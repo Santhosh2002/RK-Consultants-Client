@@ -1,58 +1,114 @@
+import React, { useState } from "react";
+import { Container, Grid2, Card, CardContent, Typography, Box, Button, IconButton, Avatar } from "@mui/material";
+import { ArrowBackIos, ArrowForwardIos, Star } from "@mui/icons-material";
 
-import { motion } from "framer-motion";
-import { fadeIn } from "../variants";
-export default function OurClients() {
-  const clientData = [
-    {
-      id: 1,
-      image: "/client-logo-01.png",
-      name: "Client 1",
-      des: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Exercitationem, optio.",
-    },
-    {
-      id: 2,
-      image: "/client-logo-03.png",
-      name: "Client 3",
-      des: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Exercitationem, optio.",
-    },
-    {
-      id: 3,
-      image: "/client-logo-02.png",
-      name: "Client 2",
-      des: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Exercitationem, optio.",
-    },
-  ];
+const testimonials = [
+  {
+    id: 1,
+    name: "Wade Warren",
+    location: "USA, California",
+    rating: 5,
+    feedback: "Our experience with Estatein was outstanding. Their team's dedication and professionalism made finding our dream home a breeze. Highly recommended! Estatein has truly exceeded our expectations with their incredible service.",
+    avatar: "https://randomuser.me/api/portraits/men/32.jpg",
+    title: "Exceptional Service!",
+  },
+  {
+    id: 2,
+    name: "Emelie Thomson",
+    location: "USA, Florida",
+    rating: 5,
+    feedback: "Estatein provided us with top-notch service. They helped us sell our property quickly and at a great price. We couldn't be happier with the results. The team was professional, friendly, and incredibly efficient!",
+    avatar: "https://randomuser.me/api/portraits/women/44.jpg",
+    title: "Efficient and Reliable",
+  },
+  {
+    id: 3,
+    name: "John Mans",
+    location: "USA, Nevada",
+    rating: 5,
+    feedback: "The Estatein team guided us through the entire buying process. Their knowledge and commitment to our needs were impressive. Thank you for your support! Estatein made our home-buying experience smooth and stress-free.",
+    avatar: "https://randomuser.me/api/portraits/men/45.jpg",
+    title: "Trusted Advisors",
+  },
+];
+
+const OurClients = () => {
+  const [expanded, setExpanded] = useState({});
+
+  const toggleExpand = (id) => {
+    setExpanded((prevState) => ({ ...prevState, [id]: !prevState[id] }));
+  };
 
   return (
-    <>
-    <section className="bg-gray-950"> 
-      <div className="w-full pt-10 mx-auto text-center text-gray-200 bg-gray-950 font-semibold text-3xl">
-        Our Clients
-      </div>
-      <div className="w-full mx-auto text-center text-gray-400 bg-gray-950 font-light text-lg">
-        We have been working with some 50+ fortune clients
-      </div>
-      <div className="grid grid-cols-1  lg:grid-cols-3 gap-6 px-5 py-10 justify-center items-center w-full max-w-5xl mx-auto">
-  {clientData.map((client, index) => (
-    <motion.div variants={
-        fadeIn('up', 0.2)
-        } initial="hidden" whileInView={"show"}viewport={{once:true,amount:0.1 }}
-      key={client.id}
-      className={`max-w-lg bg-gray-100 border border-gray-800 rounded-lg shadow mx-auto hover:shadow-lg hover:scale-110 duration-150`}
-    >
-      <a href="#">
-        <img
-          className="rounded-t-lg w-full object-cover"
-          src={client.image}
-          alt={client.name}
-        />
-      </a>
-      
-    </motion.div>
-  ))}
-</div>
-</section>
+    <Box sx={{ backgroundColor: "#111", color: "#fff", py: 6}}>
+      <Container maxWidth="lg" sx={{display:"flex", flexDirection:"column", gap:"16px"}}>
+        <Box sx={{ display: "flex", flexDirection:"column", alignItems: "flex-start", gap:'16px', marginBottom: '40px' }}>
+          <img
+            src="/Icons/abstract-Design.svg"
+            alt="Icon"
+            style={{ width: 70, height: "auto", marginRight: 10 }}
+          />
+          <Typography variant="h3" sx={{ fontWeight: "bold" }}>
+            What Our Clients Say
+          </Typography>
+          <Box sx={{display:"flex", flexDirection:"row", justifyContent:"space-between", alignItems:"center", width:"100%"}}>
+            <Typography variant="body1" sx={{ textAlign: "left", width:"70%", color:"#999999" }}>
+            Read the success stories and heartfelt testimonials from our valued clients. Discover why they chose Estatein for their real estate needs.
+            </Typography>
+            <Button variant="outlined" sx={{ whiteSpace:"nowrap", color:"white", border:"1px solid #999999" }}>View All Testimonials</Button>
+          </Box>
+        </Box>
+        {/* Testimonials Grid2 */}
+        <Grid2 container spacing={4}>
+          {testimonials.map((testimonial) => (
+            <Grid2 item size={{ xs: 12, md: 4, sm: 6 }} key={testimonial.id}>
+              <Card sx={{ borderRadius: "10px", border: "1px solid #444", backgroundColor: "#111", color: "#fff", padding: "24px", height: "300px", overflow: "hidden" }}>
+                {/* Star Ratings */}
+                <Box sx={{ display: "flex", gap: 0.5, mb: 2 }}>
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <Star key={i} sx={{ color: "#FFD700" }} />
+                  ))}
+                </Box>
+                {/* Testimonial Content */}
+                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                  {testimonial.title}
+                </Typography>
+                <Typography variant="body2" color="grey.400" mb={3} sx={{ height: expanded[testimonial.id] ? "auto" : "60px", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  {testimonial.feedback}
+                </Typography>
+                {testimonial.feedback.length > 150 && (
+                  <Button size="small" onClick={() => toggleExpand(testimonial.id)} sx={{ color: "#6A5ACD", textTransform: "none" }}>
+                    {expanded[testimonial.id] ? "Show Less" : "Read More"}
+                  </Button>
+                )}
+                {/* User Profile */}
+                <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 2 }}>
+                  <Avatar src={testimonial.avatar} alt={testimonial.name} sx={{ width: 40, height: 40 }} />
+                  <Box>
+                    <Typography variant="body1" sx={{ fontWeight: "bold" }}>{testimonial.name}</Typography>
+                    <Typography variant="body2" sx={{ color: "grey.500" }}>{testimonial.location}</Typography>
+                  </Box>
+                </Box>
+              </Card>
+            </Grid2>
+          ))}
+        </Grid2>
 
-    </>
+        {/* Pagination Controls */}
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 5, borderTop: "1px solid #999" }}> 
+          <Typography variant="body2" sx={{ color: "#888", pt: 2 }}>01 of 10</Typography>
+          <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
+            <IconButton sx={{ color: "#fff", border: "1px solid #999", borderRadius: "50%", width: 40, height: 40 }}>
+              <ArrowBackIos fontSize="small" />
+            </IconButton>
+            <IconButton sx={{ color: "#fff", border: "1px solid #999", borderRadius: "50%", width: 40, height: 40 }}>
+              <ArrowForwardIos fontSize="small" />
+            </IconButton>
+          </Box>
+        </Box>
+      </Container>
+    </Box>
   );
-}
+};
+
+export default OurClients;
