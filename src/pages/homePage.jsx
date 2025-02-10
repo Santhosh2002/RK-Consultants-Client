@@ -7,6 +7,8 @@ import Services from '../components/services';
 import CounterSection from '../components/statsComponent';
 import PropertyListing from '../components/propertyListing';
 import OurClients from '../components/OurClients'
+import RealEstateCTA from '../components/RealEstateCTA';
+import ContactUs from '../components/ContactUsPage';
 import axios from 'axios'
 
 function HomePage() {
@@ -33,9 +35,11 @@ function HomePage() {
       <WhyChooseUs about={general.about}/>
       <PropertyListing />
       <OurClients />
+      <RealEstateCTA />
       <Services/>
-      <CounterSection/>
-      <WorkDisplaySection />
+      {/* <CounterSection/> */}
+      {/* <WorkDisplaySection /> */}
+      {/* <ContactUs /> */}
       <FooterComponent address={general.address} phone={general.phone} email={general.email} logo={general.logo} insta={general.instagram} fb={general.facebook}   linkedin={general.linkedin}  />  
     </>
   )

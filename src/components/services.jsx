@@ -1,91 +1,78 @@
+import React, { useEffect, useState } from "react";
+import { Container, Box, Typography, Button, Grid2, Card, CardContent, CardMedia } from "@mui/material";
 import { motion } from "framer-motion";
-import { fadeIn } from "../variants";
 import { Link, useNavigate } from "react-router-dom";
-import React, { useEffect } from "react";
 import axios from "axios";
+
 const Services = () => {
   const navigate = useNavigate();
-  const [services, setServices] = React.useState([]);
-  const handleNavigate = ()=>{
-    navigate('/services')
-  } 
+  const [services, setServices] = useState([]);
 
-  const getServices = async () => {
-    const base = import.meta.env.VITE_BASE_URL;
-    const url = base + "/api/service";
-    const response = await axios.get(url);
-    setServices(response.data.services);
-    return response.data.services;
-  }
-  useEffect (()=>{
+  useEffect(() => {
+    const getServices = async () => {
+      const base = import.meta.env.VITE_BASE_URL;
+      const url = `${base}/api/service`;
+      const response = await axios.get(url);
+      setServices(response.data.services);
+    };
     getServices();
-  },[])
+  }, []);
 
   return (
-    <section className="p-8 bg-gray-950" id="services">
-        <div className="text-white font-semibold justify-center items-center flex text-3xl ">What We Offer</div>
-        <div className=" text-gray-400 font-normal justify-center items-center flex text-light mb-10 text-center ">Empowering you with innovative solutions, tailored to exceed your expectations!</div>
- <div className="max-w-screen-xl  px-4  justify-center items-center mx-auto">
-        {
-  services.slice(0, 3).map((service, index ) => {
-    const isEven = index % 2 === 0; // Check if the index is even
-    return (
-      <motion.div variants={
-        fadeIn('up', 0.2)
-        } initial="hidden" whileInView={"show"}viewport={{once:true,amount:0.1 }}    key={index} className={`container  grid mx-auto  mb-10 lg:grid-cols-2 items-center gap-8 ${isEven ? "bg-gradient-to-l" : "bg-gradient-to-r"} from-white to-[#E0EDE5]  p-8 rounded-xl border border-[#E0EDE5] shadow-md duration-150 `} >
-        {/* Conditional rendering to alternate image and text */}
-        {isEven ? (
-          <>
-            <img
-              src={service.image}
-              alt="deliver instant answers"
-              className="object-cover w-full max-h-80 rounded-xl hidden sm:block"
-            />
-            <div className="w-full py-4 md:py-5 lg:px-8">
-              <p className="block antialiased font-sans text-2xl leading-relaxed text-inherit mb-10 font-normal sm:font-bold !text-black">
-                {service.name}.
-              </p>
-              
-                <p className=" font-normal text-gray-500 list-disc">{service.description}</p>
-                <Link to="/services" >
-                <a href="" className="inline-flex items-center justify-center px-5 py-3 text-base font-medium text-center  text-green-800 border border-green-800 rounded-lg hover:bg-green-800 hover:text-white duration-150 focus:ring-4 focus:ring-gray-100 mt-3">
-                       View all services
-                    </a></ Link>
-                
-              
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="w-full py-4 md:py-5 lg:px-8">
-              <p className="block antialiased font-sans text-2xl leading-relaxed text-inherit mb-10 font-semibold  sm:font-bold !text-black">
-                {service.name}.
-              </p>
-              
-              <p  className=" font-normal text-gray-500 list-disc">{service.description}</p>
-              <Link to="/services" >
-                <a href="" className="inline-flex items-center justify-center px-5 py-3 text-base font-medium text-center  text-green-800 border border-green-800 rounded-lg hover:bg-green-800 hover:text-white duration-150 focus:ring-4 focus:ring-gray-100 mt-3">
-                       View all services
-                    </a></ Link>
-                
-              
-            </div>
-            <img
-              src={service.image}
-              alt="deliver instant answers"
-              className="object-cover w-full max-h-80 rounded-xl hidden sm:block"
-            />
-          </>
-        )}
-        </motion.div>
-      
-    );
-  })
-}
-</div>
-
-  
-</section>
+    <Box sx={{ backgroundColor: "#111", color: "#fff", py: 8 }} id="services">
+      <Container maxWidth="lg">
+        <Box sx={{ display: "flex", flexDirection:"column", alignItems: "flex-start", gap:'16px', marginBottom: '40px' }}>
+          <img
+            src="/Icons/abstract-Design.svg"
+            alt="Icon"
+            style={{ width: 70, height: "auto", marginRight: 10 }}
+          />
+          <Typography variant="h3">
+            What we Offers
+          </Typography>
+          <Box sx={{display:"flex", flexDirection:"row", justifyContent:"space-between", alignItems:"center", width:"100%"}}>
+            <Typography variant="body1" sx={{ textAlign: "left", width:"70%", color:"#999999" }}>
+            Empowering you with innovative solutions, tailored to exceed your expectations!
+            </Typography>
+            {/* <Button variant="outlined" sx={{ whiteSpace:"nowrap", color:"white", border:"1px solid #999999" }}>View All Properties</Button> */}
+          </Box>
+        </Box>
+        <Grid2 container spacing={4}>
+          {services.slice(0, 3).map((service, index) => (
+            <Grid2 item size={{ xs: 12, md: 4, sm: 6 }} key={index}>
+              <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: index * 0.2 }}>
+                <Card sx={{ backgroundColor: "#222", color: "#fff", borderRadius: "12px", overflow: "hidden", boxShadow: 4, height: "100%" }}>
+                  <CardMedia
+                    component="img"
+                    image={service.image}
+                    alt={service.name}
+                    sx={{ height: 200, objectFit: "cover" }}
+                  />
+                  <CardContent>
+                    <Typography variant="h6" fontWeight="bold" gutterBottom>
+                      {service.name}
+                    </Typography>
+                    <Typography variant="body2" color="grey.400" sx={{ height:"150px", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      {service.description}
+                    </Typography>
+                    <Box sx={{width:"100%", display:"flex", flexDirection:'row', justifyContent:"center", alignItems:"center"}}>
+                      <Button
+                        component={Link}
+                        to="/services"
+                        variant="outlined"
+                        sx={{ mt: 2, color: "#6A5ACD", borderColor: "#6A5ACD", textTransform: "none" }}
+                      >
+                        View All Services
+                      </Button>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </Grid2>
+          ))}
+        </Grid2>
+      </Container>
+    </Box>
   );
 };
 

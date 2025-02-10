@@ -73,7 +73,7 @@ const OurClients = () => {
                 <Typography variant="h6" fontWeight="bold" gutterBottom>
                   {testimonial.title}
                 </Typography>
-                <Typography variant="body2" color="grey.400" mb={3} sx={{ height: expanded[testimonial.id] ? "auto" : "60px", overflow: "hidden", textOverflow: "ellipsis" }}>
+                <Typography variant="body2" color="grey.400" sx={{ height: expanded[testimonial.id] ? "auto" : "60px", overflow: "hidden", textOverflow: "ellipsis" }}>
                   {testimonial.feedback}
                 </Typography>
                 {testimonial.feedback.length > 150 && (

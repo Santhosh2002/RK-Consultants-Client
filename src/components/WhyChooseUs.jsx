@@ -6,8 +6,10 @@ const WhyChooseUs = ({ about }) => {
   return (
     <Box
       sx={{
-        backgroundColor: "#E0EDE5",
-        minHeight: "100vh", // Ensures full screen height
+        backgroundColor: "#111",
+        color: "#fff",
+        py: 10,
+        px: 4,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -19,7 +21,7 @@ const WhyChooseUs = ({ about }) => {
         spacing={4}
         sx={{
           width: "100%",
-          maxWidth: "1200px", // Restrict max width for a clean design
+          maxWidth: "1200px",
           mx: "auto",
           px: { xs: 2, md: 6 },
           alignItems: "center",
@@ -39,23 +41,23 @@ const WhyChooseUs = ({ about }) => {
             }}
           >
             <img
-              src="https://images.unsplash.com/photo-1531973576160-7125cd663d86?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              src="/why-choose-us-1.jpg"
               alt="office content 1"
               style={{
                 width: "100%",
-                height: "450px", // Adjust height for consistency
+                height: "400px",
                 objectFit: "cover",
-                borderRadius: "10px",
+                borderRadius: "12px",
               }}
             />
             <img
-              src="https://images.unsplash.com/photo-1533750516457-a7f992034fec?q=80&w=1506&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              src="/why-choose-us-2.jpg"
               alt="office content 2"
               style={{
                 width: "100%",
-                height: "450px", // Keep same height for balance
+                height: "400px",
                 objectFit: "cover",
-                borderRadius: "10px",
+                borderRadius: "12px",
                 marginTop: "16px",
               }}
             />
@@ -79,10 +81,10 @@ const WhyChooseUs = ({ about }) => {
             <Typography
               variant="h3"
               sx={{
-                fontWeight: "600",
-                color: "black",
-                marginBottom: 2,
-                textAlign: { xs: "center", md: "left" }, // Center text on small screens
+                fontWeight: "bold",
+                color: "#fff",
+                marginBottom: 3,
+                textAlign: { xs: "center", md: "left" },
               }}
             >
               Why Choose Us?
@@ -90,7 +92,7 @@ const WhyChooseUs = ({ about }) => {
             <Typography
               variant="body1"
               sx={{
-                color: "black",
+                color: "#ccc",
                 fontSize: "18px",
                 fontWeight: "400",
                 textAlign: { xs: "center", md: "left" },
