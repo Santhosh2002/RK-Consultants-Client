@@ -14,14 +14,14 @@ const RealEstateCTA = () => {
         alignItems: "center",
         justifyContent: "center",
         overflow: "hidden",
-        borderTop:"0.5px solid #999999",
-        borderBottom:"0.5px solid #999999",
+        borderTop:"0.5px solid #262626",
+        borderBottom:"0.5px solid #262626",
       }}
     >
       {/* Left Background Design */}
       <Box
         component="img"
-        src="public/Icons/square-design-left.svg"
+        src="/Icons/square-design-left.svg"
         alt="Square Design Left"
         sx={{
           position: "absolute",
@@ -37,7 +37,7 @@ const RealEstateCTA = () => {
       {/* Right Background Design */}
       <Box
         component="img"
-        src="public/Icons/squre-design-right.svg"
+        src="/Icons/squre-design-right.svg"
         alt="Square Design Right"
         sx={{
           position: "absolute",

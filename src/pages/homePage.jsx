@@ -1,6 +1,7 @@
 import {useEffect,useState} from 'react';
 import FooterComponent from '../components/footer';
-import {HeroSection} from '../components/hero';
+import Navbar from '../components/Navbar';
+import HeroSection from '../components/hero';
 import WhyChooseUs from '../components/WhyChooseUs';
 import WorkDisplaySection from '../components/workDisplaySection';
 import Services from '../components/services';
@@ -9,6 +10,7 @@ import PropertyListing from '../components/propertyListing';
 import OurClients from '../components/OurClients'
 import RealEstateCTA from '../components/RealEstateCTA';
 import ContactUs from '../components/ContactUsPage';
+import ServicesSection from '../components/ServiceSection';
 import axios from 'axios'
 
 function HomePage() {
@@ -31,12 +33,14 @@ function HomePage() {
   },[]); 
   return (
     <>
+      <Navbar />
       <HeroSection logo={general.logo}/>
-      <WhyChooseUs about={general.about}/>
+      <ServicesSection />
+      {/* <WhyChooseUs about={general.about}/> */}
       <PropertyListing />
       <OurClients />
-      <RealEstateCTA />
       <Services/>
+      <RealEstateCTA />
       {/* <CounterSection/> */}
       {/* <WorkDisplaySection /> */}
       {/* <ContactUs /> */}

@@ -1,17 +1,15 @@
 import React from "react";
-import Logo from "./Logo";
 import { Container, Box, Typography, TextField, Button, Grid2, IconButton } from "@mui/material";
 import { Facebook, LinkedIn, Twitter, YouTube, Email, LocationOn, Phone } from "@mui/icons-material";
 
 const FooterComponent = ({ address, phone, logo, insta, fb, linkedin, email }) => {
   return (
-    <Box sx={{ backgroundColor: "#111", color: "#fff", py: 6, borderTop: "1px solid #999999" }}>
-      <Container maxWidth="lg">
-        <Grid2 container spacing={4} alignItems="center">
+    <Box sx={{ backgroundColor: "#111", color: "#fff" }}>
+      <Container maxWidth="lg" sx={{padding:"48px 0"}}>
+        <Grid2 container spacing={4} alignItems="flex-start" justifyContent={"space-between"}>
           <Grid2 item size={{xs:12, md:3}}>
-            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-              {/* <img src={logo} alt="Logo" className="max-h-40 w-56 object-cover scale-105 mt-2" /> */}
-              <Logo />
+            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap:'32px' }}>
+              <img src="Icons/RK_Logo_White_No_Slogan.svg" alt="Logo" className="max-h-40 w-56 object-cover scale-105 mt-2" />
               <Box sx={{ display: "flex", alignItems: "center", gap: 1, backgroundColor: "#222", p: 1, borderRadius: "8px" }}>
                 <TextField
                   variant="standard"
@@ -26,7 +24,7 @@ const FooterComponent = ({ address, phone, logo, insta, fb, linkedin, email }) =
             </Box>
           </Grid2>
           <Grid2 item xs={12} md={6}>
-            <Grid2 container spacing={4}>
+            {/* <Grid2 container spacing={4}>
               <Grid2 item xs={4}>
                 <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2 }}>Home</Typography>
                 <Typography variant="body2">Hero Section</Typography>
@@ -51,7 +49,19 @@ const FooterComponent = ({ address, phone, logo, insta, fb, linkedin, email }) =
                 <Typography variant="body2">Closing Success</Typography>
                 <Typography variant="body2">Property Management</Typography>
               </Grid2>
-            </Grid2>
+            </Grid2> */}
+            <Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
+              <LocationOn sx={{ fontSize: 20, mr: 1 }} />
+              <Typography variant="body2" noWrap>{address}</Typography>
+            </Box>
+            <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
+              <Phone sx={{ fontSize: 20, mr: 1 }} />
+              <Typography variant="body2" noWrap>{phone}</Typography>
+            </Box>
+            <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
+              <Email sx={{ fontSize: 20, mr: 1 }} />
+              <Typography variant="body2" noWrap>{email}</Typography>
+            </Box>
           </Grid2>
           <Grid2 item xs={12} md={3}>
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
@@ -63,7 +73,7 @@ const FooterComponent = ({ address, phone, logo, insta, fb, linkedin, email }) =
                 allowFullScreen="" 
                 loading="lazy"
               ></iframe>
-              <Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
+              {/* <Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
                 <LocationOn sx={{ fontSize: 20, mr: 1 }} />
                 <Typography variant="body2" noWrap>{address}</Typography>
               </Box>
@@ -74,21 +84,21 @@ const FooterComponent = ({ address, phone, logo, insta, fb, linkedin, email }) =
               <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
                 <Email sx={{ fontSize: 20, mr: 1 }} />
                 <Typography variant="body2" noWrap>{email}</Typography>
-              </Box>
+              </Box> */}
             </Box>
           </Grid2>
         </Grid2>
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 6, borderTop: "1px solid #999999", pt: 3 }}>
-          <Typography variant="body2" sx={{ color: "#999999" }}>©2024 RK Realtors and Consultants. All Rights Reserved.</Typography>
-          <Typography variant="body2" sx={{ color: "#999999" }}>Managed by G & G Developers</Typography>
-          <Box>
-            <IconButton sx={{ color: "#fff" }} href={fb}><Facebook /></IconButton>
-            <IconButton sx={{ color: "#fff" }} href={linkedin}><LinkedIn /></IconButton>
-            <IconButton sx={{ color: "#fff" }} href={insta}><Twitter /></IconButton>
-            <IconButton sx={{ color: "#fff" }} href="https://www.youtube.com/@RKRealtorsConsultants"><YouTube /></IconButton>
-          </Box>
-        </Box>
       </Container>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid #262626", padding:"8px 64px", backgroundColor:"#1A1A1A"}}>
+        <Typography variant="body2" sx={{ color: "#999999" }}>©2024 RK Realtors and Consultants. All Rights Reserved.</Typography>
+        <Typography variant="body2" sx={{ color: "#999999" }}>Managed by G & G Developers</Typography>
+        <Box>
+          <IconButton sx={{ color: "#fff" }} href={fb}><Facebook /></IconButton>
+          <IconButton sx={{ color: "#fff" }} href={linkedin}><LinkedIn /></IconButton>
+          <IconButton sx={{ color: "#fff" }} href={insta}><Twitter /></IconButton>
+          <IconButton sx={{ color: "#fff" }} href="https://www.youtube.com/@RKRealtorsConsultants"><YouTube /></IconButton>
+        </Box>
+      </Box>
     </Box>
   );
 };
