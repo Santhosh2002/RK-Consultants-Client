@@ -18,28 +18,10 @@ import {
   Alert,
 } from "@mui/material";
 import { styled } from "@mui/system";
+import { useTheme } from "@mui/material/styles";
 
-const Background = styled(Box)({
-  height: "100vh",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  backgroundImage: "url(/slider-img-02.jpg)",
-  backgroundSize: "cover",
-  backgroundPosition: "center",
-});
-
-const StyledCard = styled(Card)({
-  padding: "2rem",
-  borderRadius: "10px",
-  boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.2)",
-  maxWidth: "400px",
-  width: "100%",
-  textAlign: "center",
-  backgroundColor: "rgba(255, 255, 255, 0.9)",
-});
-
-function AdminLoginPage() {
+const AdminLoginPage = () => {
+  const theme = useTheme(); // Access the theme
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -58,13 +40,37 @@ function AdminLoginPage() {
   };
 
   return (
-    <Background>
+    <Box
+      sx={{
+        height: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundImage: "url(/slider-img-02.jpg)",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundColor: theme.palette.background.paper,
+      }}
+    >
       <Container>
-        <StyledCard>
+        <Card
+          sx={{
+            p: theme.spacing(4),
+            borderRadius: theme.shape.borderRadius,
+            boxShadow: theme.shadows[4],
+            maxWidth: "400px",
+            width: "100%",
+            textAlign: "center",
+          }}
+        >
           <Box mb={2}>
             <img src="/new_logo_bg.png" alt="Logo" style={{ height: "80px" }} />
           </Box>
-          <Typography variant="h5" fontWeight="bold" gutterBottom>
+          <Typography
+            variant="h5"
+            fontWeight={theme.typography.fontWeightBold}
+            gutterBottom
+          >
             Admin Login
           </Typography>
           <form onSubmit={handleSubmit}>
@@ -92,7 +98,11 @@ function AdminLoginPage() {
               type="submit"
               variant="contained"
               color="primary"
-              sx={{ mt: 2, py: 1.5 }}
+              sx={{
+                mt: theme.spacing(2),
+                py: theme.spacing(1.5),
+                borderRadius: theme.shape.borderRadius,
+              }}
               disabled={loading}
             >
               {loading ? (
@@ -107,14 +117,14 @@ function AdminLoginPage() {
               Don't have an account?{" "}
               <Button
                 variant="text"
-                color="secondary"
+                color="primary"
                 onClick={() => navigate("/admin/signup")}
               >
                 Sign Up
               </Button>
             </Typography>
           </Box>
-        </StyledCard>
+        </Card>
       </Container>
       <Snackbar
         open={Boolean(error)}
@@ -123,8 +133,8 @@ function AdminLoginPage() {
       >
         <Alert severity="error">{error}</Alert>
       </Snackbar>
-    </Background>
+    </Box>
   );
-}
+};
 
 export default AdminLoginPage;

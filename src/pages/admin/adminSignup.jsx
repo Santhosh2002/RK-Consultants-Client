@@ -17,29 +17,10 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
-import { styled } from "@mui/system";
+import { useTheme } from "@mui/material/styles";
 
-const Background = styled(Box)({
-  height: "100vh",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  backgroundImage: "url(/slider-img-02.jpg)",
-  backgroundSize: "cover",
-  backgroundPosition: "center",
-});
-
-const StyledCard = styled(Card)({
-  padding: "2rem",
-  borderRadius: "10px",
-  boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.2)",
-  maxWidth: "400px",
-  width: "100%",
-  textAlign: "center",
-  backgroundColor: "rgba(255, 255, 255, 0.9)",
-});
-
-function AdminSignupPage() {
+const AdminSignupPage = () => {
+  const theme = useTheme(); // Access the theme
   const [username, setUsername] = useState("");
   const [role, setRole] = useState("");
   const [password, setPassword] = useState("");
@@ -59,13 +40,37 @@ function AdminSignupPage() {
   };
 
   return (
-    <Background>
+    <Box
+      sx={{
+        height: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundImage: "url(/slider-img-02.jpg)",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundColor: theme.palette.background.paper,
+      }}
+    >
       <Container>
-        <StyledCard>
+        <Card
+          sx={{
+            p: theme.spacing(4),
+            borderRadius: theme.shape.borderRadius,
+            boxShadow: theme.shadows[4],
+            maxWidth: "400px",
+            width: "100%",
+            textAlign: "center",
+          }}
+        >
           <Box mb={2}>
             <img src="/new_logo_bg.png" alt="Logo" style={{ height: "80px" }} />
           </Box>
-          <Typography variant="h5" fontWeight="bold" gutterBottom>
+          <Typography
+            variant="h5"
+            fontWeight={theme.typography.fontWeightBold}
+            gutterBottom
+          >
             Admin Sign Up
           </Typography>
           <form onSubmit={handleSubmit}>
@@ -102,7 +107,11 @@ function AdminSignupPage() {
               type="submit"
               variant="contained"
               color="primary"
-              sx={{ mt: 2, py: 1.5 }}
+              sx={{
+                mt: theme.spacing(2),
+                py: theme.spacing(1.5),
+                borderRadius: theme.shape.borderRadius,
+              }}
               disabled={loading}
             >
               {loading ? (
@@ -124,7 +133,7 @@ function AdminSignupPage() {
               </Button>
             </Typography>
           </Box>
-        </StyledCard>
+        </Card>
       </Container>
       <Snackbar
         open={Boolean(error)}
@@ -133,8 +142,8 @@ function AdminSignupPage() {
       >
         <Alert severity="error">{error}</Alert>
       </Snackbar>
-    </Background>
+    </Box>
   );
-}
+};
 
 export default AdminSignupPage;
