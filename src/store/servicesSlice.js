@@ -13,6 +13,33 @@ export const fetchServices = createAsyncThunk(
     }
   }
 );
+export const createService = createAsyncThunk(
+  "services/createService",
+  async (serviceData, { rejectWithValue }) => {
+    try {
+      const formData = new FormData();
+
+      // Append service fields
+      Object.keys(serviceData).forEach((key) => {
+        if (key === "images") {
+          serviceData.images.forEach((file) => {
+            formData.append("images", file);
+          });
+        } else if (key === "subServices") {
+          formData.append(key, JSON.stringify(serviceData[key]));
+        } else {
+          formData.append(key, serviceData[key]);
+        }
+      });
+
+      const response = await axios.post("/api/service/create", formData);
+
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "An error occurred");
+    }
+  }
+);
 
 // Delete a service
 export const deleteService = createAsyncThunk(
@@ -58,6 +85,18 @@ const servicesSlice = createSlice({
         );
       })
       .addCase(deleteService.rejected, (state, action) => {
+        state.error = action.payload;
+      })
+
+      .addCase(createService.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(createService.fulfilled, (state, action) => {
+        state.loading = false;
+        state.services.push(action.payload);
+      })
+      .addCase(createService.rejected, (state, action) => {
+        state.loading = false;
         state.error = action.payload;
       });
   },

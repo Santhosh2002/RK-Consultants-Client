@@ -247,7 +247,7 @@ const theme = createTheme({
     },
     MuiTextField: {
       defaultProps: {
-        color: "text.primary",
+        color: "#ffffff",
       },
       styleOverrides: {
         root: {
@@ -259,7 +259,7 @@ const theme = createTheme({
     },
     MuiInputLabel: {
       defaultProps: {
-        color: "text.primary",
+        color: "#ffffff",
       },
       styleOverrides: {
         shrink: {
@@ -273,7 +273,7 @@ const theme = createTheme({
     },
     MuiSelect: {
       defaultProps: {
-        color: "text.primary",
+        color: "#ffffff",
       },
       styleOverrides: {
         select: {
@@ -329,7 +329,7 @@ const theme = createTheme({
     },
     MuiOutlinedInput: {
       defaultProps: {
-        color: "text.primary",
+        color: "#ffffff",
       },
       styleOverrides: {
         root: {
