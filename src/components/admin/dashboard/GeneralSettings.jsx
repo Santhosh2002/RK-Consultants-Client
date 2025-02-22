@@ -1,81 +1,93 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchGeneralSettings,
+  updateGeneralSettings,
+  getGeneralSettings,
+  getSettingsLoader,
+  getSettingsUpdater,
+} from "../../../store/generalSettingsSlice";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
   Container,
   Grid2,
-  Card,
-  CardContent,
   Typography,
   Box,
   TextField,
   Button,
+  Avatar,
+  CircularProgress,
 } from "@mui/material";
+import { Edit, Save, Cancel } from "@mui/icons-material";
+
+// Function to capitalize only the first letter of each title
+const capitalizeTitle = (title) =>
+  title.charAt(0).toUpperCase() + title.slice(1);
 
 const GeneralSettings = () => {
-  const [settings, setSettings] = useState({
-    logo: null,
-    title: "",
-    about: "",
-    contact: "",
-    email: "",
-    phone: "",
-    address: "",
-    facebook: "",
-    instagram: "",
-    linkedin: "",
-    terms: "",
-    privacy: "",
-    shippingPolicy: "",
-    refundPolicy: "",
-  });
+  const dispatch = useDispatch();
+  const settings = useSelector(getGeneralSettings);
+  const loading = useSelector(getSettingsLoader);
+  const updating = useSelector(getSettingsUpdater);
 
-  const [previewLogo, setPreviewLogo] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [isUpdating, setIsUpdating] = useState(false);
+  const [formValues, setFormValues] = useState({});
   const [isEditing, setIsEditing] = useState(false);
-  const base = import.meta.env.VITE_BASE_URL;
+  const [previewLogo, setPreviewLogo] = useState(null);
+  const [expandedFields, setExpandedFields] = useState({});
 
   useEffect(() => {
-    axios
-      .get(`${base}/api/general`)
-      .then((response) => {
-        setSettings(response.data.general);
-        setLoading(false);
-      })
-      .catch(() => {
-        toast.error("Error fetching settings");
-        setLoading(false);
-      });
-  }, []);
+    dispatch(fetchGeneralSettings());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (settings) {
+      setFormValues(settings);
+    }
+  }, [settings]);
 
   const handleChange = (e) => {
-    setSettings({ ...settings, [e.target.name]: e.target.value });
+    setFormValues({ ...formValues, [e.target.name]: e.target.value });
   };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    setSettings({ ...settings, logo: file });
+    setFormValues({ ...formValues, logo: file });
     setPreviewLogo(URL.createObjectURL(file));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsUpdating(true);
-    const token = localStorage.getItem("authToken");
-
-    try {
-      await axios.post(`${base}/api/general/${settings._id}`, settings, {
-        headers: { Authorization: `${token}` },
-      });
-      toast.success("Settings updated successfully!");
-      setIsEditing(false);
-    } catch (error) {
-      toast.error("Error updating settings");
-    }
-    setIsUpdating(false);
+    dispatch(updateGeneralSettings(formValues))
+      .unwrap()
+      .then(() => {
+        toast.success("Settings updated successfully!");
+        setIsEditing(false);
+      })
+      .catch(() => toast.error("Error updating settings"));
   };
+
+  const toggleExpand = (key) => {
+    setExpandedFields((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  };
+
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <Box
@@ -83,143 +95,244 @@ const GeneralSettings = () => {
         backgroundColor: "#111",
         color: "#fff",
         py: 6,
-        borderRadius: "16px",
+        minHeight: "100vh",
+        width: "100%",
       }}
     >
       <ToastContainer />
-      <Container
-        maxWidth="lg"
-        sx={{ borderRadius: "16px", padding: "20px", backgroundColor: "#222" }}
-      >
-        <Typography
-          variant="h3"
-          sx={{ fontWeight: "bold", marginBottom: "20px" }}
+      <Container maxWidth="xl">
+        <Box
+          sx={{
+            backgroundColor: "#222",
+            padding: "24px",
+            borderRadius: "12px",
+          }}
         >
-          General Settings
-        </Typography>
-        {loading ? (
-          <Typography>Loading settings...</Typography>
-        ) : (
-          <>
-            {isEditing ? (
-              <form onSubmit={handleSubmit}>
-                <Grid2 container spacing={3}>
-                  <Grid2 item xs={12}>
-                    <Card
-                      sx={{
-                        backgroundColor: "#333",
-                        borderRadius: "16px",
-                        padding: 3,
-                      }}
-                    >
-                      <CardContent>
-                        <Typography variant="h6">Logo</Typography>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={handleFileChange}
-                        />
-                        {previewLogo && (
-                          <img
-                            src={previewLogo}
-                            alt="Logo Preview"
-                            style={{
-                              marginTop: "10px",
-                              borderRadius: "8px",
-                              width: "100px",
-                            }}
-                          />
-                        )}
-                      </CardContent>
-                    </Card>
-                  </Grid2>
-                  {Object.entries(settings).map(([key, value]) =>
-                    key !== "_id" && key !== "logo" ? (
-                      <Grid2 item size={{ xs: 12, sm: 6 }} key={key}>
-                        <TextField
-                          fullWidth
-                          label={key.replace(/([A-Z])/g, " $1").trim()}
-                          name={key}
-                          value={value}
-                          onChange={handleChange}
-                          multiline={
-                            key.includes("Policy") ||
-                            key === "terms" ||
-                            key === "privacy"
-                          }
-                          rows={
-                            key.includes("Policy") ||
-                            key === "terms" ||
-                            key === "privacy"
-                              ? 4
-                              : 1
-                          }
-                          sx={{ backgroundColor: "#333", borderRadius: "8px" }}
-                          InputProps={{ style: { color: "#fff" } }}
-                        />
-                      </Grid2>
-                    ) : null
-                  )}
-                </Grid2>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  sx={{
-                    backgroundColor: "#6A5ACD",
-                    color: "#fff",
-                    textTransform: "none",
-                    marginTop: 3,
-                    padding: "10px 20px",
-                    borderRadius: "8px",
-                  }}
-                >
-                  {isUpdating ? "Updating..." : "Save Changes"}
-                </Button>
-              </form>
+          {/* Header Section */}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: "30px",
+            }}
+          >
+            <Box sx={{ display: "flex", alignItems: "center", gap: "15px" }}>
+              <Avatar
+                src={previewLogo || settings.logo}
+                alt="Logo"
+                sx={{ width: 80, height: 80, border: "2px solid #6A5ACD" }}
+              />
+              <Box>
+                <Typography variant="h4" sx={{ fontWeight: "bold" }}>
+                  General Settings
+                </Typography>
+                {isEditing && (
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                  />
+                )}
+              </Box>
+            </Box>
+
+            {!isEditing ? (
+              <Button
+                variant="contained"
+                startIcon={<Edit />}
+                onClick={() => setIsEditing(true)}
+                sx={{
+                  backgroundColor: "#6A5ACD",
+                  color: "#fff",
+                  textTransform: "none",
+                }}
+              >
+                Edit
+              </Button>
             ) : (
-              <>
-                <Grid2 container spacing={3}>
-                  {Object.entries(settings).map(([key, value]) =>
-                    key !== "_id" && key !== "logo" ? (
-                      <Grid2 item size={{ xs: 12, sm: 6 }} key={key}>
-                        <Card
+              <Box sx={{ display: "flex", gap: 2 }}>
+                <Button
+                  variant="contained"
+                  startIcon={<Save />}
+                  onClick={handleSubmit}
+                  sx={{ backgroundColor: "#6A5ACD", color: "#fff" }}
+                  disabled={updating}
+                >
+                  {updating ? "Saving..." : "Save Changes"}
+                </Button>
+                <Button
+                  variant="contained"
+                  startIcon={<Cancel />}
+                  onClick={() => setIsEditing(false)}
+                  sx={{ backgroundColor: "#D32F2F", color: "#fff" }}
+                >
+                  Cancel
+                </Button>
+              </Box>
+            )}
+          </Box>
+
+          {/* Form Section */}
+          <Grid2 container spacing={3}>
+            {/* Small Fields (3 columns) */}
+            {["title", "contact", "email", "phone"].map(
+              (key) =>
+                formValues[key] !== undefined && (
+                  <Grid2 item size={{ xs: 12, sm: 3 }} key={key}>
+                    <Typography
+                      variant="h6"
+                      sx={{ color: "#ffffff", marginBottom: "6px" }}
+                    >
+                      {capitalizeTitle(key.replace(/([A-Z])/g, " $1").trim())}
+                    </Typography>
+                    {isEditing ? (
+                      <TextField
+                        fullWidth
+                        name={key}
+                        value={formValues[key]}
+                        onChange={handleChange}
+                        sx={{
+                          backgroundColor: "#333",
+                          borderRadius: "8px",
+                          color: "#fff",
+                          "& .MuiOutlinedInput-root": {
+                            "& fieldset": {
+                              border: "none", // Removes the black border
+                            },
+                            "&:hover fieldset": {
+                              border: "none", // Ensures no border appears on hover
+                            },
+                            "&.Mui-focused fieldset": {
+                              border: "1px solid #6A5ACD", // Optional: Add focus border color
+                            },
+                          },
+                        }}
+                      />
+                    ) : (
+                      <Typography variant="body1" sx={{ color: "#fff" }}>
+                        {formValues[key] || "—"}
+                      </Typography>
+                    )}
+                  </Grid2>
+                )
+            )}
+            {/* Social Links (6 columns) */}
+            {["address", "facebook", "instagram", "linkedin"].map(
+              (key) =>
+                formValues[key] !== undefined && (
+                  <Grid2 item size={{ xs: 12, sm: 6 }} key={key}>
+                    <Typography
+                      variant="h6"
+                      sx={{ color: "#ffffff", marginBottom: "6px" }}
+                    >
+                      {capitalizeTitle(key.replace(/([A-Z])/g, " $1").trim())}
+                    </Typography>
+                    {isEditing ? (
+                      <TextField
+                        fullWidth
+                        name={key}
+                        value={formValues[key]}
+                        onChange={handleChange}
+                        sx={{
+                          backgroundColor: "#333",
+                          borderRadius: "8px",
+                          color: "#fff",
+                          "& .MuiOutlinedInput-root": {
+                            "& fieldset": {
+                              border: "none", // Removes the black border
+                            },
+                            "&:hover fieldset": {
+                              border: "none", // Ensures no border appears on hover
+                            },
+                            "&.Mui-focused fieldset": {
+                              border: "1px solid #6A5ACD", // Optional: Add focus border color
+                            },
+                          },
+                        }}
+                      />
+                    ) : (
+                      <Typography variant="body1" sx={{ color: "#fff" }}>
+                        {formValues[key] || "—"}
+                      </Typography>
+                    )}
+                  </Grid2>
+                )
+            )}
+            {/* Large Fields (12 columns) */}
+            {[
+              "about",
+              "terms",
+              "privacy",
+              "refundPolicy",
+              "shippingPolicy",
+            ].map(
+              (key) =>
+                formValues[key] !== undefined && (
+                  <Grid2 item size={{ xs: 12 }} key={key}>
+                    <Typography
+                      variant="h6"
+                      sx={{ color: "#ffffff", marginBottom: "6px" }}
+                    >
+                      {capitalizeTitle(key.replace(/([A-Z])/g, " $1").trim())}
+                    </Typography>
+
+                    {/* View Mode - Show Typography with truncation */}
+                    {!isEditing ? (
+                      <>
+                        <Typography
+                          variant="body1"
                           sx={{
-                            backgroundColor: "#333",
-                            borderRadius: "16px",
-                            padding: 3,
+                            color: "#fff",
+                            wordWrap: "break-word", // Ensures text doesn't overflow
+                            overflowWrap: "break-word", // Handles large words correctly
+                            whiteSpace: "normal", // Prevents text from expanding beyond container
+                            maxWidth: "100%", // Ensures text stays within grid limits
                           }}
                         >
-                          <CardContent>
-                            <Typography variant="h6">
-                              {key.replace(/([A-Z])/g, " $1").trim()}
-                            </Typography>
-                            <Typography variant="body1" sx={{ color: "#ccc" }}>
-                              {value}
-                            </Typography>
-                          </CardContent>
-                        </Card>
-                      </Grid2>
-                    ) : null
-                  )}
-                </Grid2>
-                <Button
-                  variant="contained"
-                  sx={{
-                    backgroundColor: "#6A5ACD",
-                    color: "#fff",
-                    textTransform: "none",
-                    marginTop: 3,
-                    padding: "10px 20px",
-                    borderRadius: "8px",
-                  }}
-                  onClick={() => setIsEditing(true)}
-                >
-                  Edit Settings
-                </Button>
-              </>
+                          {formValues[key] || "—"}
+                        </Typography>
+                        {formValues[key] && formValues[key].length > 100 && (
+                          <Button
+                            sx={{ color: "#ffffff", textTransform: "none" }}
+                            onClick={() => toggleExpand(key)}
+                          >
+                            {expandedFields[key] ? "Show Less" : "Show More"}
+                          </Button>
+                        )}
+                      </>
+                    ) : (
+                      // Edit Mode - Show TextField
+                      <TextField
+                        fullWidth
+                        name={key}
+                        value={formValues[key]}
+                        onChange={handleChange}
+                        multiline
+                        rows={8}
+                        sx={{
+                          backgroundColor: "#333",
+                          borderRadius: "8px",
+                          color: "#fff",
+                          "& .MuiOutlinedInput-root": {
+                            "& fieldset": {
+                              border: "none", // Removes the black border
+                            },
+                            "&:hover fieldset": {
+                              border: "none", // Ensures no border appears on hover
+                            },
+                            "&.Mui-focused fieldset": {
+                              border: "1px solid #6A5ACD", // Optional: Add focus border color
+                            },
+                          },
+                        }}
+                      />
+                    )}
+                  </Grid2>
+                )
             )}
-          </>
-        )}
+          </Grid2>
+        </Box>
       </Container>
     </Box>
   );

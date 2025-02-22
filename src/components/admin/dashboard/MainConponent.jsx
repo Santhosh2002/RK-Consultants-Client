@@ -156,6 +156,9 @@ const Sidebar = ({
               margin: "10px 0",
               border: selectedPage === index ? "1px solid white" : "none",
               "&:hover": { backgroundColor: "#222" },
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
             }}
           >
             <Tooltip title={item.text} placement="right">

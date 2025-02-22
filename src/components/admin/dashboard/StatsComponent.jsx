@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
@@ -13,29 +14,31 @@ import {
 } from "@mui/material";
 import Popup from "../../utils/PopUp";
 import VisitorsComponent from "./VisitosComponent";
+import {
+  fetchStats,
+  updateStats,
+  getStats,
+  getStatsError,
+  getStatsLoader,
+} from "../../../store/statsSlice";
 
 function StatsComponent() {
+  const dispatch = useDispatch();
+  const stats = useSelector(getStats);
+  const error = useSelector(getStatsError);
+  const loading = useSelector(getStatsLoader);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [popupTitle, setPopupTitle] = useState("");
-  const [stats, setStats] = useState({
-    happyClients: "...",
-    projects: "...",
-    daysOfWork: "...",
-  });
 
   useEffect(() => {
-    getCurrentStats();
-  }, []);
+    dispatch(fetchStats());
+  }, [dispatch]);
 
-  const getCurrentStats = async () => {
-    try {
-      const url = import.meta.env.VITE_BASE_URL + "/api/stats";
-      const response = await axios.get(url);
-      setStats(response.data.stats);
-    } catch (error) {
-      toast.error(`Error fetching stats: ${error.message}`);
+  useEffect(() => {
+    if (error) {
+      toast.error(`Error fetching stats: ${error}`);
     }
-  };
+  }, [error]);
 
   const handleOpenPopup = (statType) => {
     setPopupTitle(statType);
@@ -48,17 +51,18 @@ function StatsComponent() {
 
   const handleUpdateStats = async (newValue) => {
     try {
-      await updateStats(stats._id, { [popupTitle]: parseInt(newValue, 10) });
-      setStats((prevStats) => ({
-        ...prevStats,
-        [popupTitle]: parseInt(newValue, 10),
-      }));
+      await dispatch(
+        updateStats({
+          id: stats._id,
+          key: popupTitle,
+          value: parseInt(newValue, 10),
+        })
+      );
       handleClosePopup();
     } catch (error) {
       toast.error(`Error updating stats: ${error.message}`);
     }
   };
-
   return (
     <Box sx={{ backgroundColor: "#111", color: "#fff", py: 6 }}>
       <Container maxWidth="xl">

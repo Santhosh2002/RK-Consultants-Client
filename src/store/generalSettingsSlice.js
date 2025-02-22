@@ -1,0 +1,76 @@
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
+
+// Fetch settings from API
+export const fetchGeneralSettings = createAsyncThunk(
+  "settings/fetchGeneralSettings",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.get("/api/general");
+      return response.data.general;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Update settings
+export const updateGeneralSettings = createAsyncThunk(
+  "settings/updateGeneralSettings",
+  async (settings, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("authToken");
+      await axios.post(`/api/general/${settings._id}`, settings, {
+        headers: { Authorization: `${token}` },
+      });
+      return settings;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+const generalSettingsSlice = createSlice({
+  name: "settings",
+  initialState: {
+    settings: {},
+    loading: false,
+    updating: false,
+    error: null,
+  },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchGeneralSettings.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchGeneralSettings.fulfilled, (state, action) => {
+        state.loading = false;
+        state.settings = action.payload;
+      })
+      .addCase(fetchGeneralSettings.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(updateGeneralSettings.pending, (state) => {
+        state.updating = true;
+      })
+      .addCase(updateGeneralSettings.fulfilled, (state, action) => {
+        state.updating = false;
+        state.settings = action.payload;
+      })
+      .addCase(updateGeneralSettings.rejected, (state, action) => {
+        state.updating = false;
+        state.error = action.payload;
+      });
+  },
+});
+
+// Selectors
+export const getGeneralSettings = (state) => state.settings.settings;
+export const getSettingsLoader = (state) => state.settings.loading;
+export const getSettingsUpdater = (state) => state.settings.updating;
+export const getSettingsError = (state) => state.settings.error;
+
+export default generalSettingsSlice.reducer;

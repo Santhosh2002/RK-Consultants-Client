@@ -4,6 +4,7 @@ import { jwtDecode } from "jwt-decode";
 import MainConponent from "../../components/admin/dashboard/MainConponent";
 import { useDispatch } from "react-redux";
 import { fetchProfile, getProfile } from "../../store/authSlice";
+import { Box, CircularProgress } from "@mui/material";
 function AdminDashBoard() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -40,7 +41,18 @@ function AdminDashBoard() {
   }, [navigate]);
   // Show loading or nothing while checking the token
   if (!isAuthenticated) {
-    return <div>Loading...</div>;
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
   }
   return (
     <>

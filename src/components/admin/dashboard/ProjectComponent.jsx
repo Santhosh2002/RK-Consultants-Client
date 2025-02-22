@@ -1,5 +1,5 @@
-import axios from "axios";
 import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import NewProjectPopup from "../../utils/NewProjectPopUp";
@@ -12,37 +12,36 @@ import {
   CardContent,
   Typography,
   Box,
+  CircularProgress,
   Button,
-  IconButton,
 } from "@mui/material";
-import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
+import {
+  fetchProjects,
+  getProjects,
+  getProjectsLoader,
+  getProjectsError,
+} from "../../../store/projectsSlice";
 
 function AdminProjectsComponent() {
-  const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const projects = useSelector(getProjects);
+  const loading = useSelector(getProjectsLoader);
+  const error = useSelector(getProjectsError);
+
   const [isNewPopupOpen, setNewPopupOpen] = useState(false);
   const [isUpdatePopupOpen, setUpdatePopupOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
   const [selectedId, setSelectedId] = useState(null);
-  const [buttonLoading, setButtonLoading] = useState(false);
-  const base = import.meta.env.VITE_BASE_URL;
-  const url = base + "/api/project/";
 
   useEffect(() => {
-    fetchProjects();
-  }, []);
+    dispatch(fetchProjects());
+  }, [dispatch]);
 
-  const fetchProjects = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get(url);
-      setProjects(response.data.projects);
-    } catch (error) {
-      toast.error(`Failed to fetch projects: ${error.message}`);
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    if (error) {
+      toast.error(`Failed to fetch projects: ${error}`);
     }
-  };
+  }, [error]);
 
   return (
     <Box sx={{ backgroundColor: "#111", color: "#fff", py: 6 }}>
@@ -73,9 +72,16 @@ function AdminProjectsComponent() {
           </Button>
         </Box>
         {loading ? (
-          <Typography variant="h6" textAlign="center" color="gray">
-            Loading Projects...
-          </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100vh",
+            }}
+          >
+            <CircularProgress />
+          </Box>
         ) : (
           <Grid2 container spacing={4}>
             {projects.map((project) => (

@@ -1,47 +1,39 @@
-import axios from "axios";
 import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Container, Grid2, Typography, Box } from "@mui/material";
 import Chart from "react-apexcharts";
+import {
+  fetchVisitors,
+  getVisitors,
+  getTotalVisitors,
+  getPeakHour,
+  getVisitorsError,
+} from "../../../store/visitorsSlice";
 
 function VisitorsComponent() {
-  const [visitors, setVisitors] = useState([]);
-  const [totalVisitors, setTotalVisitors] = useState(0);
-  const [peakHour, setPeakHour] = useState("");
+  const dispatch = useDispatch();
+  const visitors = useSelector(getVisitors);
+  const totalVisitors = useSelector(getTotalVisitors);
+  const peakHour = useSelector(getPeakHour);
+  const error = useSelector(getVisitorsError);
 
   useEffect(() => {
-    const fetchVisitors = async () => {
-      try {
-        const response = await axios.get(
-          import.meta.env.VITE_BASE_URL + "/api/visitor/visitors"
-        );
-        const data = response.data;
-        setVisitors(data.visitors);
-        setTotalVisitors(data.total);
+    dispatch(fetchVisitors());
+  }, [dispatch]);
 
-        const hourCounts = {};
-        data.visitors.forEach((visitor) => {
-          const hour = new Date(visitor.createdAt).getHours();
-          hourCounts[hour] = (hourCounts[hour] || 0) + 1;
-        });
-
-        const peak = Object.entries(hourCounts).reduce((max, current) =>
-          current[1] > max[1] ? current : max
-        );
-        setPeakHour(`${peak[0]}:00 - ${peak[0]}:59`);
-      } catch (error) {
-        toast.error(`Error fetching visitors: ${error.message}`);
-      }
-    };
-    fetchVisitors();
-  }, []);
+  useEffect(() => {
+    if (error) {
+      toast.error(`Error fetching visitors: ${error}`);
+    }
+  }, [error]);
 
   const processDailyData = () => {
-    if (!visitors.length) return [];
+    if (!visitors?.length) return [];
 
     const dailyCounts = {};
-    visitors.forEach((visitor) => {
+    visitors?.forEach((visitor) => {
       const visitDate = new Date(visitor.createdAt).toLocaleDateString();
       dailyCounts[visitDate] = (dailyCounts[visitDate] || 0) + 1;
     });
@@ -53,7 +45,7 @@ function VisitorsComponent() {
   };
 
   const processHourlyData = () => {
-    if (!visitors.length) return [];
+    if (!visitors?.length) return [];
 
     const hourCounts = {};
     visitors.forEach((visitor) => {

@@ -1,13 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const base = import.meta.env.VITE_BASE_URL;
-
 export const registerUser = createAsyncThunk(
   "auth/registerUser",
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${base}/api/user/register`, userData);
+      const response = await axios.post(`/api/user/register`, userData);
       return response.data;
     } catch (error) {
       return rejectWithValue(
@@ -22,7 +20,7 @@ export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async (credentials, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${base}/api/user/login`, credentials);
+      const response = await axios.post(`/api/user/login`, credentials);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Login failed");
@@ -34,10 +32,7 @@ export const fetchProfile = createAsyncThunk(
   "auth/fetchProfile",
   async (id, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("authToken");
-      const response = await axios.get(`${base}/api/user/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(`/api/user/${id}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(

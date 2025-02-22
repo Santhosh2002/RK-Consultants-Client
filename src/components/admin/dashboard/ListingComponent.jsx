@@ -1,5 +1,5 @@
-import axios from "axios";
 import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import NewListingPopup from "../../utils/NewListingPopUp";
@@ -17,36 +17,36 @@ import {
   Typography,
   Box,
   Button,
+  CircularProgress,
   IconButton,
 } from "@mui/material";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
+import {
+  fetchListings,
+  getListings,
+  getListingsLoader,
+  getListingsError,
+} from "../../../store/listingsSlice";
 
 function ListingComponent() {
-  const [listings, setListings] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+  const listings = useSelector(getListings);
+  const loading = useSelector(getListingsLoader);
+  const error = useSelector(getListingsError);
+
   const [isNewPopupOpen, setIsNewPopupOpen] = useState(false);
   const [isUpdatePopupOpen, setIsUpdatePopupOpen] = useState(false);
   const [selectedListing, setSelectedListing] = useState(null);
 
   useEffect(() => {
-    getAllListings();
-  }, []);
+    dispatch(fetchListings());
+  }, [dispatch]);
 
-  const getAllListings = async () => {
-    setLoading(true);
-    try {
-      const url = `${import.meta.env.VITE_BASE_URL}/api/listing/all`;
-      const token = localStorage.getItem("authToken");
-      const response = await axios.get(url, {
-        headers: { Authorization: token },
-      });
-      setListings(response.data.listings);
-    } catch (error) {
-      toast.error(`Failed to fetch listings: ${error.message}`);
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    if (error) {
+      toast.error(`Failed to fetch listings: ${error}`);
     }
-  };
+  }, [error]);
 
   return (
     <Box sx={{ backgroundColor: "#111", color: "#fff", py: 6 }}>
@@ -77,9 +77,16 @@ function ListingComponent() {
           </Button>
         </Box>
         {loading ? (
-          <Typography variant="h6" textAlign="center" color="gray">
-            Loading Listings...
-          </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100vh",
+            }}
+          >
+            <CircularProgress />
+          </Box>
         ) : (
           <Grid2 container spacing={4}>
             {listings.map((listing) => (

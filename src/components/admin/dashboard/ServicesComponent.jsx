@@ -1,55 +1,68 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { Grid2, Card, Box, Typography, Button, Container } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  Grid2,
+  Card,
+  Box,
+  Typography,
+  Button,
+  Container,
+  CircularProgress,
+} from "@mui/material";
 import { motion } from "framer-motion";
 import NewServicePopup from "../../utils/NewServicePopup";
 import UpdateServicePopup from "../../utils/UpdatingServices";
+import {
+  fetchServices,
+  deleteService,
+  getServices,
+  getServicesLoader,
+  getServicesError,
+} from "../../../store/servicesSlice";
 
 function ServicesComponent() {
-  const url = import.meta.env.VITE_BASE_URL + "/api/service";
-  const [services, setServices] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+  const services = useSelector(getServices);
+  const loading = useSelector(getServicesLoader);
+  const error = useSelector(getServicesError);
+
   const [isNewPopupOpen, setNewPopupOpen] = useState(false);
   const [isUpdatePopupOpen, setUpdatePopupOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [buttonLoading, setButtonLoading] = useState(false);
 
   useEffect(() => {
-    const fetchServices = async () => {
-      try {
-        const response = await axios.get(url);
-        setServices(response.data.services);
-      } catch (error) {
-        console.error("Error fetching services:", error);
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchServices();
-  }, []);
+    dispatch(fetchServices());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (error) {
+      console.error("Error fetching services:", error);
+    }
+  }, [error]);
 
   const handleDelete = async (id) => {
     setButtonLoading(true);
     try {
-      const token = localStorage.getItem("authToken");
-      await axios.delete(`${url}/delete/${id}`, {
-        headers: { Authorization: `${token}` },
-      });
-      setServices((prev) => prev.filter((service) => service._id !== id));
+      await dispatch(deleteService(id));
     } catch (error) {
       console.error("Error deleting service:", error);
-      setError(error.message);
     }
     setButtonLoading(false);
   };
 
   if (loading) {
     return (
-      <Typography variant="h6" sx={{ textAlign: "center", color: "white" }}>
-        Loading Services...
-      </Typography>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
     );
   }
 
