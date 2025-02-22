@@ -17,6 +17,7 @@ import PrivacyPage from "../pages/PrivacyPage";
 import ShippingPolicyPage from "../pages/ShippingPolicyPage";
 import RefundPolicyPage from "../pages/RefundPolicyPage";
 import AdminSignupPage from "../pages/admin/adminSignup";
+import ListYourProperty from "../pages/ListYourProperty/ListYourProperty";
 
 const AppRoutes = () => {
   return (
@@ -25,6 +26,7 @@ const AppRoutes = () => {
       <Route path="/services" element={<ServicesPage />} />
       <Route path="/about" element={<AboutUs />} />
       <Route path="/contact" element={<ContactUs />} />
+      <Route path="/listyourproperty" element={<ListYourProperty />} />
       <Route path="/admin/login" element={<AdminLoginPage />} />
       <Route path="/admin/signup" element={<AdminSignupPage />} />
       <Route
