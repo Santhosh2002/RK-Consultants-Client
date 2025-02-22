@@ -1,32 +1,25 @@
-import React, { useEffect, useState } from 'react';
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  CartesianGrid,
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  Legend,
-} from 'recharts';
+import axios from "axios";
+import { useState, useEffect } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { Container, Grid2, Typography, Box } from "@mui/material";
+import Chart from "react-apexcharts";
 
 function VisitorsComponent() {
   const [visitors, setVisitors] = useState([]);
   const [totalVisitors, setTotalVisitors] = useState(0);
-  const [peakHour, setPeakHour] = useState('');
+  const [peakHour, setPeakHour] = useState("");
 
   useEffect(() => {
-    // Fetch visitors data from the API
     const fetchVisitors = async () => {
       try {
-        const response = await fetch('https://real-co-server.vercel.app/api/visitor/visitors');
-        const data = await response.json();
+        const response = await axios.get(
+          import.meta.env.VITE_BASE_URL + "/api/visitor/visitors"
+        );
+        const data = response.data;
         setVisitors(data.visitors);
         setTotalVisitors(data.total);
 
-        // Process peak hour data here
         const hourCounts = {};
         data.visitors.forEach((visitor) => {
           const hour = new Date(visitor.createdAt).getHours();
@@ -38,15 +31,14 @@ function VisitorsComponent() {
         );
         setPeakHour(`${peak[0]}:00 - ${peak[0]}:59`);
       } catch (error) {
-        console.error('Error fetching visitors:', error);
+        toast.error(`Error fetching visitors: ${error.message}`);
       }
     };
-
     fetchVisitors();
   }, []);
 
   const processDailyData = () => {
-    if (!visitors || visitors.length === 0) return [];
+    if (!visitors.length) return [];
 
     const dailyCounts = {};
     visitors.forEach((visitor) => {
@@ -55,13 +47,13 @@ function VisitorsComponent() {
     });
 
     return Object.keys(dailyCounts).map((date) => ({
-      date,
-      visits: dailyCounts[date],
+      x: date,
+      y: dailyCounts[date],
     }));
   };
 
   const processHourlyData = () => {
-    if (!visitors || visitors.length === 0) return [];
+    if (!visitors.length) return [];
 
     const hourCounts = {};
     visitors.forEach((visitor) => {
@@ -70,58 +62,134 @@ function VisitorsComponent() {
     });
 
     return Object.keys(hourCounts).map((hour) => ({
-      hour: `${hour}:00 - ${hour}:59`,
-      visits: hourCounts[hour],
+      x: `${hour}:00 - ${hour}:59`,
+      y: hourCounts[hour],
     }));
   };
 
-  const dailyData = processDailyData();
-  const hourlyData = processHourlyData();
-
   return (
-    <div className="p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold text-center mb-6">Visitor Statistics</h1>
-      <div className="mb-6 text-center">
-        <p className="text-lg text-black">
-          Total Visitors: <span className="font-semibold text-green-600">{totalVisitors}</span>
-        </p>
-        <p className="text-lg text-black">
-          Peak Hour: <span className="font-semibold text-blue-600">{peakHour}</span>
-        </p>
-      </div>
+    <Box sx={{ backgroundColor: "#111", color: "#fff", marginTop: "40px" }}>
+      <Typography
+        variant="h3"
+        sx={{ fontWeight: "bold", marginBottom: "40px" }}
+      >
+        Visitor Statistics
+      </Typography>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: "20px",
+        }}
+      >
+        <Typography variant="h6" sx={{ color: "#6A5ACD" }}>
+          Total Visitors: {totalVisitors}
+        </Typography>
+        <Typography variant="h6" sx={{ color: "#6A5ACD" }}>
+          Peak Hour: {peakHour}
+        </Typography>
+      </Box>
+      <Grid2 container spacing={4}>
+        <Grid2
+          item
+          size={{
+            xs: 12,
+            mb: 12,
+          }}
+        >
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Daily Visits
+          </Typography>
+          <Box sx={{ borderRadius: "16px" }}>
+            <Chart
+              options={{
+                grid: {
+                  show: false,
+                },
+                chart: {
+                  type: "bar",
+                  background: "#222",
+                  toolbar: { show: false },
+                  borderRadius: "16px",
+                },
+                plotOptions: {
+                  bar: {
+                    borderRadius: 6,
+                  },
+                },
+                xaxis: {
+                  type: "category",
+                  labels: { style: { colors: "#fff" } },
+                  lines: {
+                    show: false,
+                  },
+                },
+                yaxis: {
+                  labels: { style: { colors: "#fff" } },
 
-      <div className="mb-8">
-        <h2 className="text-xl font-semibold text-center mb-4 text-black">Daily Visits</h2>
-        <div className="w-full h-80">
-          <ResponsiveContainer>
-            <BarChart data={dailyData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="visits" fill="#82ca9d" />
-              <Legend />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
+                  lines: {
+                    show: false,
+                  },
+                },
+                theme: { mode: "dark" },
+                colors: ["#6A5ACD"],
+              }}
+              series={[{ name: "Visits", data: processDailyData() }]}
+              type="bar"
+              height={300}
+            />
+          </Box>
+        </Grid2>
+        <Grid2
+          item
+          size={{
+            xs: 12,
+            mb: 12,
+          }}
+        >
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Hourly Visits
+          </Typography>
+          <Box sx={{ borderRadius: "16px" }}>
+            <Chart
+              options={{
+                grid: {
+                  show: false,
+                },
+                chart: {
+                  type: "area",
+                  background: "#222",
+                  toolbar: { show: false },
+                  borderRadius: "16px",
+                },
+                xaxis: {
+                  type: "category",
+                  labels: { style: { colors: "#fff" } },
+                  lines: {
+                    show: false,
+                  },
+                },
+                yaxis: {
+                  labels: { style: { colors: "#fff" } },
 
-      <div>
-        <h2 className="text-xl font-semibold text-center mb-4 text-black">Hourly Visits</h2>
-        <div className="w-full h-80"> 
-          <ResponsiveContainer>
-            <LineChart data={hourlyData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="hour" />
-              <YAxis />
-              <Tooltip />
-              <Line type="monotone" dataKey="visits" stroke="#8884d8" />
-              <Legend />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-    </div>
+                  lines: {
+                    show: false,
+                  },
+                },
+                theme: { mode: "dark" },
+                colors: ["#FF6347"],
+                stroke: { curve: "smooth" },
+              }}
+              series={[{ name: "Visits", data: processHourlyData() }]}
+              type="area"
+              height={300}
+            />
+          </Box>
+        </Grid2>
+      </Grid2>
+    </Box>
   );
 }
 

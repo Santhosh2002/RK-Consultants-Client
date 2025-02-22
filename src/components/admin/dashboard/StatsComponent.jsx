@@ -1,6 +1,17 @@
-import React, { useState, useEffect } from "react";
-import Popup from "../../utils/PopUp"; // Import your Popup component
 import axios from "axios";
+import { useState, useEffect } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import {
+  Container,
+  Grid2,
+  Card,
+  CardContent,
+  Typography,
+  Box,
+  Button,
+} from "@mui/material";
+import Popup from "../../utils/PopUp";
 import VisitorsComponent from "./VisitosComponent";
 
 function StatsComponent() {
@@ -12,36 +23,19 @@ function StatsComponent() {
     daysOfWork: "...",
   });
 
-  // Function to fetch stats
+  useEffect(() => {
+    getCurrentStats();
+  }, []);
+
   const getCurrentStats = async () => {
     try {
       const url = import.meta.env.VITE_BASE_URL + "/api/stats";
       const response = await axios.get(url);
       setStats(response.data.stats);
     } catch (error) {
-      console.error("Error fetching stats:", error);
+      toast.error(`Error fetching stats: ${error.message}`);
     }
   };
-
-  // Function to update stats
-  const updateStats = async (id, newValue) => {
-    try {
-      const url = import.meta.env.VITE_BASE_URL + `/api/stats/` + id;
-      const token = localStorage.getItem("authToken");
-      const payload = newValue;
-      console.log(payload);
-      await axios.post(url, payload, {
-        headers: { Authorization: `${token}` },
-      });
-    } catch (error) {
-      console.error("Error updating stats:", error);
-    }
-  };
-
-  // Ensure getCurrentStats is called only once
-  useEffect(() => {
-    getCurrentStats();
-  }, []);
 
   const handleOpenPopup = (statType) => {
     setPopupTitle(statType);
@@ -54,92 +48,90 @@ function StatsComponent() {
 
   const handleUpdateStats = async (newValue) => {
     try {
-      // Update on the serve
-
       await updateStats(stats._id, { [popupTitle]: parseInt(newValue, 10) });
-
-      // Update locally
       setStats((prevStats) => ({
         ...prevStats,
         [popupTitle]: parseInt(newValue, 10),
       }));
-
       handleClosePopup();
     } catch (error) {
-      console.error("Error during stats update:", error);
+      toast.error(`Error updating stats: ${error.message}`);
     }
   };
 
   return (
-    <>
-      <div className=" bg-white">
-        <div className="container  p-4 justify-center items-center">
-          <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 gap-4 justify-center items-center w-auto">
-            {/* Happy Clients */}
-            <div className="bg-white p-4 rounded-md shadow-md">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-500">Happy Clients</p>
-                  <h1 className="text-2xl font-bold text-black">
-                    {stats?.happyClients}
-                  </h1>
-                </div>
-                <div
-                  className="text-sm rounded-lg bg-blue-500 text-white py-2 px-3 cursor-pointer"
-                  onClick={() => handleOpenPopup("happyClients")}
-                >
-                  Update
-                </div>
-              </div>
-            </div>
+    <Box sx={{ backgroundColor: "#111", color: "#fff", py: 6 }}>
+      <Container maxWidth="xl">
+        <ToastContainer />
 
-            {/* Total Projects */}
-            <div className="bg-white p-4 rounded-md shadow-md">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-500">Total Projects</p>
-                  <h1 className="text-2xl font-bold text-black">
-                    {stats?.projects}
-                  </h1>
-                </div>
-                <div
-                  className="text-sm rounded-lg bg-blue-500 text-white py-2 px-3 cursor-pointer"
-                  onClick={() => handleOpenPopup("projects")}
+        <Typography
+          variant="h3"
+          sx={{ fontWeight: "bold", marginBottom: "40px" }}
+        >
+          Admin Panel: Statistics
+        </Typography>
+        <Grid2 container spacing={4}>
+          {stats &&
+            Object?.entries(stats)
+              ?.filter(([key]) => !["_id", "__v"].includes(key))
+              ?.map(([key, value]) => (
+                <Grid2
+                  item
+                  size={{
+                    xs: 12,
+                    sm: 6,
+                    md: 4,
+                    lg: 3,
+                  }}
+                  key={key}
                 >
-                  Update
-                </div>
-              </div>
-            </div>
+                  <Card
+                    sx={{
+                      borderRadius: 3,
+                      border: "1px solid #444",
+                      backgroundColor: "#222",
+                      color: "#fff",
+                      boxShadow: 4,
+                      padding: 2,
+                    }}
+                  >
+                    <CardContent>
+                      <Typography
+                        variant="h6"
+                        fontWeight="bold"
+                        sx={{ textTransform: "capitalize" }}
+                      >
+                        {key.replace(/([A-Z])/g, " $1").trim()}
+                      </Typography>
+                      <Typography variant="h4" sx={{ fontWeight: "bold" }}>
+                        {value}
+                      </Typography>
+                      <Button
+                        variant="contained"
+                        sx={{
+                          backgroundColor: "#6A5ACD",
+                          color: "#fff",
+                          textTransform: "none",
+                          marginTop: 2,
+                        }}
+                        onClick={() => handleOpenPopup(key)}
+                      >
+                        Update
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </Grid2>
+              ))}
+        </Grid2>
+        <VisitorsComponent />
 
-            {/* Total Days of Work */}
-            <div className="bg-white p-4 rounded-md shadow-md">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-500">Total Days of Work</p>
-                  <h1 className="text-2xl font-bold text-black">
-                    {stats?.daysOfWork}
-                  </h1>
-                </div>
-                <div
-                  className="text-sm rounded-lg bg-blue-500 text-white py-2 px-3 cursor-pointer"
-                  onClick={() => handleOpenPopup("daysOfWork")}
-                >
-                  Update
-                </div>
-              </div>
-            </div>
-          </div>
-          <VisitorsComponent />
-        </div>
-      </div>
-
-      {/* Popup Component */}
-      <Popup
-        isOpen={isPopupOpen}
-        onClose={handleClosePopup}
-        onSubmit={handleUpdateStats}
-      />
-    </>
+        <Popup
+          isOpen={isPopupOpen}
+          onClose={handleClosePopup}
+          onSubmit={handleUpdateStats}
+        />
+      </Container>
+    </Box>
   );
 }
 

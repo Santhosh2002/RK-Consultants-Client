@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import MainConponent from "../../components/admin/dashboard/MainConponent";
-
+import { useDispatch } from "react-redux";
+import { fetchProfile, getProfile } from "../../store/authSlice";
 function AdminDashBoard() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   useEffect(() => {
     const verifyToken = () => {
@@ -20,13 +22,12 @@ function AdminDashBoard() {
         const decoded = jwtDecode(token); // Decode the token
         const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
         console.log(decoded.exp - currentTime);
-
+        console.log("logged in user: ", decoded);
+        dispatch(fetchProfile(decoded.id));
         if (decoded.exp < currentTime) {
-          
-          localStorage.removeItem("authToken"); 
+          localStorage.removeItem("authToken");
           navigate("/admin/login");
         } else {
-    
           setIsAuthenticated(true);
         }
       } catch (error) {
@@ -42,8 +43,8 @@ function AdminDashBoard() {
     return <div>Loading...</div>;
   }
   return (
-    <>    
-    <MainConponent/>
+    <>
+      <MainConponent />
     </>
   );
 }

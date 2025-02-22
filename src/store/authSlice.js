@@ -32,10 +32,10 @@ export const loginUser = createAsyncThunk(
 
 export const fetchProfile = createAsyncThunk(
   "auth/fetchProfile",
-  async (_, { rejectWithValue }) => {
+  async (id, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("authToken");
-      const response = await axios.get(`${base}/api/user/profile`, {
+      const response = await axios.get(`${base}/api/user/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data;
@@ -122,4 +122,6 @@ export const selectUserProfile = (state) => state.auth.profile;
 export const selectUpdatingProfile = (state) => state.auth.updatingProfile;
 
 export const { logout, resetError } = authSlice.actions;
+
+export const getProfile = (state) => state.auth.profile;
 export default authSlice.reducer;

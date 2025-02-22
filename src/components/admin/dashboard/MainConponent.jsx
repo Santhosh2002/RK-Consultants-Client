@@ -1,31 +1,44 @@
-import React, { useEffect, useState } from 'react';
-import { jwtDecode } from 'jwt-decode';
-import StatsComponent from './StatsComponent';
-import ServicesComponent from './ServicesComponent';
-import AdminProjectsComponent from './ProjectComponent';
-import { useNavigate } from 'react-router-dom';
-import GeneralSettings from './GeneralSettings';
-import ListingComponent from './ListingComponent';
-// import UserSettingsComponent from '../dashboard/UserSetitingsComponent';
+import React, { useEffect, useState } from "react";
+import { jwtDecode } from "jwt-decode";
+import {
+  Drawer,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+  AppBar,
+  Toolbar,
+  Typography,
+  IconButton,
+  Button,
+  Box,
+  Tooltip,
+  Avatar,
+} from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import CloseIcon from "@mui/icons-material/Close";
+import BarChartIcon from "@mui/icons-material/BarChart";
+import BuildIcon from "@mui/icons-material/Build";
+import WorkIcon from "@mui/icons-material/Work";
+import ListIcon from "@mui/icons-material/List";
+import SettingsIcon from "@mui/icons-material/Settings";
+import StatsComponent from "./StatsComponent";
+import ServicesComponent from "./ServicesComponent";
+import AdminProjectsComponent from "./ProjectComponent";
+import GeneralSettings from "./GeneralSettings";
+import ListingComponent from "./ListingComponent";
+import { useNavigate } from "react-router-dom";
+import { Logout } from "@mui/icons-material";
+import RKLogo from "./RkLogo";
+import { useSelector } from "react-redux";
+import { getProfile } from "../../../store/authSlice";
 
 function MainComponent() {
-  const [userName, setUserName] = useState('');
-  const [selectedPage, setSelectedPage] = useState(0); // Index for selected page
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Toggle state for sidebar
-  
-  const getUserName = () => {
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      const decoded = jwtDecode(token);
-      setUserName(decoded.role);
-      return decoded.id;
-    }
-    return '';
-  };
-
-  useEffect(() => {
-    getUserName();
-  }, []); // Added an empty dependency array to prevent continuous re-runs
+  const [userName, setUserName] = useState("");
+  const [selectedPage, setSelectedPage] = useState(0);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const navigate = useNavigate();
+  const profile = useSelector(getProfile);
 
   const renderContent = () => {
     switch (selectedPage) {
@@ -34,123 +47,205 @@ function MainComponent() {
       case 1:
         return <ServicesComponent />;
       case 2:
-        return <AdminProjectsComponent/>;
-      case 3: 
-        return <ListingComponent/>
-     
-      default: 
-        return  <GeneralSettings/> ; 
+        return <AdminProjectsComponent />;
+      case 3:
+        return <ListingComponent />;
+      default:
+        return <GeneralSettings />;
     }
   };
 
   return (
-    <div className="flex h-screen overflow-y-scroll w-screen bg-white ">
-      {/* Sidebar */}
-      {isSidebarOpen && <Sidebar setSelectedPage={setSelectedPage} setIsSidebarOpen={setIsSidebarOpen} />}
+    <Box
+      sx={{
+        display: "flex",
+        height: "100vh",
+        backgroundColor: "#141414",
+        color: "#fff",
+      }}
+    >
+      <Sidebar
+        isOpen={isSidebarOpen}
+        setSelectedPage={setSelectedPage}
+        selectedPage={selectedPage}
+        setIsSidebarOpen={() => setIsSidebarOpen(!isSidebarOpen)}
+      />
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col">
-        <Nav username={userName} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} isSidebarOpen={isSidebarOpen} />
-        <div className="p-4">{renderContent()}</div>
-      </div>
-    </div>
+      <Box
+        sx={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          transition: "margin 0.3s",
+          marginLeft: isSidebarOpen ? "300px" : "80px",
+        }}
+      >
+        <Nav
+          profile={profile}
+          toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+          isSidebarOpen={isSidebarOpen}
+        />
+        <Box sx={{ marginTop: "70px" }}>{renderContent()}</Box>
+      </Box>
+    </Box>
   );
 }
 
 export default MainComponent;
 
 // Sidebar Component
-const Sidebar = ({ setSelectedPage, setIsSidebarOpen }) => {
+const Sidebar = ({
+  isOpen,
+  setSelectedPage,
+  selectedPage,
+  setIsSidebarOpen,
+}) => {
   const navigate = useNavigate();
+  const menuItems = [
+    { text: "Stats", icon: <BarChartIcon /> },
+    { text: "Services", icon: <BuildIcon /> },
+    { text: "Projects", icon: <WorkIcon /> },
+    { text: "Listings", icon: <ListIcon /> },
+    { text: "General Settings", icon: <SettingsIcon /> },
+  ];
+
   return (
-    <div className="w-56 bg-green-100 text-black flex flex-col duration-150 h-full sticky top-0">
-      <div className="p-4 text-sm font-semibold border-b border-gray-700 flex justify-between items-center">
-        RK Realtors & Consultants
-        <button
-          className="text-gray-400 hover:text-gray-600 px-3"
-          onClick={() => setIsSidebarOpen(false)}
-        >
-          ✕
-        </button>
-      </div>
-      <nav className="flex-1">
-        <ul className="space-y-2 p-4">
-          <li
-            className="hover:bg-green-200 p-2 rounded cursor-pointer"
-            onClick={() => setSelectedPage(0)}
+    <Drawer
+      variant="permanent"
+      open={isOpen}
+      sx={{
+        "& .MuiDrawer-paper": {
+          width: isOpen ? 300 : 80,
+          backgroundColor: "#141414",
+          color: "#fff",
+          overflowX: "hidden",
+          transition: "width 0.3s",
+          borderRight: "1px solid #333",
+        },
+      }}
+    >
+      <Box
+        sx={{
+          p: 2,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          borderBottom: "1px solid #333",
+          height: "70px",
+          maxHeight: "70px",
+        }}
+      >
+        {isOpen && (
+          <Box sx={{ display: "flex", alignItems: "center", width: "150px" }}>
+            <RKLogo />
+          </Box>
+        )}
+        <IconButton onClick={setIsSidebarOpen} sx={{ color: "#fff" }}>
+          {isOpen ? <CloseIcon /> : <MenuIcon />}
+        </IconButton>
+      </Box>
+      <List sx={{ padding: "0 10px 0 10px" }}>
+        {menuItems.map((item, index) => (
+          <ListItem
+            button
+            key={item.text}
+            onClick={() => setSelectedPage(index)}
+            sx={{
+              backgroundColor: selectedPage === index ? "#333" : "transparent",
+              borderRadius: "8px",
+              margin: "10px 0",
+              border: selectedPage === index ? "1px solid white" : "none",
+              "&:hover": { backgroundColor: "#222" },
+            }}
           >
-            Stats
-          </li>
-          <li
-            className="hover:bg-green-200 p-2 rounded cursor-pointer"
-            onClick={() => setSelectedPage(1)}
+            <Tooltip title={item.text} placement="right">
+              <ListItemIcon
+                sx={{ color: "#fff", minWidth: isOpen ? "auto" : 36 }}
+              >
+                {item.icon}
+              </ListItemIcon>
+            </Tooltip>
+            {isOpen && (
+              <ListItemText primary={item.text} sx={{ color: "#fff" }} />
+            )}
+          </ListItem>
+        ))}
+      </List>
+      <Box sx={{ p: 2, borderTop: "1px solid #333", marginTop: "auto" }}>
+        {isOpen ? (
+          <Button
+            fullWidth
+            variant="contained"
+            color="error"
+            onClick={() => {
+              localStorage.removeItem("authToken");
+              navigate("/admin/login");
+            }}
           >
-            Services
-          </li>
-          <li
-            className="hover:bg-green-200 p-2 rounded cursor-pointer"
-            onClick={() => setSelectedPage(2)}
+            Logout
+          </Button>
+        ) : (
+          <IconButton
+            onClick={() => {
+              localStorage.removeItem("authToken");
+              navigate("/admin/login");
+            }}
+            color="error"
+            variant="contained"
           >
-            Projects
-          </li>
-          <li
-            className="hover:bg-green-200 p-2 rounded cursor-pointer"
-            onClick={() => setSelectedPage(3)}
-          >
-           Listings
-          </li>
-          <li
-            className="hover:bg-green-200 p-2 rounded cursor-pointer"
-            onClick={() => setSelectedPage(4)}
-          >
-            General Settings
-          </li>
-        
-        </ul>
-      </nav>
-      <div className="p-4 border-t border-green-700 duration-150">
-        <button
-          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded w-full"
-          onClick={() => {
-            localStorage.removeItem('authToken');
-            navigate('/admin/login');
-          }}
-        >
-          Logout
-        </button>
-      </div>
-    </div>
+            <Tooltip title="Logout" placement="right">
+              <Logout />
+            </Tooltip>
+          </IconButton>
+        )}
+      </Box>
+    </Drawer>
   );
 };
 
 // Nav Component
-const Nav = ({ username, toggleSidebar ,isSidebarOpen}) => {
+const Nav = ({ profile, toggleSidebar, isSidebarOpen, handleMenuClick }) => {
   return (
-    <div className="w-auto bg-white border-b border-gray-200 overflow-hidden min-h-16">
-      <div className="flex justify-between items-center  mx-auto p-4">
-        <button
-          className={`text-gray-800 hover:text-gray-600   ${isSidebarOpen ? "hidden" :"block"}`}
+    <AppBar
+      position="fixed"
+      sx={{
+        backgroundColor: "#141414",
+        borderBottom: "1px solid #333",
+        height: "70px",
+        maxHeight: "70px",
+      }}
+    >
+      <Toolbar>
+        {/* <IconButton
+          edge="start"
+          color="inherit"
+          aria-label="menu"
           onClick={toggleSidebar}
-
         >
-          ☰
-        </button>
-        <div className="text-sm font-normal text-gray-900">RK Realtors & Consultants</div>
-        <div className="flex items-center justify-center">
-          <div>
-            <a href="/" target="_blank" className="text-gray-600">
-              <img
-                src="/open-link.svg"
-                alt=""
-                className="size-5 mx-4 text-gray-200 hover:text-gray-800"
-              />
-            </a>
-          </div>
-          <div className="flex items-center space-x-4">
-           
-          </div>
-        </div>
-      </div>
-    </div>
+          <MenuIcon />
+        </IconButton> */}
+        <Typography variant="h6" sx={{ flexGrow: 1, textAlign: "center" }}>
+          RK Realtors & Consultants
+        </Typography>
+        <Box
+          sx={{
+            color: "#fff",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexDirection: "row",
+
+            border: "1px solid #333",
+            borderRadius: "50px",
+            padding: "8px",
+          }}
+        >
+          <Avatar sx={{ bgcolor: "#4caf50" }}>
+            {profile?.username.charAt(0).toUpperCase()}
+          </Avatar>
+          <Typography sx={{ ml: 1 }}>{profile?.username}</Typography>
+        </Box>
+      </Toolbar>
+    </AppBar>
   );
 };
