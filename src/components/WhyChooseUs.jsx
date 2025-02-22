@@ -14,7 +14,7 @@ const WhyChooseUs = ({ about }) => {
         alignItems: "center",
         justifyContent: "center",
       }}
-      id="about"
+      // id="about"
     >
       <Grid
         container

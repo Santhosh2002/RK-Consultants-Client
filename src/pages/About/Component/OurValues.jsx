@@ -28,7 +28,7 @@ const OurValues = () => {
         backgroundColor: "#141414",
         color: "white",
         width:"100%",
-        padding:"40px"
+        padding:"8px 40px 0 40px"
       }}
     >
       {/* Left Content */}

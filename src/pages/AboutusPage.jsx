@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { Box, Typography, Button, Container, Grid } from "@mui/material";
+import { Box, Typography, Button, Container, Grid2 } from "@mui/material";
 import Navbar from "../components/Navbar";
 import FooterComponent from "../components/footer";
 
@@ -47,9 +47,9 @@ const AboutUs = () => {
       {/* Main Content Section */}
       <Box sx={{ backgroundColor: "#141414", color: "white", py: 10 }}>
         <Container maxWidth="lg">
-          <Grid container spacing={6} alignItems="center">
+          <Grid2 container spacing={6} alignItems="center">
             {/* Left Section */}
-            <Grid item xs={12} md={6}>
+            <Grid2 item size={{xs:12, md:6}}>
               <Typography variant="h4" fontWeight={600} sx={{ mb: 3 }}>
                 We help in creating Legal Briefs
               </Typography>
@@ -81,10 +81,10 @@ const AboutUs = () => {
               >
                 View All Services
               </Button>
-            </Grid>
+            </Grid2>
 
             {/* Right Section */}
-            <Grid item xs={12} md={6}>
+            <Grid2 item xs={12} md={6}>
               <Box sx={{ display: "flex", justifyContent: "center" }}>
                 <img
                   src="/home-service-05.jpg"
@@ -98,8 +98,8 @@ const AboutUs = () => {
                   }}
                 />
               </Box>
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         </Container>
       </Box>
 

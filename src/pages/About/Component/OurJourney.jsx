@@ -17,6 +17,7 @@ const OurJourney = () => {
         justifyContent: "space-between",
         backgroundColor: "#141414",
         color: "white",
+        padding:"8px 100px 0 40px"
       }}
     >
       {/* Left Content */}
