@@ -18,8 +18,8 @@ const ServicesSection = () => {
         color: "white",
         padding: "20px",
         textAlign: "center",
-        border:'1px solid #262626',
-        boxShadow: "inset 0px 0px 20px rgba(255, 255, 255, 0.1)",
+        border:'5px solid #262626',
+        boxShadow: "inset 0px 0px 20px #262626",
       }}
     >
       <Grid2 container spacing={3} justifyContent="center">

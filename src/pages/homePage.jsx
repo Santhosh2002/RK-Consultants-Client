@@ -11,7 +11,10 @@ import OurClients from '../components/OurClients'
 import RealEstateCTA from '../components/RealEstateCTA';
 import ContactUs from '../components/ContactUsPage';
 import ServicesSection from '../components/ServiceSection';
+import OurJourney from './About/Component/OurJourney';
 import axios from 'axios'
+import OurValues from './About/Component/OurValues';
+import OurAchievements from './About/Component/OurAchievements';
 
 function HomePage() {
   const visitorUpdate = async()=>{
@@ -45,6 +48,10 @@ function HomePage() {
       {/* <WorkDisplaySection /> */}
       {/* <ContactUs /> */}
       <FooterComponent address={general.address} phone={general.phone} email={general.email} logo={general.logo} insta={general.instagram} fb={general.facebook}   linkedin={general.linkedin}  />  
+      {/* AboutUsPage */}
+      <OurJourney />
+      <OurValues />
+      <OurAchievements />
     </>
   )
 }
