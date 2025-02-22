@@ -92,7 +92,7 @@ const PropertyListing = () => {
           ))}
         </Grid2>
         {/* Pagination Controls */}
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 5, borderTop: "1px solid #999" }}> 
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 5, borderTop: "1px solid #262626" }}> 
           <Typography variant="body2" sx={{ color: "#888", pt: 2 }}>01 of 10</Typography>
           <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
             <IconButton sx={{ color: "#fff", border: "1px solid #999", borderRadius: "50%", width: 40, height: 40 }}>
