@@ -7,7 +7,7 @@ import WorkDisplaySection from "../components/workDisplaySection";
 import Services from "../components/services";
 import CounterSection from "../components/statsComponent";
 import PropertyListing from "../components/PropertyListing";
-import OurClients from "../components/OurClients";
+import OurClients from "../components/ourClients";
 import RealEstateCTA from "../components/RealEstateCTA";
 import ContactUs from "../components/ContactUsPage";
 import ServicesSection from "../components/ServiceSection";
