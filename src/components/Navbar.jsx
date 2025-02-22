@@ -7,7 +7,7 @@ const navItems = [
   { label: "About Us", href: "/about" },
   { label: "Properties", href: "/properties" },
   { label: "Services", href: "/services" },
-  // { label: "Contact Us", href: "/contact", isButton: true },
+  { label: "Contact Us", href: "/contact", isButton: false },
 ];
 
 const Navbar = ({ logo }) => {
@@ -46,7 +46,7 @@ const Navbar = ({ logo }) => {
         </Box>
 
         <Button
-          href="/contact"
+          href="/listyourproperty"
           variant="contained"
           sx={{
             display: { xs: "none", md: "flex" },
@@ -59,7 +59,7 @@ const Navbar = ({ logo }) => {
             },
           }}
         >
-          Contact us
+          List your Property
         </Button>
 
         {/* Mobile Menu Icon */}

@@ -89,7 +89,7 @@ const FooterComponent = ({ address, phone, logo, insta, fb, linkedin, email }) =
           </Grid2>
         </Grid2>
       </Container>
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid #262626", padding:"8px 64px", backgroundColor:"#1A1A1A"}}>
+      <Box sx={{ display: "flex", flexDirection:{xs:"column-reverse", sm:'row'}, justifyContent: "space-between", alignItems: "center", borderTop: "1px solid #262626", padding:{xs:"8px 16px", md:"8px 64px"}, backgroundColor:"#1A1A1A", gap:{xs:"8px"}}}>
         <Typography variant="body2" sx={{ color: "#999999" }}>©2024 RK Realtors and Consultants. All Rights Reserved.</Typography>
         <Typography variant="body2" sx={{ color: "#999999" }}>Managed by G & G Developers</Typography>
         <Box>
