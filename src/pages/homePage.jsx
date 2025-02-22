@@ -48,10 +48,6 @@ function HomePage() {
       {/* <WorkDisplaySection /> */}
       {/* <ContactUs /> */}
       <FooterComponent address={general.address} phone={general.phone} email={general.email} logo={general.logo} insta={general.instagram} fb={general.facebook}   linkedin={general.linkedin}  />  
-      {/* AboutUsPage */}
-      <OurJourney />
-      <OurValues />
-      <OurAchievements />
     </>
   )
 }

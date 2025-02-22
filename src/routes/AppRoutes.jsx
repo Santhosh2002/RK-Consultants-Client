@@ -7,6 +7,7 @@ import PrivateRoute from "../components/privateComponent";
 import AdminDashBoard from "../pages/admin/adminDashboard";
 // import AboutUs from "../pages/AboutusPage";
 import AboutUs from "../pages/About/AboutUs";
+import ContactUs from "../pages/ContactUs/ContactUs";
 import Page404 from "../pages/404Page";
 import ProjectPages from "../pages/ProjectPages";
 import ListingDetailPage from "../pages/ListingDetailPage";
@@ -23,6 +24,7 @@ const AppRoutes = () => {
       <Route path="/" element={<HomePage />} />
       <Route path="/services" element={<ServicesPage />} />
       <Route path="/about" element={<AboutUs />} />
+      <Route path="/contact" element={<ContactUs />} />
       <Route path="/admin/login" element={<AdminLoginPage />} />
       <Route path="/admin/signup" element={<AdminSignupPage />} />
       <Route
