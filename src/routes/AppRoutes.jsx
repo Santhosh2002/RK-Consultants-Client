@@ -18,6 +18,7 @@ import ShippingPolicyPage from "../pages/ShippingPolicyPage";
 import RefundPolicyPage from "../pages/RefundPolicyPage";
 import AdminSignupPage from "../pages/admin/adminSignup";
 import ListYourProperty from "../pages/ListYourProperty/ListYourProperty";
+import Properties from "../pages/Properties/properties";
 
 const AppRoutes = () => {
   return (
@@ -25,6 +26,7 @@ const AppRoutes = () => {
       <Route path="/" element={<HomePage />} />
       <Route path="/services" element={<ServicesPage />} />
       <Route path="/about" element={<AboutUs />} />
+      <Route path="/properties" element={<Properties />} />
       <Route path="/contact" element={<ContactUs />} />
       <Route path="/listyourproperty" element={<ListYourProperty />} />
       <Route path="/admin/login" element={<AdminLoginPage />} />

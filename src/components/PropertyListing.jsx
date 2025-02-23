@@ -31,7 +31,7 @@ const properties = [
 
 const PropertyListing = () => {
   return (
-    <Box sx={{ backgroundColor: "#111", color: "#fff", py: 6}}>
+    <Box sx={{ backgroundColor: "#141414", color: "#fff", py: 6}}>
       <Container maxWidth="lg" sx={{display:"flex", flexDirection:"column", gap:"16px"}}>
         <Box sx={{ display: "flex", flexDirection:"column", alignItems: "flex-start", gap:'16px', marginBottom: '40px' }}>
           <img
@@ -44,7 +44,7 @@ const PropertyListing = () => {
           </Typography>
           <Box sx={{display:"flex", flexDirection:"row", justifyContent:"space-between", alignItems:"center", width:"100%"}}>
             <Typography variant="body1" sx={{ textAlign: "left", width:"70%", color:"#999999" }}>
-              Explore our handpicked selection of featured properties. Each listing offers a glimpse into exceptional homes and investments available through Estatein. Click "View Details" for more information.
+              Explore our handpicked selection of featured properties. Each listing offers a glimpse into exceptional homes and investments available through RK Realtors & Consultants. Click "View Property Details" for more information.
             </Typography>
             <Button variant="outlined" sx={{ whiteSpace:"nowrap", color:"white", border:"1px solid #999999" }}>View All Properties</Button>
           </Box>

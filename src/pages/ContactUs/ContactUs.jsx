@@ -7,6 +7,8 @@ import Navbar from "../../components/Navbar";
 import RealEstateCTA from "../../components/RealEstateCTA";
 import FooterComponent from "../../components/footer";
 
+const MotionBox = motion(Box);
+
 const ContactUs = () => {
   const services = [
     { src: "Icons/Location-Icon.svg", title: "B-102 Sen Nagar Santacruz East , Mumbai - 400055" },
@@ -17,7 +19,10 @@ const ContactUs = () => {
   return (
     <Box id="contact" sx={{backgroundColor:"#191919", width:"100vw"}}>
       <Navbar />
-      <Box 
+      <MotionBox
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, ease: "easeOut" }}
         sx={{ 
           background: "linear-gradient(53deg, #262626 0%, #141414 53%)", 
           color: "white", 
@@ -28,13 +33,13 @@ const ContactUs = () => {
           textAlign: "start", 
           gap:'24px' 
       }}>
-        <Typography variant="h3">Get in Touch with RK Realtors & Consultants</Typography>
+        <Typography variant="h3" fontSize={48}>Get in Touch with RK Realtors & Consultants</Typography>
         <Typography variant="body2" color="#999999" width={"90%"}>
           Welcome to RK's Contact Us page. We’re here to assist you with any inquiries, 
           requests, or feedback you may have. Whether you’re looking to buy or sell a property, 
           explore investment opportunities, or simply want to connect, we’re just a message away.
         </Typography>
-      </Box>
+      </MotionBox>
         
       <Box
         sx={{
