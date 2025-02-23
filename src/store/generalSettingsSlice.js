@@ -36,9 +36,14 @@ const generalSettingsSlice = createSlice({
     settings: {},
     loading: false,
     updating: false,
+    navbarButton: "Home",
     error: null,
   },
-  reducers: {},
+  reducers: {
+    setNavBarButton: (state, action) => {
+      state.navbarButton = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchGeneralSettings.pending, (state) => {
@@ -72,5 +77,8 @@ export const getGeneralSettings = (state) => state.settings.settings;
 export const getSettingsLoader = (state) => state.settings.loading;
 export const getSettingsUpdater = (state) => state.settings.updating;
 export const getSettingsError = (state) => state.settings.error;
+export const getNavBarButton = (state) => state.settings.navbarButton;
+
+export const { setNavBarButton } = generalSettingsSlice.actions;
 
 export default generalSettingsSlice.reducer;

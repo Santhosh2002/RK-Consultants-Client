@@ -14,13 +14,13 @@ const AboutUs = () => {
     <Box
      id="about"
       sx={{
+        width:"100vw",
         display: "flex",
         flexDirection:"column",
         alignItems: "center",
-        // justifyContent: "space-between",
         backgroundColor: "#141414",
         color: "white",
-        // padding:"0px 0px"
+        gap:"24px"
       }}
     >
       <Navbar />

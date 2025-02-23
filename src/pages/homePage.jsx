@@ -37,7 +37,7 @@ function HomePage() {
   return (
     <>
       <Navbar />
-      <HeroSection logo={general.logo} />
+      <HeroSection />
       <ServicesSection />
       {/* <WhyChooseUs about={general.about}/> */}
       <PropertyListing />

@@ -13,16 +13,18 @@ const HeroSection = () => {
     <Box
       sx={{
         display: "flex",
+        flexDirection:{xs:"column-reverse", sm:"row"},
         alignItems: "center",
         justifyContent: "space-between",
         backgroundColor: "#0d0d0d",
         color: "white",
+        padding:{xs:"16px", sm:"0px"}
       }}
     >
       {/* Left Content */}
       <Box sx={{display:"flex", flexDirection:"column", justifyContent:'flex-start', alignItems:'flex-start', flex:1, padding:"60px" }}>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1 }}>
-          <Typography variant="h3" fontWeight={600} gutterBottom>
+          <Typography variant="h1" fontSize={60} fontWeight={500} gutterBottom>
             Discover Your Dream Property with RK
           </Typography>
           <Typography variant="body1" sx={{ color: "#b0b0b0" }}>
@@ -39,7 +41,7 @@ const HeroSection = () => {
               display: { xs: "none", md: "flex" },
               color: "white",
               backgroundColor: "#1A1A1A",
-              border: "1px solid rgba(255, 255, 255, 0.3)" ,
+              border: "1px solid #262626" ,
               '&:hover': {
                 backgroundColor: "rgba(255, 255, 255, 0.2)",
                 color: "#FFFFFF",
@@ -49,12 +51,12 @@ const HeroSection = () => {
             Learn More
           </Button>
           <Button
-            // href="/contact"
+            href="/properties"
             variant="contained"
             sx={{
               display: { xs: "none", md: "flex" },
               color: "white",
-              backgroundColor: "#6a39f8",
+              backgroundColor: "#703BF7",
             }}
           >
             Browse Properties
@@ -62,16 +64,16 @@ const HeroSection = () => {
         </motion.div>
 
         {/* Stats Section */}
-        <Grid2 container spacing={3} sx={{ width:'100%' }}>
+        <Grid2 container spacing={3} sx={{ width:'100%' }} direction={{xs:"column", sm:"row"}}>
           {stats.map((item, index) => (
             <Grid2 item size={{ xs:12, sm:4 }} key={index} sx={{flex: 1}}>
               <Box
                 sx={{
-                  background: "rgba(255, 255, 255, 0.1)",
+                  background: "#1A1A1A",
                   padding: "20px",
                   borderRadius: "12px",
                   textAlign: "left",
-                  border: "1px solid rgba(255, 255, 255, 0.2)",
+                  border: "1px solid #262626",
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "center",

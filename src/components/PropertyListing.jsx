@@ -39,7 +39,7 @@ const PropertyListing = () => {
             alt="Icon"
             style={{ width: 70, height: "auto", marginRight: 10 }}
           />
-          <Typography variant="h3" sx={{ fontWeight: "bold" }}>
+          <Typography variant="h3" sx={{ fontWeight: "bold" }} fontSize={48}>
             Featured Properties
           </Typography>
           <Box sx={{display:"flex", flexDirection:"row", justifyContent:"space-between", alignItems:"center", width:"100%"}}>

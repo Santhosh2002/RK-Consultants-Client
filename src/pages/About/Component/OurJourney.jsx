@@ -12,23 +12,25 @@ const OurJourney = () => {
   return (
     <Box
       sx={{
+        width:'100%',
         display: "flex",
+        flexDirection:{xs:"column-reverse", sm:"row"},
         alignItems: "center",
         justifyContent: "space-between",
         backgroundColor: "#141414",
         color: "white",
-        padding:"8px 100px 0 40px"
+        padding:{xs:"0 16px", sm:"0 64px"}
       }}
     >
       {/* Left Content */}
-      <Box sx={{display:"flex", flexDirection:"column", justifyContent:'flex-start', alignItems:'flex-start', flex:1, padding:"60px", gap:"80px" }}>
+      <Box sx={{display:"flex", flexDirection:"column", justifyContent:'flex-start', alignItems:'flex-start', flex:1, padding:{xs:"32px", sm:"60px"}, gap:"80px" }}>
         <motion.div style={{display:"flex", flexDirection:"column", gap:'16px'}} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1 }}>
           <img
             src="/Icons/abstract-Design.svg"
             alt="Icon"
             style={{ width: 70, height: "auto", marginRight: 10 }}
           />
-          <Typography variant="h3" fontWeight={600}>
+          <Typography variant="h3" fontWeight={600} fontSize={48}>
             Our Journey
           </Typography>
           <Typography variant="body1" sx={{ color: "#999999" }}>
@@ -37,7 +39,7 @@ const OurJourney = () => {
         </motion.div>
 
         {/* Stats Section */}
-        <Grid2 container spacing={3} sx={{ width:'100%' }}>
+        <Grid2 container spacing={3} sx={{ width:'100%' }} direction={{xs:"column", sm:"row"}}>
           {stats.map((item, index) => (
             <Grid2 item size={{ xs:12, sm:4 }} key={index} sx={{flex: 1}}>
               <Box

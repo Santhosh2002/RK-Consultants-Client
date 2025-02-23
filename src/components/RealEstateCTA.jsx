@@ -5,6 +5,7 @@ const RealEstateCTA = () => {
   return (
     <Box
       sx={{
+        width:"100%",
         position: "relative",
         backgroundColor: "#111",
         color: "#fff",

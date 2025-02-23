@@ -23,22 +23,23 @@ const OurValues = () => {
     <Box
       sx={{
         display: "flex",
+        flexDirection:{xs:"column", sm:"row"},
         alignItems: "center",
         justifyContent: "space-between",
         backgroundColor: "#141414",
         color: "white",
         width:"100%",
-        padding:"8px 40px 0 40px"
+        padding:{xs:"16px", sm:"64px"}
       }}
     >
       {/* Left Content */}
-      <motion.div style={{width:"40%", display:"flex", flexDirection:"column", gap:'16px', padding:"60px"}} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1 }}>
+      <motion.div style={{width:"40%", display:"flex", flexDirection:"column", gap:'16px', padding:"60px" }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1 }}>
         <img
           src="/Icons/abstract-Design.svg"
           alt="Icon"
           style={{ width: 70, height: "auto", marginRight: 10 }}
         />
-        <Typography variant="h3" fontWeight={600}>
+        <Typography variant="h3" fontWeight={600} fontSize={48}>
           Our Values
         </Typography>
         <Typography variant="body1" sx={{ color: "#999999" }}>

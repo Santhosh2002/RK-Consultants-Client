@@ -1,21 +1,32 @@
 import React, { useState } from "react";
 import { AppBar, Toolbar, Box, Button, IconButton, Drawer, List, ListItem, ListItemText } from "@mui/material";
 import { Menu as MenuIcon, Close as CloseIcon } from "@mui/icons-material";
+import { setNavBarButton, getNavBarButton } from "../store/generalSettingsSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom"; // ✅ Import useNavigate
 
 const navItems = [
-  { label: "Home", href: "/", isButton: true },
-  { label: "About Us", href: "/about" },
-  { label: "Properties", href: "/properties" },
-  { label: "Services", href: "/services" },
-  { label: "Contact Us", href: "/contact", isButton: false },
+  { label: "Home", path: "/" },
+  { label: "About Us", path: "/about" },
+  { label: "Properties", path: "/properties" },
+  { label: "Services", path: "/services" },
+  { label: "Contact Us", path: "/contact" },
 ];
 
 const Navbar = ({ logo }) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate(); // ✅ Initialize useNavigate
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const selectedButton = useSelector(getNavBarButton);
+
+  const handleNavigation = (path, label) => {
+    dispatch(setNavBarButton(label)); // Update Redux state
+    navigate(path); // Navigate without reloading
+  };
 
   return (
-    <AppBar position="relative" sx={{ backgroundColor: "#1A1A1A", boxShadow: "none" }}>
-      <Toolbar sx={{display: "flex", justifyContent: "space-between", alignItems: "center", padding:"0 32px" }}>
+    <AppBar position="relative" sx={{ backgroundColor: "#1A1A1A", boxShadow: "none", width:"100%" }}>
+      <Toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0 32px" }}>
         {/* Logo */}
         <Box>
           <img src="Icons/RK_Logo_White_No_Slogan.svg" alt="Logo" style={{ width: "auto", height: "30px" }} />
@@ -26,16 +37,16 @@ const Navbar = ({ logo }) => {
           {navItems.map((item) => (
             <Button
               key={item.label}
-              href={item.href}
-              variant={item.isButton ? "contained" : "text"}
+              onClick={() => handleNavigation(item.path, item.label)} // ✅ Handle navigation
+              variant={item.label === selectedButton ? "contained" : "text"}
               sx={{
                 color: "white",
-                textTransform:"none",
-                backgroundColor: item.isButton ? "#1A1A1A" : "transparent",
+                textTransform: "none",
+                backgroundColor: item.label === selectedButton ? "#141414" : "transparent",
                 borderRadius: "8px",
-                border: item.isButton ? "1px solid rgba(255, 255, 255, 0.3)" : "none",
-                '&:hover': {
-                  backgroundColor: item.isButton ? "rgba(255, 255, 255, 0.2)" : "transparent",
+                border: item.label === selectedButton ? "2px solid #262626" : "none",
+                "&:hover": {
+                  backgroundColor: "rgba(255, 255, 255, 0.2)",
                   color: "#FFFFFF",
                 },
               }}
@@ -46,14 +57,14 @@ const Navbar = ({ logo }) => {
         </Box>
 
         <Button
-          href="/listyourproperty"
+          onClick={() => handleNavigation("/listyourproperty", "List your Property")}
           variant="contained"
           sx={{
             display: { xs: "none", md: "flex" },
             color: "white",
-            backgroundColor: "#1A1A1A",
-            border: "1px solid rgba(255, 255, 255, 0.3)" ,
-            '&:hover': {
+            backgroundColor: "#141414",
+            border: "1px solid #262626",
+            "&:hover": {
               backgroundColor: "rgba(255, 255, 255, 0.2)",
               color: "#FFFFFF",
             },
@@ -78,11 +89,19 @@ const Navbar = ({ logo }) => {
           </Box>
           <List>
             {navItems.map((item) => (
-              <ListItem button key={item.label} component="a" href={item.href} onClick={() => setIsDrawerOpen(false)}>
-                <ListItemText 
-                  primary={item.label} 
-                  sx={{ fontSize: "18px", fontWeight: "500", textAlign: "center" }} 
-                />
+              <ListItem
+                button
+                key={item.label}
+                onClick={() => {
+                  handleNavigation(item.path, item.label);
+                  setIsDrawerOpen(false);
+                }}
+                sx={{
+                  backgroundColor: item.label === selectedButton ? "#262626" : "transparent",
+                  "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.2)" },
+                }}
+              >
+                <ListItemText primary={item.label} sx={{ textAlign: "center", color: "white" }} />
               </ListItem>
             ))}
           </List>

@@ -4,7 +4,7 @@ import { Facebook, LinkedIn, Twitter, YouTube, Email, LocationOn, Phone } from "
 
 const FooterComponent = ({ address, phone, logo, insta, fb, linkedin, email }) => {
   return (
-    <Box sx={{ backgroundColor: "#111", color: "#fff" }}>
+    <Box sx={{ backgroundColor: "#141414", color: "#fff", width:"100%" }}>
       <Container maxWidth="lg" sx={{padding:"48px 0"}}>
         <Grid2 container spacing={4} alignItems="flex-start" justifyContent={"space-between"}>
           <Grid2 item size={{xs:12, md:3}}>

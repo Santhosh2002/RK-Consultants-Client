@@ -48,7 +48,7 @@ const Services = () => {
             alt="Icon"
             style={{ width: 70, height: "auto", marginRight: 10 }}
           />
-          <Typography variant="h3">What we Offer</Typography>
+          <Typography variant="h3" fontSize={48} fontWeight={"bold"}>What we Offer</Typography>
           <Box
             sx={{
               display: "flex",
