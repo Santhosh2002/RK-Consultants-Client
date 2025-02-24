@@ -18,7 +18,7 @@ import ShippingPolicyPage from "../pages/ShippingPolicyPage";
 import RefundPolicyPage from "../pages/RefundPolicyPage";
 import AdminSignupPage from "../pages/admin/adminSignup";
 import ListYourProperty from "../pages/ListYourProperty/ListYourProperty";
-import Properties from "../pages/Properties/properties";
+import Properties from "../pages/Properties/Properties";
 
 const AppRoutes = () => {
   return (
