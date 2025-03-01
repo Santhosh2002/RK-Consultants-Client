@@ -178,14 +178,7 @@ const ContactUs = () => {
                 placeholder="Enter First Name"
                 variant="outlined"
                 InputLabelProps={{ style: { color: "#999999" } }}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    backgroundColor: "#1A1A1A",
-                    "& fieldset": { borderColor: "#262626" },
-                    "&:hover fieldset": { borderColor: "#262626" },
-                    "& .MuiInputBase-input": { color: "#666666" },
-                  },
-                }}
+                sx={inputStyles}
               />
             </Grid2>
             <Grid2
@@ -199,14 +192,7 @@ const ContactUs = () => {
                 placeholder="Enter Last Name"
                 variant="outlined"
                 InputLabelProps={{ style: { color: "#999999" } }}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    backgroundColor: "#1A1A1A",
-                    "& fieldset": { borderColor: "#262626" },
-                    "&:hover fieldset": { borderColor: "#262626" },
-                    "& .MuiInputBase-input": { color: "#666666" },
-                  },
-                }}
+                sx={inputStyles}
               />
             </Grid2>
             <Grid2
@@ -220,14 +206,7 @@ const ContactUs = () => {
                 placeholder="Enter Email"
                 variant="outlined"
                 InputLabelProps={{ style: { color: "#999999" } }}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    backgroundColor: "#1A1A1A",
-                    "& fieldset": { borderColor: "#262626" },
-                    "&:hover fieldset": { borderColor: "#262626" },
-                    "& .MuiInputBase-input": { color: "#666666" },
-                  },
-                }}
+                sx={inputStyles}
               />
             </Grid2>
             <Grid2
@@ -241,14 +220,7 @@ const ContactUs = () => {
                 placeholder="Enter Phone Number"
                 variant="outlined"
                 InputLabelProps={{ style: { color: "#999999" } }}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    backgroundColor: "#1A1A1A",
-                    "& fieldset": { borderColor: "#262626" },
-                    "&:hover fieldset": { borderColor: "#262626" },
-                    "& .MuiInputBase-input": { color: "#666666" },
-                  },
-                }}
+                sx={inputStyles}
               />
             </Grid2>
             <Grid2
@@ -263,14 +235,7 @@ const ContactUs = () => {
                 placeholder="Select Inquiry Type"
                 variant="outlined"
                 InputLabelProps={{ style: { color: "#999999" } }}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    backgroundColor: "#1A1A1A",
-                    "& fieldset": { borderColor: "#262626" },
-                    "&:hover fieldset": { borderColor: "#262626" },
-                    "& .MuiInputBase-input::placeholder": { color: "#666666" },
-                  },
-                }}
+                sx={inputStyles}
               >
                 <MenuItem value={"buying"}>Buying</MenuItem>
                 <MenuItem value={"selling"}>Selling</MenuItem>
@@ -291,14 +256,7 @@ const ContactUs = () => {
                 placeholder="Select"
                 variant="outlined"
                 InputLabelProps={{ style: { color: "#999999" } }}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    backgroundColor: "#1A1A1A",
-                    "& fieldset": { borderColor: "#262626" },
-                    "&:hover fieldset": { borderColor: "#262626" },
-                    "& .MuiInputBase-input": { color: "#666666" },
-                  },
-                }}
+                sx={inputStyles}
               >
                 <MenuItem value={"social media"}>Social Media</MenuItem>
                 <MenuItem value={"friend"}>Friend</MenuItem>
@@ -318,14 +276,7 @@ const ContactUs = () => {
                 placeholder="Enter your message here.."
                 variant="outlined"
                 InputLabelProps={{ style: { color: "#999999" } }}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    backgroundColor: "#1A1A1A",
-                    "& fieldset": { borderColor: "#262626" },
-                    "&:hover fieldset": { borderColor: "#262626" },
-                    "& .MuiInputBase-input": { color: "#666666" },
-                  },
-                }}
+                sx={inputStyles}
               />
             </Grid2>
             <Grid2
@@ -376,6 +327,16 @@ const ContactUs = () => {
       <FooterComponent />
     </Box>
   );
+};
+const inputStyles = {
+  "& .MuiOutlinedInput-root": {
+    backgroundColor: "#1A1A1A",
+    minHeight: "50px",
+    color: "#ffffff",
+    "& fieldset": { borderColor: "#262626" },
+    "&:hover fieldset": { borderColor: "#7C4DFF" },
+    "& .MuiInputBase-input": { color: "#ffffff" },
+  },
 };
 
 export default ContactUs;

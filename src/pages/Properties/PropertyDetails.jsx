@@ -11,20 +11,19 @@ import {
   OutlinedInput,
   FormControl,
 } from "@mui/material";
-import Navbar from "../../components/Navbar";
 import RealEstateCTA from "../../components/RealEstateCTA";
 import FooterComponent from "../../components/footer";
 import PropertyCategory from "../../components/PropertyCategory";
 import CategoriesList from "../../components/CategoriesList";
-import InquiryForm from "../../components/InquiryForm";
+import Navbar from "../../components/Navbar";
 
 const MotionBox = motion(Box);
 
-const PropertieCategories = () => {
+const PropertyDetails = () => {
   return (
     <Box
-      id="property-catagories"
-      // sx={{ backgroundColor: "#191919", width: "100vw" }}
+      id="property-details"
+      sx={{ backgroundColor: "#191919", width: "100vw" }}
     >
       <Navbar />
       <MotionBox
@@ -41,13 +40,11 @@ const PropertieCategories = () => {
       >
         <PropertyCategory />
         <CategoriesList />
-        <InquiryForm />
       </MotionBox>
-
       <RealEstateCTA />
       <FooterComponent />
     </Box>
   );
 };
 
-export default PropertieCategories;
+export default PropertyDetails;
