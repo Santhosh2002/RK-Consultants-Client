@@ -86,6 +86,7 @@ const PropertyListing = () => {
               Details" for more information.
             </Typography>
             <Button
+              href="/properties"
               variant="outlined"
               sx={{
                 whiteSpace: "nowrap",

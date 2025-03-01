@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
-  Container,
   Box,
   Typography,
   TextField,
   Button,
   Grid2,
   IconButton,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import {
   Facebook,
@@ -17,6 +19,10 @@ import {
   LocationOn,
   Phone,
 } from "@mui/icons-material";
+import {
+  fetchGeneralSettings,
+  getGeneralSettings,
+} from "../store/generalSettingsSlice";
 
 const FooterComponent = ({
   address,
@@ -27,13 +33,23 @@ const FooterComponent = ({
   linkedin,
   email,
 }) => {
+  const dispatch = useDispatch();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md")); // Detect small screens
+  const settings = useSelector(getGeneralSettings);
+
+  useEffect(() => {
+    if (settings) dispatch(fetchGeneralSettings());
+  }, [dispatch]);
+
   return (
     <Box sx={{ backgroundColor: "#141414", color: "#fff", width: "100%" }}>
-      <Container maxWidth="lg" sx={{ padding: "48px 0" }}>
+      <Box sx={{ padding: isMobile ? "80px 16px" : "80px" }}>
         <Grid2
           container
           spacing={4}
-          alignItems="flex-start"
+          direction={isMobile ? "column" : "row"}
+          alignItems={isMobile ? "center" : "flex-start"}
           justifyContent={"space-between"}
         >
           <Grid2 item size={{ xs: 12, md: 3 }}>
@@ -41,7 +57,7 @@ const FooterComponent = ({
               sx={{
                 display: "flex",
                 flexDirection: "column",
-                alignItems: "flex-start",
+                alignItems: "center",
                 gap: "32px",
               }}
             >
@@ -112,19 +128,19 @@ const FooterComponent = ({
             <Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
               <LocationOn sx={{ fontSize: 20, mr: 1 }} />
               <Typography variant="body2" noWrap>
-                {address}
+                {settings?.address}
               </Typography>
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
               <Phone sx={{ fontSize: 20, mr: 1 }} />
               <Typography variant="body2" noWrap>
-                {phone}
+                {settings?.phone}
               </Typography>
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
               <Email sx={{ fontSize: 20, mr: 1 }} />
               <Typography variant="body2" noWrap>
-                {email}
+                {settings?.email}
               </Typography>
             </Box>
           </Grid2>
@@ -159,7 +175,7 @@ const FooterComponent = ({
             </Box>
           </Grid2>
         </Grid2>
-      </Container>
+      </Box>
       <Box
         sx={{
           display: "flex",
@@ -179,13 +195,13 @@ const FooterComponent = ({
           Managed by G & G Developers
         </Typography>
         <Box>
-          <IconButton sx={{ color: "#fff" }} href={fb}>
+          <IconButton sx={{ color: "#fff" }} href={settings?.facebook}>
             <Facebook />
           </IconButton>
-          <IconButton sx={{ color: "#fff" }} href={linkedin}>
+          <IconButton sx={{ color: "#fff" }} href={settings?.linkedin}>
             <LinkedIn />
           </IconButton>
-          <IconButton sx={{ color: "#fff" }} href={insta}>
+          <IconButton sx={{ color: "#fff" }} href={settings?.instagram}>
             <Twitter />
           </IconButton>
           <IconButton

@@ -17,23 +17,6 @@ import OurValues from "./About/Component/OurValues";
 import OurAchievements from "./About/Component/OurAchievements";
 
 function HomePage() {
-  const visitorUpdate = async () => {
-    const base = import.meta.env.VITE_BASE_URL;
-    const url = base + "/api/visitor/";
-    await axios.get(url);
-  };
-  const [general, setGeneral] = useState({});
-  const getGeneralSettings = async () => {
-    const base = import.meta.env.VITE_BASE_URL;
-    const url = base + "/api/general";
-    const response = await axios.get(url);
-    setGeneral(response.data.general);
-    return response.data.general;
-  };
-  useEffect(() => {
-    visitorUpdate();
-    getGeneralSettings();
-  }, []);
   return (
     <>
       <Navbar />
@@ -47,15 +30,7 @@ function HomePage() {
       {/* <CounterSection/> */}
       {/* <WorkDisplaySection /> */}
       {/* <ContactUs /> */}
-      <FooterComponent
-        address={general.address}
-        phone={general.phone}
-        email={general.email}
-        logo={general.logo}
-        insta={general.instagram}
-        fb={general.facebook}
-        linkedin={general.linkedin}
-      />
+      <FooterComponent />
     </>
   );
 }

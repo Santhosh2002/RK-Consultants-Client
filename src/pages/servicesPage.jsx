@@ -22,18 +22,6 @@ const ServicesPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
-  const [general, setGeneral] = useState({});
-
-  const getGeneralSettings = async () => {
-    const base = import.meta.env.VITE_BASE_URL;
-    const url = base + "/api/general";
-    const response = await axios.get(url);
-    setGeneral(response.data.general);
-  };
-
-  useEffect(() => {
-    getGeneralSettings();
-  }, []);
 
   const getServices = async () => {
     setIsLoading(true);
@@ -64,7 +52,7 @@ const ServicesPage = () => {
 
   return (
     <>
-      <Navbar logo={general.logo} />
+      <Navbar />
 
       <Box sx={{ backgroundColor: "#141414", color: "white", py: 6 }}>
         <Container maxWidth="lg">
@@ -175,7 +163,7 @@ const ServicesPage = () => {
         <Modal service={selectedService} onClose={closeModal} />
       )}
 
-      <FooterComponent {...general} />
+      <FooterComponent />
     </>
   );
 };
