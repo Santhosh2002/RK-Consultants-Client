@@ -45,7 +45,7 @@ const OurJourney = () => {
           transition={{ duration: 1 }}
         >
           <img
-            src="/icons/abstract-Design.svg"
+            src="Icons/abstract-Design.svg"
             alt="Icon"
             style={{ width: 70, height: "auto", marginRight: 10 }}
           />
@@ -100,7 +100,7 @@ const OurJourney = () => {
       {/* Right Image */}
       <Box sx={{ display: "flex", flex: 1 }}>
         <motion.img
-          src="icons/Home_on_hand.svg"
+          src="Icons/Home_on_hand.svg"
           alt="Modern Building"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

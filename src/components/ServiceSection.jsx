@@ -76,7 +76,7 @@ const ServicesSection = () => {
             />
             <Box sx={{ marginBottom: "10px" }}>
               <img
-                src="icons/Home_icon.svg"
+                src="Icons/Home_icon.svg"
                 alt={service.name}
                 style={{ width: "60px", height: "60px" }}
               />

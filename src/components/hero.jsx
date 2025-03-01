@@ -130,7 +130,7 @@ const HeroSection = () => {
       {/* Right Image */}
       <Box sx={{ display: "flex", flex: 1 }}>
         <motion.img
-          src="icons/Container.svg"
+          src="Icons/Container.svg"
           alt="Modern Building"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

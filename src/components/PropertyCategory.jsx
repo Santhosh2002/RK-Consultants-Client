@@ -340,7 +340,6 @@ const PropertyCategory = () => {
                 backgroundColor: "#6A5ACD",
                 color: "#fff",
                 textTransform: "none",
-                color: "white",
                 padding: "20px 20px",
                 minHeight: "50px",
                 borderRadius: "8px",

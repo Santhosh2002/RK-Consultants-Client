@@ -23,7 +23,7 @@ const PropertieCategories = () => {
   return (
     <Box
       id="property-catagories"
-      sx={{ backgroundColor: "#191919", width: "100vw" }}
+      // sx={{ backgroundColor: "#191919", width: "100vw" }}
     >
       <Navbar />
       <MotionBox

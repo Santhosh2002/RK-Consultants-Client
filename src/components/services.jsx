@@ -44,7 +44,7 @@ const Services = () => {
           }}
         >
           <img
-            src="/icons/abstract-Design.svg"
+            src="Icons/abstract-Design.svg"
             alt="Icon"
             style={{ width: 70, height: "auto", marginRight: 10 }}
           />

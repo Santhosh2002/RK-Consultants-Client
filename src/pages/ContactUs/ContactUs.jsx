@@ -21,12 +21,12 @@ const MotionBox = motion(Box);
 const ContactUs = () => {
   const services = [
     {
-      src: "icons/Location-Icon.svg",
+      src: "Icons/Location-Icon.svg",
       title: "B-102 Sen Nagar Santacruz East , Mumbai - 400055",
     },
-    { src: "icons/Phone-Icon.svg", title: "+91 7715021942" },
-    { src: "icons/Email-Icon.svg", title: "nfo@rkrealco.com" },
-    { src: "icons/Social-Icon.svg", title: "Social Media" },
+    { src: "Icons/Phone-Icon.svg", title: "+91 7715021942" },
+    { src: "Icons/Email-Icon.svg", title: "nfo@rkrealco.com" },
+    { src: "Icons/Social-Icon.svg", title: "Social Media" },
   ];
   return (
     <Box id="contact" sx={{ backgroundColor: "#191919", width: "100vw" }}>
@@ -130,7 +130,7 @@ const ContactUs = () => {
           }}
         >
           <img
-            src="/icons/abstract-Design.svg"
+            src="Icons/abstract-Design.svg"
             alt="Icon"
             style={{ width: 70, height: "auto", marginRight: 10 }}
           />
