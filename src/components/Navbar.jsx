@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AppBar, Toolbar, Box, Button, IconButton, Drawer, List, ListItem, ListItemText } from "@mui/material";
 import { Menu as MenuIcon, Close as CloseIcon } from "@mui/icons-material";
 import { setNavBarButton, getNavBarButton } from "../store/generalSettingsSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom"; // ✅ Import useNavigate
+import { useNavigate, useLocation } from "react-router-dom";
 
 const navItems = [
   { label: "Home", path: "/" },
@@ -13,11 +13,24 @@ const navItems = [
   { label: "Contact Us", path: "/contact" },
 ];
 
+const getPageFromPath = (pathname) => {
+  if (pathname === "/listyourproperty") return null; // No tab selected on this page
+  const matchedItem = navItems.find((item) => item.path === pathname);
+  return matchedItem ? matchedItem.label : "Home"; // Default to "Home"
+};
+
 const Navbar = ({ logo }) => {
   const dispatch = useDispatch();
-  const navigate = useNavigate(); // ✅ Initialize useNavigate
+  const navigate = useNavigate();
+  const location = useLocation();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const selectedButton = useSelector(getNavBarButton);
+
+  // Sync navbar state with URL on page load and route changes
+  useEffect(() => {
+    const currentPage = getPageFromPath(location.pathname);
+    dispatch(setNavBarButton(currentPage));
+  }, [location.pathname, dispatch]);
 
   const handleNavigation = (path, label) => {
     dispatch(setNavBarButton(label)); // Update Redux state
@@ -25,7 +38,7 @@ const Navbar = ({ logo }) => {
   };
 
   return (
-    <AppBar position="relative" sx={{ backgroundColor: "#1A1A1A", boxShadow: "none", width:"100%" }}>
+    <AppBar position="relative" sx={{ backgroundColor: "#1A1A1A", boxShadow: "none", width: "100%" }}>
       <Toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0 32px" }}>
         {/* Logo */}
         <Box>
@@ -37,7 +50,7 @@ const Navbar = ({ logo }) => {
           {navItems.map((item) => (
             <Button
               key={item.label}
-              onClick={() => handleNavigation(item.path, item.label)} // ✅ Handle navigation
+              onClick={() => handleNavigation(item.path, item.label)}
               variant={item.label === selectedButton ? "contained" : "text"}
               sx={{
                 color: "white",
@@ -56,8 +69,9 @@ const Navbar = ({ logo }) => {
           ))}
         </Box>
 
+        {/* "List your Property" button should NOT affect navbar selection */}
         <Button
-          onClick={() => handleNavigation("/listyourproperty", "List your Property")}
+          onClick={() => handleNavigation("/listyourproperty", null)}
           variant="contained"
           sx={{
             display: { xs: "none", md: "flex" },
@@ -90,13 +104,13 @@ const Navbar = ({ logo }) => {
           <List>
             {navItems.map((item) => (
               <ListItem
-                button
                 key={item.label}
                 onClick={() => {
                   handleNavigation(item.path, item.label);
                   setIsDrawerOpen(false);
                 }}
                 sx={{
+                  cursor: "pointer",
                   backgroundColor: item.label === selectedButton ? "#262626" : "transparent",
                   "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.2)" },
                 }}

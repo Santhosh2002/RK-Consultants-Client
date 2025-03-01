@@ -46,7 +46,7 @@ const PropertyListing = () => {
             <Typography variant="body1" sx={{ textAlign: "left", width:"70%", color:"#999999" }}>
               Explore our handpicked selection of featured properties. Each listing offers a glimpse into exceptional homes and investments available through RK Realtors & Consultants. Click "View Property Details" for more information.
             </Typography>
-            <Button variant="outlined" sx={{ whiteSpace:"nowrap", color:"white", border:"1px solid #999999" }}>View All Properties</Button>
+            <Button href="/properties" variant="outlined" sx={{ whiteSpace:"nowrap", color:"white", border:"1px solid #999999" }}>View All Properties</Button>
           </Box>
         </Box>
         <Grid2 container spacing={4}>

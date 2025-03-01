@@ -1,25 +1,28 @@
 import React from "react";
-import { Container, Box, Typography, Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { Box, Typography, Button, useMediaQuery, useTheme } from "@mui/material";
 
 const RealEstateCTA = () => {
+  const theme = useTheme();
+  const navigate = useNavigate();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md")); // Detect small screens
+
   return (
     <Box
       sx={{
-        width:"100%",
+        width: "100%",
         position: "relative",
-        backgroundColor: "#111",
-        color: "#fff",
-        py: 8,
-        px: 4,
+        backgroundColor: "#141414",
         display: "flex",
+        flexDirection: isMobile ? "column" : "row",
         alignItems: "center",
         justifyContent: "center",
         overflow: "hidden",
-        borderTop:"0.5px solid #262626",
-        borderBottom:"0.5px solid #262626",
+        borderTop: "1px solid #262626",
+        borderBottom: "1px solid #262626",
       }}
     >
-      {/* Left Background Design */}
+      {/* Left Background Design - Full Height */}
       <Box
         component="img"
         src="/Icons/square-design-left.svg"
@@ -27,15 +30,17 @@ const RealEstateCTA = () => {
         sx={{
           position: "absolute",
           left: 0,
-          top: "50%",
-          transform: "translateY(-50%)",
-          width: "30%",
+          top: 0,
+          height: "100%", // Ensures full height
+          width: "auto",
+          maxWidth: "30%",
+          objectFit: "cover", // Ensures it covers without distortion
           opacity: "100%",
           zIndex: 1,
         }}
       />
 
-      {/* Right Background Design */}
+      {/* Right Background Design - Full Height */}
       <Box
         component="img"
         src="/Icons/squre-design-right.svg"
@@ -43,15 +48,29 @@ const RealEstateCTA = () => {
         sx={{
           position: "absolute",
           right: 0,
-          top: "50%",
-          transform: "translateY(-50%)",
-          width: "30%",
+          top: 0,
+          height: "100%", // Ensures full height
+          width: "auto",
+          maxWidth: "30%",
+          objectFit: "cover", // Ensures it covers without distortion
           opacity: "100%",
           zIndex: 1,
         }}
       />
-      <Container maxWidth="lg" sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", zIndex: 2, }}>
-        <Box sx={{ maxWidth: "70%" }}>
+
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: isMobile ? "column" : "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          zIndex: 2,
+          textAlign: isMobile ? "center" : "left",
+          gap: "16px",
+          padding: isMobile ? "80px 16px" : "80px",
+        }}
+      >
+        <Box sx={{ maxWidth: isMobile ? "100%" : "70%", mb: isMobile ? 2 : 0 }}>
           <Typography variant="h3" sx={{ fontWeight: "bold", mb: 2 }}>
             Start Your Real Estate Journey Today
           </Typography>
@@ -70,10 +89,13 @@ const RealEstateCTA = () => {
             padding: "12px 24px",
             textTransform: "none",
           }}
+          onClick={() => {
+            navigate("/properties");
+          }}
         >
           Explore Properties
         </Button>
-      </Container>
+      </Box>
     </Box>
   );
 };

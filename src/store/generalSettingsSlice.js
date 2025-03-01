@@ -30,13 +30,24 @@ export const updateGeneralSettings = createAsyncThunk(
   }
 );
 
+const getPageFromPath = (pathname) => {
+  const pageMapping = {
+    "/": "Home",
+    "/about": "About",
+    "/services": "Services",
+    "/contact": "Contact",
+    "/profile": "Profile",
+  };
+  return pageMapping[pathname] || "Home"; // Default to Home if not found
+};
+
 const generalSettingsSlice = createSlice({
   name: "settings",
   initialState: {
     settings: {},
     loading: false,
     updating: false,
-    navbarButton: "Home",
+    navbarButton: getPageFromPath(window.location.pathname), // Initialize from URL
     error: null,
   },
   reducers: {

@@ -1,14 +1,22 @@
 import React from "react";
-import { Container, Box, Typography, TextField, Button, Grid2, IconButton } from "@mui/material";
+import { Container, Box, Typography, TextField, Button, Grid2, IconButton, useTheme, useMediaQuery } from "@mui/material";
 import { Facebook, LinkedIn, Twitter, YouTube, Email, LocationOn, Phone } from "@mui/icons-material";
 
 const FooterComponent = ({ address, phone, logo, insta, fb, linkedin, email }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md")); // Detect small screens
   return (
     <Box sx={{ backgroundColor: "#141414", color: "#fff", width:"100%" }}>
-      <Container maxWidth="lg" sx={{padding:"48px 0"}}>
-        <Grid2 container spacing={4} alignItems="flex-start" justifyContent={"space-between"}>
+      <Box sx={{padding:isMobile?"80px 16px":"80px"}}>
+        <Grid2 
+          container 
+          spacing={4} 
+          direction={isMobile ? "column" : "row"} 
+          alignItems={isMobile ? "center" : "flex-start"} 
+          justifyContent={"space-between"}
+        >
           <Grid2 item size={{xs:12, md:3}}>
-            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap:'32px' }}>
+            <Box sx={{ display: "flex", flexDirection: "column", alignItems:"center", gap:'32px' }}>
               <img src="Icons/RK_Logo_White_No_Slogan.svg" alt="Logo" className="max-h-40 w-56 object-cover scale-105 mt-2" />
               <Box sx={{ display: "flex", alignItems: "center", gap: 1, backgroundColor: "#222", p: 1, borderRadius: "8px" }}>
                 <TextField
@@ -88,7 +96,7 @@ const FooterComponent = ({ address, phone, logo, insta, fb, linkedin, email }) =
             </Box>
           </Grid2>
         </Grid2>
-      </Container>
+      </Box>
       <Box sx={{ display: "flex", flexDirection:{xs:"column-reverse", sm:'row'}, justifyContent: "space-between", alignItems: "center", borderTop: "1px solid #262626", padding:{xs:"8px 16px", md:"8px 64px"}, backgroundColor:"#1A1A1A", gap:{xs:"8px"}}}>
         <Typography variant="body2" sx={{ color: "#999999" }}>©2024 RK Realtors and Consultants. All Rights Reserved.</Typography>
         <Typography variant="body2" sx={{ color: "#999999" }}>Managed by G & G Developers</Typography>
