@@ -1,10 +1,20 @@
-import React from "react";
-import { Container, Box, Typography, TextField, Button, Grid2, IconButton, useTheme, useMediaQuery } from "@mui/material";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Box, Typography, TextField, Button, Grid2, IconButton, useTheme, useMediaQuery } from "@mui/material";
 import { Facebook, LinkedIn, Twitter, YouTube, Email, LocationOn, Phone } from "@mui/icons-material";
+import { fetchGeneralSettings, getGeneralSettings } from "../store/generalSettingsSlice";
 
 const FooterComponent = ({ address, phone, logo, insta, fb, linkedin, email }) => {
+  const dispatch = useDispatch();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md")); // Detect small screens
+  const settings = useSelector(getGeneralSettings);
+
+  useEffect(()=>{
+    if(settings)
+      dispatch(fetchGeneralSettings());
+  },[dispatch]);
+
   return (
     <Box sx={{ backgroundColor: "#141414", color: "#fff", width:"100%" }}>
       <Box sx={{padding:isMobile?"80px 16px":"80px"}}>
@@ -60,15 +70,15 @@ const FooterComponent = ({ address, phone, logo, insta, fb, linkedin, email }) =
             </Grid2> */}
             <Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
               <LocationOn sx={{ fontSize: 20, mr: 1 }} />
-              <Typography variant="body2" noWrap>{address}</Typography>
+              <Typography variant="body2" noWrap>{settings?.address}</Typography>
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
               <Phone sx={{ fontSize: 20, mr: 1 }} />
-              <Typography variant="body2" noWrap>{phone}</Typography>
+              <Typography variant="body2" noWrap>{settings?.phone}</Typography>
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
               <Email sx={{ fontSize: 20, mr: 1 }} />
-              <Typography variant="body2" noWrap>{email}</Typography>
+              <Typography variant="body2" noWrap>{settings?.email}</Typography>
             </Box>
           </Grid2>
           <Grid2 item xs={12} md={3}>
@@ -101,9 +111,9 @@ const FooterComponent = ({ address, phone, logo, insta, fb, linkedin, email }) =
         <Typography variant="body2" sx={{ color: "#999999" }}>©2024 RK Realtors and Consultants. All Rights Reserved.</Typography>
         <Typography variant="body2" sx={{ color: "#999999" }}>Managed by G & G Developers</Typography>
         <Box>
-          <IconButton sx={{ color: "#fff" }} href={fb}><Facebook /></IconButton>
-          <IconButton sx={{ color: "#fff" }} href={linkedin}><LinkedIn /></IconButton>
-          <IconButton sx={{ color: "#fff" }} href={insta}><Twitter /></IconButton>
+          <IconButton sx={{ color: "#fff" }} href={settings?.facebook}><Facebook /></IconButton>
+          <IconButton sx={{ color: "#fff" }} href={settings?.linkedin}><LinkedIn /></IconButton>
+          <IconButton sx={{ color: "#fff" }} href={settings?.instagram}><Twitter /></IconButton>
           <IconButton sx={{ color: "#fff" }} href="https://www.youtube.com/@RKRealtorsConsultants"><YouTube /></IconButton>
         </Box>
       </Box>

@@ -14,27 +14,12 @@ const navItems = [
 ];
 
 function ShippingPolicyPage() {
-    const [general, setGeneral] = React.useState({});
-        // Fetch general settings
-        const getGeneralSettings = async () => {
-            const base = import.meta.env.VITE_BASE_URL;
-            const url = base + "/api/general";
-            try {
-              const response = await axios.get(url);
-              setGeneral(response.data.general);
-            } catch (error) {
-              console.error("Error fetching general settings:", error);
-            }
-          };
-        
-          React.useEffect(() => {
-            getGeneralSettings();
-          }, []);
-            const [isOpen, setIsOpen] = React.useState(false);
-            const toggleMenu = () => setIsOpen(!isOpen);
+  const [isOpen, setIsOpen] = React.useState(false);
+  const toggleMenu = () => setIsOpen(!isOpen);
+  
   return (
     <>
-     <Navbar logo={general.logo}/>
+     <Navbar />
         <div className="min-h-screen bg-gray-950 text-gray-300 p-6 mt-10 sm:p-12">
       <div className="max-w-4xl mx-auto bg-gray-800 rounded-lg shadow-md overflow-hidden">
         <header className="bg-gray-900 text-white text-center py-4">
@@ -46,7 +31,7 @@ function ShippingPolicyPage() {
 
           <section>
             <h2 className="text-xl font-semibold text-gray-200 mb-4">Shipping Policy</h2>
-            <p className="text-gray-300 leading-relaxed whitespace-pre-line">{general.shippingPolicy}</p>
+            {/* <p className="text-gray-300 leading-relaxed whitespace-pre-line">{general.shippingPolicy}</p> */}
           </section>
         </main>
 
@@ -55,7 +40,7 @@ function ShippingPolicyPage() {
         </footer>
       </div>
     </div>
-    <FooterComponent address={general.address} phone={general.phone} email={general.email} logo={general.logo} insta={general.instagram} fb={general.facebook}   linkedin={general.linkedin}  />
+    <FooterComponent />
     </>
   )
 }

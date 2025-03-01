@@ -22,28 +22,11 @@ function ProjectDetailPage() {
     const [projectData, setprojectData] = React.useState(null);
     const [isLoading, setIsLoading] = React.useState(true);
     const { id } = useParams();
-    const [general, setGeneral] = React.useState({});
     const [isPopupOpen, setIsPopupOpen] = React.useState(false);
     
       const togglePopup = () => {
         setIsPopupOpen(!isPopupOpen);
       };
-  
-    // Fetch general settings
-    const getGeneralSettings = async () => {
-      const base = import.meta.env.VITE_BASE_URL;
-      const url = base + "/api/general";
-      try {
-        const response = await axios.get(url);
-        setGeneral(response.data.general);
-      } catch (error) {
-        console.error("Error fetching general settings:", error);
-      }
-    };
-  
-    React.useEffect(() => {
-      getGeneralSettings();
-    }, []);
       const [isOpen, setIsOpen] = React.useState(false);
       const toggleMenu = () => setIsOpen(!isOpen);
   
@@ -117,7 +100,7 @@ function ProjectDetailPage() {
   return (
 
     <>
-    <Navbar logo={general.logo}/>
+    <Navbar />
       <div className="p-6 bg-gray-950 min-h-screen mt-16">
       <div className="bg-gray-900 rounded-lg shadow-lg p-2 max-w-[1100px] mx-auto">
         {/* Header Section */}
@@ -254,7 +237,7 @@ function ProjectDetailPage() {
         
       </div>
     </div>
-    <FooterComponent address={general.address} phone={general.phone} email={general.email} logo={general.logo} insta={general.instagram} fb={general.facebook}   linkedin={general.linkedin}  />
+    <FooterComponent  />
 
 
 

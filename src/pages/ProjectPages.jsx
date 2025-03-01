@@ -24,19 +24,6 @@ function ProjectPages() {
   const [isOpen, setIsOpen] = useState(false);
   const toggleMenu = () => setIsOpen(!isOpen);
 
-  const [general, setGeneral] = useState({});
-  const getGeneralSettings = async()=>{
-    const base = import.meta.env.VITE_BASE_URL;
-    const url = base + "/api/general"; 
-    const response = await axios.get(url); 
-    setGeneral(response.data.general);
-    return response.data.general; 
-  }
-  useEffect(()=>{
-
-    getGeneralSettings(); 
-  },[]); 
-
   const getProjects = async () => {
     const url = import.meta.env.VITE_BASE_URL + '/api/project/';
     const listingsUrl = import.meta.env.VITE_BASE_URL + '/api/listing/';
@@ -66,7 +53,7 @@ function ProjectPages() {
 
   return (
     <>
-    <Navbar logo={general.logo}/>
+    <Navbar />
     
     <div className="bg-gray-950 text-white min-h-screen ">
       
@@ -162,7 +149,7 @@ function ProjectPages() {
       </section>
     </div>
     
-    <FooterComponent address={general.address} phone={general.phone} email={general.email} logo={general.logo} insta={general.instagram} fb={general.facebook}   linkedin={general.linkedin}  />
+    <FooterComponent />
     </>
     
   );

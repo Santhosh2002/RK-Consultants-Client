@@ -6,26 +6,10 @@ import Navbar from "../components/Navbar";
 import FooterComponent from "../components/footer";
 
 const AboutUs = () => {
-  const [general, setGeneral] = useState({});
-
-  // Fetch general settings
-  const getGeneralSettings = async () => {
-    const base = import.meta.env.VITE_BASE_URL;
-    try {
-      const response = await axios.get(`${base}/api/general`);
-      setGeneral(response.data.general);
-    } catch (error) {
-      console.error("Error fetching general settings:", error);
-    }
-  };
-
-  useEffect(() => {
-    getGeneralSettings();
-  }, []);
 
   return (
     <>
-      <Navbar logo={general.logo} />
+      <Navbar />
 
       {/* Header Section */}
       <Box
@@ -104,15 +88,7 @@ const AboutUs = () => {
       </Box>
 
       {/* Footer Section */}
-      <FooterComponent
-        address={general.address}
-        phone={general.phone}
-        email={general.email}
-        logo={general.logo}
-        insta={general.instagram}
-        fb={general.facebook}
-        linkedin={general.linkedin}
-      />
+      <FooterComponent />
     </>
   );
 };
