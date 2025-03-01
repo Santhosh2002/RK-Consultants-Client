@@ -19,6 +19,7 @@ import RefundPolicyPage from "../pages/RefundPolicyPage";
 import AdminSignupPage from "../pages/admin/adminSignup";
 import ListYourProperty from "../pages/ListYourProperty/ListYourProperty";
 import Properties from "../pages/Properties/Properties";
+import PropertieCategories from "../pages/Properties/PropertieCategories";
 
 const AppRoutes = () => {
   return (
@@ -27,6 +28,7 @@ const AppRoutes = () => {
       <Route path="/services" element={<ServicesPage />} />
       <Route path="/about" element={<AboutUs />} />
       <Route path="/properties" element={<Properties />} />
+      <Route path="/properties/category" element={<PropertieCategories />} />
       <Route path="/contact" element={<ContactUs />} />
       <Route path="/listyourproperty" element={<ListYourProperty />} />
       <Route path="/admin/login" element={<AdminLoginPage />} />

@@ -6,36 +6,71 @@ import SchoolIcon from "@mui/icons-material/School";
 import GroupsIcon from "@mui/icons-material/Groups";
 import VerifiedIcon from "@mui/icons-material/Verified";
 
-
 const OurValues = () => {
   const [stats, setStats] = useState([
-    {title:"Happy Customer", value: 200, divisor: 1, suffix: ""},
-    {title:"Properties For Clients", value: 10000, divisor: 1000, suffix:"K"},
-    {title:"Years of Experience", value: 16, divisor: 1, suffix:""},
-  ])
+    { title: "Happy Customer", value: 200, divisor: 1, suffix: "" },
+    {
+      title: "Properties For Clients",
+      value: 10000,
+      divisor: 1000,
+      suffix: "K",
+    },
+    { title: "Years of Experience", value: 16, divisor: 1, suffix: "" },
+  ]);
   const values = [
-    { icon: <StarIcon />, title: "Trust", description: "Trust is the cornerstone of every successful real estate transaction." },
-    { icon: <SchoolIcon />, title: "Excellence", description: "We set the bar high for ourselves. From the properties we list to the services we provide." },
-    { icon: <GroupsIcon />, title: "Client-Centric", description: "Your dreams and needs are at the center of our universe. We listen, understand." },
-    { icon: <VerifiedIcon />, title: "Our Commitment", description: "We are dedicated to providing you with the highest level of service, professionalism, and support." },
+    {
+      icon: <StarIcon />,
+      title: "Trust",
+      description:
+        "Trust is the cornerstone of every successful real estate transaction.",
+    },
+    {
+      icon: <SchoolIcon />,
+      title: "Excellence",
+      description:
+        "We set the bar high for ourselves. From the properties we list to the services we provide.",
+    },
+    {
+      icon: <GroupsIcon />,
+      title: "Client-Centric",
+      description:
+        "Your dreams and needs are at the center of our universe. We listen, understand.",
+    },
+    {
+      icon: <VerifiedIcon />,
+      title: "Our Commitment",
+      description:
+        "We are dedicated to providing you with the highest level of service, professionalism, and support.",
+    },
   ];
   return (
     <Box
       sx={{
         display: "flex",
-        flexDirection:{xs:"column", sm:"row"},
+        flexDirection: { xs: "column", sm: "row" },
         alignItems: "center",
         justifyContent: "space-between",
         backgroundColor: "#141414",
         color: "white",
-        width:"100%",
-        padding:{xs:"16px", sm:"64px"}
+        width: "100%",
+        padding: { xs: "16px", sm: "64px" },
       }}
     >
       {/* Left Content */}
-      <motion.div style={{width:"40%", display:"flex", flexDirection:"column", gap:'16px', padding:"60px" }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1 }}>
+      <motion.div
+        style={{
+          width: "40%",
+          display: "flex",
+          flexDirection: "column",
+          gap: "16px",
+          padding: "60px",
+        }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1 }}
+      >
         <img
-          src="/Icons/abstract-Design.svg"
+          src="/icons/abstract-Design.svg"
           alt="Icon"
           style={{ width: 70, height: "auto", marginRight: 10 }}
         />
@@ -43,7 +78,9 @@ const OurValues = () => {
           Our Values
         </Typography>
         <Typography variant="body1" sx={{ color: "#999999" }}>
-          Our story is one of continuous growth and evolution. We started as a small team with big dreams, determined to create a real estate platform that transcended the ordinary.
+          Our story is one of continuous growth and evolution. We started as a
+          small team with big dreams, determined to create a real estate
+          platform that transcended the ordinary.
         </Typography>
       </motion.div>
 
@@ -68,7 +105,7 @@ const OurValues = () => {
           boxShadow: "0px 0px 30px #262626",
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
-          gap:"20px",
+          gap: "20px",
           width: "60%",
         }}
       >
@@ -81,7 +118,7 @@ const OurValues = () => {
               alignItems: "flex-start",
               padding: "25px",
               position: "relative",
-              gap:"16px"
+              gap: "16px",
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center", gap: "16px" }}>

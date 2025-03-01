@@ -1,23 +1,82 @@
 import React from "react";
-import { Container, Box, Typography, TextField, Button, Grid2, IconButton } from "@mui/material";
-import { Facebook, LinkedIn, Twitter, YouTube, Email, LocationOn, Phone } from "@mui/icons-material";
+import {
+  Container,
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Grid2,
+  IconButton,
+} from "@mui/material";
+import {
+  Facebook,
+  LinkedIn,
+  Twitter,
+  YouTube,
+  Email,
+  LocationOn,
+  Phone,
+} from "@mui/icons-material";
 
-const FooterComponent = ({ address, phone, logo, insta, fb, linkedin, email }) => {
+const FooterComponent = ({
+  address,
+  phone,
+  logo,
+  insta,
+  fb,
+  linkedin,
+  email,
+}) => {
   return (
-    <Box sx={{ backgroundColor: "#141414", color: "#fff", width:"100%" }}>
-      <Container maxWidth="lg" sx={{padding:"48px 0"}}>
-        <Grid2 container spacing={4} alignItems="flex-start" justifyContent={"space-between"}>
-          <Grid2 item size={{xs:12, md:3}}>
-            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap:'32px' }}>
-              <img src="Icons/RK_Logo_White_No_Slogan.svg" alt="Logo" className="max-h-40 w-56 object-cover scale-105 mt-2" />
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1, backgroundColor: "#222", p: 1, borderRadius: "8px" }}>
+    <Box sx={{ backgroundColor: "#141414", color: "#fff", width: "100%" }}>
+      <Container maxWidth="lg" sx={{ padding: "48px 0" }}>
+        <Grid2
+          container
+          spacing={4}
+          alignItems="flex-start"
+          justifyContent={"space-between"}
+        >
+          <Grid2 item size={{ xs: 12, md: 3 }}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                gap: "32px",
+              }}
+            >
+              <img
+                src="icons/RK_Logo_White_No_Slogan.svg"
+                alt="Logo"
+                className="max-h-40 w-56 object-cover scale-105 mt-2"
+              />
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  backgroundColor: "#222",
+                  p: 1,
+                  borderRadius: "8px",
+                }}
+              >
                 <TextField
                   variant="standard"
                   placeholder="Enter Your Email"
-                  InputProps={{ disableUnderline: true, style: { color: "#fff" } }}
+                  InputProps={{
+                    disableUnderline: true,
+                    style: { color: "#fff" },
+                  }}
                   sx={{ flex: 1 }}
                 />
-                <Button variant="contained" sx={{ backgroundColor: "#6A5ACD", color: "#fff", borderRadius: "8px" }}>
+                <Button
+                  variant="contained"
+                  sx={{
+                    backgroundColor: "#6A5ACD",
+                    color: "#fff",
+                    borderRadius: "8px",
+                  }}
+                >
                   ➜
                 </Button>
               </Box>
@@ -52,25 +111,37 @@ const FooterComponent = ({ address, phone, logo, insta, fb, linkedin, email }) =
             </Grid2> */}
             <Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
               <LocationOn sx={{ fontSize: 20, mr: 1 }} />
-              <Typography variant="body2" noWrap>{address}</Typography>
+              <Typography variant="body2" noWrap>
+                {address}
+              </Typography>
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
               <Phone sx={{ fontSize: 20, mr: 1 }} />
-              <Typography variant="body2" noWrap>{phone}</Typography>
+              <Typography variant="body2" noWrap>
+                {phone}
+              </Typography>
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
               <Email sx={{ fontSize: 20, mr: 1 }} />
-              <Typography variant="body2" noWrap>{email}</Typography>
+              <Typography variant="body2" noWrap>
+                {email}
+              </Typography>
             </Box>
           </Grid2>
           <Grid2 item xs={12} md={3}>
-            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-              <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d30164.075405149306!2d72.84568488833001!3d19.08529497365678!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c9c6e7802383%3A0x99bd638ce39dd513!2sR.K%20REALTORS%20%26%20CONSULTANTS!5e0!3m2!1sen!2sin!4v1735987985835!5m2!1sen!2sin"  
-                width="100%" 
-                height="150" 
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d30164.075405149306!2d72.84568488833001!3d19.08529497365678!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c9c6e7802383%3A0x99bd638ce39dd513!2sR.K%20REALTORS%20%26%20CONSULTANTS!5e0!3m2!1sen!2sin!4v1735987985835!5m2!1sen!2sin"
+                width="100%"
+                height="150"
                 style={{ border: "0", borderRadius: "8px" }}
-                allowFullScreen="" 
+                allowFullScreen=""
                 loading="lazy"
               ></iframe>
               {/* <Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
@@ -89,14 +160,40 @@ const FooterComponent = ({ address, phone, logo, insta, fb, linkedin, email }) =
           </Grid2>
         </Grid2>
       </Container>
-      <Box sx={{ display: "flex", flexDirection:{xs:"column-reverse", sm:'row'}, justifyContent: "space-between", alignItems: "center", borderTop: "1px solid #262626", padding:{xs:"8px 16px", md:"8px 64px"}, backgroundColor:"#1A1A1A", gap:{xs:"8px"}}}>
-        <Typography variant="body2" sx={{ color: "#999999" }}>©2024 RK Realtors and Consultants. All Rights Reserved.</Typography>
-        <Typography variant="body2" sx={{ color: "#999999" }}>Managed by G & G Developers</Typography>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: { xs: "column-reverse", sm: "row" },
+          justifyContent: "space-between",
+          alignItems: "center",
+          borderTop: "1px solid #262626",
+          padding: { xs: "8px 16px", md: "8px 64px" },
+          backgroundColor: "#1A1A1A",
+          gap: { xs: "8px" },
+        }}
+      >
+        <Typography variant="body2" sx={{ color: "#999999" }}>
+          ©2024 RK Realtors and Consultants. All Rights Reserved.
+        </Typography>
+        <Typography variant="body2" sx={{ color: "#999999" }}>
+          Managed by G & G Developers
+        </Typography>
         <Box>
-          <IconButton sx={{ color: "#fff" }} href={fb}><Facebook /></IconButton>
-          <IconButton sx={{ color: "#fff" }} href={linkedin}><LinkedIn /></IconButton>
-          <IconButton sx={{ color: "#fff" }} href={insta}><Twitter /></IconButton>
-          <IconButton sx={{ color: "#fff" }} href="https://www.youtube.com/@RKRealtorsConsultants"><YouTube /></IconButton>
+          <IconButton sx={{ color: "#fff" }} href={fb}>
+            <Facebook />
+          </IconButton>
+          <IconButton sx={{ color: "#fff" }} href={linkedin}>
+            <LinkedIn />
+          </IconButton>
+          <IconButton sx={{ color: "#fff" }} href={insta}>
+            <Twitter />
+          </IconButton>
+          <IconButton
+            sx={{ color: "#fff" }}
+            href="https://www.youtube.com/@RKRealtorsConsultants"
+          >
+            <YouTube />
+          </IconButton>
         </Box>
       </Box>
     </Box>

@@ -1,7 +1,20 @@
 import React, { useState } from "react";
-import { AppBar, Toolbar, Box, Button, IconButton, Drawer, List, ListItem, ListItemText } from "@mui/material";
+import {
+  AppBar,
+  Toolbar,
+  Box,
+  Button,
+  IconButton,
+  Drawer,
+  List,
+  ListItem,
+  ListItemText,
+} from "@mui/material";
 import { Menu as MenuIcon, Close as CloseIcon } from "@mui/icons-material";
-import { setNavBarButton, getNavBarButton } from "../store/generalSettingsSlice";
+import {
+  setNavBarButton,
+  getNavBarButton,
+} from "../store/generalSettingsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom"; // ✅ Import useNavigate
 
@@ -25,15 +38,35 @@ const Navbar = ({ logo }) => {
   };
 
   return (
-    <AppBar position="relative" sx={{ backgroundColor: "#1A1A1A", boxShadow: "none", width:"100%" }}>
-      <Toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0 32px" }}>
+    <AppBar
+      position="relative"
+      sx={{ backgroundColor: "#1A1A1A", boxShadow: "none", width: "100%" }}
+    >
+      <Toolbar
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "0 32px",
+        }}
+      >
         {/* Logo */}
         <Box>
-          <img src="Icons/RK_Logo_White_No_Slogan.svg" alt="Logo" style={{ width: "auto", height: "30px" }} />
+          <img
+            src="icons/RK_Logo_White_No_Slogan.svg"
+            alt="Logo"
+            style={{ width: "auto", height: "30px" }}
+          />
         </Box>
 
         {/* Desktop Navigation */}
-        <Box sx={{ display: { xs: "none", md: "flex" }, gap: 4, alignItems: "center" }}>
+        <Box
+          sx={{
+            display: { xs: "none", md: "flex" },
+            gap: 4,
+            alignItems: "center",
+          }}
+        >
           {navItems.map((item) => (
             <Button
               key={item.label}
@@ -42,9 +75,11 @@ const Navbar = ({ logo }) => {
               sx={{
                 color: "white",
                 textTransform: "none",
-                backgroundColor: item.label === selectedButton ? "#141414" : "transparent",
+                backgroundColor:
+                  item.label === selectedButton ? "#141414" : "transparent",
                 borderRadius: "8px",
-                border: item.label === selectedButton ? "2px solid #262626" : "none",
+                border:
+                  item.label === selectedButton ? "2px solid #262626" : "none",
                 "&:hover": {
                   backgroundColor: "rgba(255, 255, 255, 0.2)",
                   color: "#FFFFFF",
@@ -57,7 +92,9 @@ const Navbar = ({ logo }) => {
         </Box>
 
         <Button
-          onClick={() => handleNavigation("/listyourproperty", "List your Property")}
+          onClick={() =>
+            handleNavigation("/listyourproperty", "List your Property")
+          }
           variant="contained"
           sx={{
             display: { xs: "none", md: "flex" },
@@ -74,13 +111,20 @@ const Navbar = ({ logo }) => {
         </Button>
 
         {/* Mobile Menu Icon */}
-        <IconButton onClick={() => setIsDrawerOpen(true)} sx={{ color: "white", display: { md: "none" } }}>
+        <IconButton
+          onClick={() => setIsDrawerOpen(true)}
+          sx={{ color: "white", display: { md: "none" } }}
+        >
           <MenuIcon sx={{ fontSize: 30 }} />
         </IconButton>
       </Toolbar>
 
       {/* Mobile Drawer */}
-      <Drawer anchor="right" open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
+      <Drawer
+        anchor="right"
+        open={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+      >
         <Box sx={{ width: 280 }}>
           <Box sx={{ display: "flex", justifyContent: "flex-end", p: 2 }}>
             <IconButton onClick={() => setIsDrawerOpen(false)}>
@@ -97,11 +141,15 @@ const Navbar = ({ logo }) => {
                   setIsDrawerOpen(false);
                 }}
                 sx={{
-                  backgroundColor: item.label === selectedButton ? "#262626" : "transparent",
+                  backgroundColor:
+                    item.label === selectedButton ? "#262626" : "transparent",
                   "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.2)" },
                 }}
               >
-                <ListItemText primary={item.label} sx={{ textAlign: "center", color: "white" }} />
+                <ListItemText
+                  primary={item.label}
+                  sx={{ textAlign: "center", color: "white" }}
+                />
               </ListItem>
             ))}
           </List>

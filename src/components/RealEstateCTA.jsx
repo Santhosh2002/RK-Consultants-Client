@@ -5,7 +5,7 @@ const RealEstateCTA = () => {
   return (
     <Box
       sx={{
-        width:"100%",
+        width: "100%",
         position: "relative",
         backgroundColor: "#111",
         color: "#fff",
@@ -15,14 +15,14 @@ const RealEstateCTA = () => {
         alignItems: "center",
         justifyContent: "center",
         overflow: "hidden",
-        borderTop:"0.5px solid #262626",
-        borderBottom:"0.5px solid #262626",
+        borderTop: "0.5px solid #262626",
+        borderBottom: "0.5px solid #262626",
       }}
     >
       {/* Left Background Design */}
       <Box
         component="img"
-        src="/Icons/square-design-left.svg"
+        src="/icons/square-design-left.svg"
         alt="Square Design Left"
         sx={{
           position: "absolute",
@@ -38,7 +38,7 @@ const RealEstateCTA = () => {
       {/* Right Background Design */}
       <Box
         component="img"
-        src="/Icons/squre-design-right.svg"
+        src="/icons/squre-design-right.svg"
         alt="Square Design Right"
         sx={{
           position: "absolute",
@@ -50,13 +50,26 @@ const RealEstateCTA = () => {
           zIndex: 1,
         }}
       />
-      <Container maxWidth="lg" sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", zIndex: 2, }}>
+      <Container
+        maxWidth="lg"
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          zIndex: 2,
+        }}
+      >
         <Box sx={{ maxWidth: "70%" }}>
           <Typography variant="h3" sx={{ fontWeight: "bold", mb: 2 }}>
             Start Your Real Estate Journey Today
           </Typography>
           <Typography variant="body1" sx={{ color: "#999999" }}>
-            Your dream property is just a click away. Whether you're looking for a new home, a strategic investment, or expert real estate advice, Estatein is here to assist you every step of the way. Take the first step towards your real estate goals and explore our available properties or get in touch with our team for personalized assistance.
+            Your dream property is just a click away. Whether you're looking for
+            a new home, a strategic investment, or expert real estate advice,
+            Estatein is here to assist you every step of the way. Take the first
+            step towards your real estate goals and explore our available
+            properties or get in touch with our team for personalized
+            assistance.
           </Typography>
         </Box>
         <Button

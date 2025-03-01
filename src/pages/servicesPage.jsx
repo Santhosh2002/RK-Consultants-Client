@@ -5,7 +5,15 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 import FooterComponent from "../components/footer";
-import { Box, Typography, Container, Grid2, Card, Button, IconButton } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Container,
+  Grid2,
+  Card,
+  Button,
+  IconButton,
+} from "@mui/material";
 import { X } from "lucide-react";
 import Modal from "./Modal";
 
@@ -15,7 +23,6 @@ const ServicesPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [general, setGeneral] = useState({});
-  
 
   const getGeneralSettings = async () => {
     const base = import.meta.env.VITE_BASE_URL;
@@ -49,12 +56,11 @@ const ServicesPage = () => {
     setSelectedService(service);
     setIsModalOpen(true);
   };
-  
+
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedService(null);
   };
-  
 
   return (
     <>
@@ -63,13 +69,29 @@ const ServicesPage = () => {
       <Box sx={{ backgroundColor: "#141414", color: "white", py: 6 }}>
         <Container maxWidth="lg">
           {/* Section Title */}
-          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", textAlign: "left", mb: 6 }}>
-            <img src="/Icons/abstract-Design.svg" alt="Icon" style={{ width: 70, height: "auto", marginBottom: 10 }} />
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              textAlign: "left",
+              mb: 6,
+            }}
+          >
+            <img
+              src="/icons/abstract-Design.svg"
+              alt="Icon"
+              style={{ width: 70, height: "auto", marginBottom: 10 }}
+            />
             <Typography variant="h3" fontWeight={600}>
               Services We Provide
             </Typography>
-            <Typography variant="body1" sx={{ color: "#999999", maxWidth: "600px", mt: 2 }}>
-              Our tailored solutions are designed to help you achieve your goals effortlessly.
+            <Typography
+              variant="body1"
+              sx={{ color: "#999999", maxWidth: "600px", mt: 2 }}
+            >
+              Our tailored solutions are designed to help you achieve your goals
+              effortlessly.
             </Typography>
           </Box>
 
@@ -77,12 +99,12 @@ const ServicesPage = () => {
           <Grid2 container spacing={4}>
             {isLoading
               ? Array.from({ length: 6 }).map((_, index) => (
-                  <Grid2 item size={{xs:12, sm:6, md:4}} key={index}>
+                  <Grid2 item size={{ xs: 12, sm: 6, md: 4 }} key={index}>
                     <ShimmerCard />
                   </Grid2>
                 ))
               : services.map((service, index) => (
-                  <Grid2 item size={{xs:12, sm:6, md:4}} key={index}>
+                  <Grid2 item size={{ xs: 12, sm: 6, md: 4 }} key={index}>
                     <Card
                       component={motion.div}
                       variants={fadeIn("up", 0.3)}
@@ -100,8 +122,8 @@ const ServicesPage = () => {
                         padding: "24px",
                         boxShadow: "0px 0px 30px #262626",
                         minHeight: "100%",
-                        alignItems:'center',
-                        gap:"16px"
+                        alignItems: "center",
+                        gap: "16px",
                       }}
                     >
                       <Box sx={{ display: "flex", justifyContent: "center" }}>
@@ -114,7 +136,14 @@ const ServicesPage = () => {
                       <Typography variant="h6" fontWeight={600}>
                         {service.name}
                       </Typography>
-                      <Typography variant="body2" sx={{ color: "#999999", flexGrow: 1, textAlign:"justify" }}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: "#999999",
+                          flexGrow: 1,
+                          textAlign: "justify",
+                        }}
+                      >
                         {service.description}
                       </Typography>
                       <Box sx={{ textAlign: "center" }}>
@@ -126,7 +155,10 @@ const ServicesPage = () => {
                             border: "2px solid #A187F0",
                             borderRadius: "8px",
                             color: "#A187F0",
-                            "&:hover": { backgroundColor: "#A187F0", color: "#fff" },
+                            "&:hover": {
+                              backgroundColor: "#A187F0",
+                              color: "#fff",
+                            },
                           }}
                         >
                           View Details
@@ -139,17 +171,25 @@ const ServicesPage = () => {
         </Container>
       </Box>
 
-      {isModalOpen && selectedService && <Modal service={selectedService} onClose={closeModal} />}
+      {isModalOpen && selectedService && (
+        <Modal service={selectedService} onClose={closeModal} />
+      )}
 
       <FooterComponent {...general} />
     </>
   );
 };
 
-
-
 const ShimmerCard = () => (
-  <Card sx={{ backgroundColor: "#1A1A1A", border: "5px solid #262626", boxShadow: "0px 0px 30px #262626", padding: "24px", minHeight: "250px" }} />
+  <Card
+    sx={{
+      backgroundColor: "#1A1A1A",
+      border: "5px solid #262626",
+      boxShadow: "0px 0px 30px #262626",
+      padding: "24px",
+      minHeight: "250px",
+    }}
+  />
 );
 
 export default ServicesPage;
