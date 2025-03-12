@@ -7,6 +7,7 @@ import projectsReducer from "./projectsSlice";
 import listingsReducer from "./listingsSlice";
 import servicesReducer from "./servicesSlice";
 import generalSettingsReducer from "./generalSettingsSlice";
+import fileUploadReducer from "./fileUploadSlice";
 const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -17,6 +18,7 @@ const store = configureStore({
     listings: listingsReducer,
     services: servicesReducer,
     settings: generalSettingsReducer,
+    files: fileUploadReducer,
   },
 });
 
