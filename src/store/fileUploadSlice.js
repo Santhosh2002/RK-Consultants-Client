@@ -20,7 +20,23 @@ export const uploadFile = createAsyncThunk(
           "Content-Type": "multipart/form-data",
         },
       });
-      return response.data;
+      if (
+        !response.data ||
+        !response.data.bucket ||
+        !response.data.name ||
+        !response.data.downloadTokens
+      ) {
+        throw new Error("Invalid upload response");
+      }
+
+      // Construct the download URL
+      const downloadURL = `https://firebasestorage.googleapis.com/v0/b/${
+        response.data.bucket
+      }/o/${encodeURIComponent(response.data.name)}?alt=media&token=${
+        response.data.downloadTokens
+      }`;
+
+      return downloadURL;
     } catch (error) {
       return rejectWithValue(error.response.data || error.message);
     }
