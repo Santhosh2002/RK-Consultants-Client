@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import {
   setClientData,
   createOrder,
@@ -13,11 +13,10 @@ import {
   Step,
   StepLabel,
   Button,
-  TextField,
   Typography,
   Paper,
-  CircularProgress,
 } from "@mui/material";
+import StyledTextField from "../StyledComponents/StyledTextField";
 
 const steps = ["Client Details", "Confirm Details", "Payment"];
 
@@ -26,14 +25,13 @@ const MultiStepForm = ({ amount }) => {
   const clientData = useSelector(getClientDetails);
 
   const {
-    register,
+    control,
     handleSubmit,
     formState: { errors },
   } = useForm();
   const [activeStep, setActiveStep] = useState(0);
   const [isRazorpayLoaded, setIsRazorpayLoaded] = useState(false);
 
-  // ✅ Load Razorpay Script Dynamically
   useEffect(() => {
     const loadRazorpay = () => {
       return new Promise((resolve) => {
@@ -50,13 +48,11 @@ const MultiStepForm = ({ amount }) => {
     loadRazorpay();
   }, []);
 
-  // ✅ Handle client details submission
   const onSubmitClientDetails = (data) => {
     dispatch(setClientData(data));
     setActiveStep(1);
   };
 
-  // ✅ Handle payment process
   const handlePayment = async () => {
     if (!isRazorpayLoaded) {
       alert("Razorpay failed to load. Please check your internet connection.");
@@ -65,9 +61,8 @@ const MultiStepForm = ({ amount }) => {
 
     dispatch(createOrder({ clientData, amount })).then((res) => {
       if (res.payload) {
-        console.log("payment", res.payload);
         const options = {
-          key: import.meta.env.VITE_RAZORPAY_KEY_ID, // ✅ Ensure this is correct
+          key: import.meta.env.VITE_RAZORPAY_KEY_ID,
           amount: res.payload.amount,
           currency: res.payload.currency,
           name: "RK Services",
@@ -86,12 +81,12 @@ const MultiStepForm = ({ amount }) => {
   };
 
   return (
-    <Paper elevation={3} sx={{ p: 4, maxWidth: 600, mx: "auto", mt: 4 }}>
+    // <Paper elevation={3} sx={{ p: 4, maxWidth: 600, mx: "auto", mt: 4 }}>
+    <Box>
       <Typography variant="h5" align="center" gutterBottom>
         Service Payment
       </Typography>
 
-      {/* ✅ Stepper Navigation */}
       <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
         {steps.map((label, index) => (
           <Step key={index}>
@@ -100,44 +95,58 @@ const MultiStepForm = ({ amount }) => {
         ))}
       </Stepper>
 
-      {/* ✅ Step 1: Client Details Form */}
       {activeStep === 0 && (
-        <form onSubmit={handleSubmit(onSubmitClientDetails)}>
-          <TextField
-            fullWidth
-            label="Name"
-            {...register("name", { required: "Name is required" })}
-            error={!!errors.name}
-            helperText={errors.name?.message}
-            margin="normal"
+        <form onSubmit={handleSubmit(onSubmitClientDetails)} style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          <Controller
+            name="name"
+            control={control}
+            rules={{ required: "Name is required" }}
+            render={({ field }) => (
+              <StyledTextField 
+                {...field}
+                placeholder="Name"
+                error={!!errors.name}
+                helperText={errors.name?.message}
+                required
+              />
+            )}
           />
 
-          <TextField
-            fullWidth
-            label="Email"
-            type="email"
-            {...register("email")}
-            margin="normal"
+          <Controller
+            name="email"
+            control={control}
+            render={({ field }) => (
+              <StyledTextField
+                {...field}
+                placeholder="Email"
+                type="email"
+              />
+            )}
           />
 
-          <TextField
-            fullWidth
-            label="Phone"
-            {...register("phone", { required: "Phone is required" })}
-            error={!!errors.phone}
-            helperText={errors.phone?.message}
-            margin="normal"
+          <Controller
+            name="phone"
+            control={control}
+            rules={{ required: "Phone is required" }}
+            render={({ field }) => (
+              <StyledTextField 
+                {...field}
+                placeholder="Phone"
+                error={!!errors.phone}
+                helperText={errors.phone?.message}
+                required
+              />
+            )}
           />
 
           <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
-            <Button type="submit" variant="contained">
+            <Button type="submit" variant="contained" sx={{ backgroundColor: "#7C4DFF", color: "white" }}>
               Next
             </Button>
           </Box>
         </form>
       )}
 
-      {/* ✅ Step 2: Confirm Details */}
       {activeStep === 1 && (
         <Box>
           <Typography variant="h6">Confirm Details</Typography>
@@ -146,21 +155,19 @@ const MultiStepForm = ({ amount }) => {
           <Typography>Phone: {clientData?.phone}</Typography>
 
           <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
-            <Button variant="outlined" onClick={() => setActiveStep(0)}>
+            <Button variant="outlined" onClick={() => setActiveStep(0)} color="error">
               Back
             </Button>
-            <Button variant="contained" onClick={() => setActiveStep(2)}>
+            <Button variant="contained" onClick={() => setActiveStep(2)} sx={{ backgroundColor: "#7C4DFF", color: "white" }}>
               Proceed to Payment
             </Button>
           </Box>
         </Box>
       )}
 
-      {/* ✅ Step 3: Payment */}
       {activeStep === 2 && (
         <Box textAlign="center">
           <Typography variant="h6">Total Amount: ₹{amount}</Typography>
-
           <Button
             variant="contained"
             color="success"
@@ -169,16 +176,14 @@ const MultiStepForm = ({ amount }) => {
           >
             {isRazorpayLoaded ? "Pay Now" : "Loading Payment..."}
           </Button>
-
           <Box sx={{ mt: 3 }}>
-            <Button variant="outlined" onClick={() => setActiveStep(1)}>
+            <Button variant="outlined" onClick={() => setActiveStep(1)} color="error">
               Back
             </Button>
           </Box>
         </Box>
       )}
 
-      {/* ✅ Step 4: Payment Successful */}
       {activeStep === 3 && (
         <Box textAlign="center">
           <Typography variant="h5" color="success.main">
@@ -187,7 +192,8 @@ const MultiStepForm = ({ amount }) => {
           <Typography>Thank you for your payment.</Typography>
         </Box>
       )}
-    </Paper>
+    {/* // </Paper> */}
+    </Box>
   );
 };
 

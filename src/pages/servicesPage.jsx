@@ -14,8 +14,8 @@ import {
   Button,
   IconButton,
 } from "@mui/material";
-import { X } from "lucide-react";
 import Modal from "./Modal";
+import ServiceCard from "../components/ServiceCard";
 
 const ServicesPage = () => {
   const [services, setServices] = useState([]);
@@ -92,68 +92,69 @@ const ServicesPage = () => {
                   </Grid2>
                 ))
               : services.map((service, index) => (
-                  <Grid2 item size={{ xs: 12, sm: 6, md: 4 }} key={index}>
-                    <Card
-                      component={motion.div}
-                      variants={fadeIn("up", 0.3)}
-                      initial="hidden"
-                      whileInView="show"
-                      viewport={{ once: true, amount: 0.1 }}
-                      sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "space-between",
-                        borderRadius: "12px",
-                        border: "5px solid #262626",
-                        backgroundColor: "#1A1A1A",
-                        color: "#fff",
-                        padding: "24px",
-                        boxShadow: "0px 0px 30px #262626",
-                        minHeight: "100%",
-                        alignItems: "center",
-                        gap: "16px",
-                      }}
-                    >
-                      <Box sx={{ display: "flex", justifyContent: "center" }}>
-                        <img
-                          src={service.icon || service.image}
-                          alt={service.name}
-                          className="max-h-36 w-full object-cover rounded-md"
-                        />
-                      </Box>
-                      <Typography variant="h6" fontWeight={600}>
-                        {service.name}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          color: "#999999",
-                          flexGrow: 1,
-                          textAlign: "justify",
-                        }}
-                      >
-                        {service.description}
-                      </Typography>
-                      <Box sx={{ textAlign: "center" }}>
-                        <Button
-                          onClick={() => openModal(service)}
-                          sx={{
-                            px: 4,
-                            py: 1,
-                            border: "2px solid #A187F0",
-                            borderRadius: "8px",
-                            color: "#A187F0",
-                            "&:hover": {
-                              backgroundColor: "#A187F0",
-                              color: "#fff",
-                            },
-                          }}
-                        >
-                          View Details
-                        </Button>
-                      </Box>
-                    </Card>
-                  </Grid2>
+                <ServiceCard service={service} />
+                  // <Grid2 item size={{ xs: 12, sm: 6, md: 4 }} key={index}>
+                  //   <Card
+                  //     component={motion.div}
+                  //     variants={fadeIn("up", 0.3)}
+                  //     initial="hidden"
+                  //     whileInView="show"
+                  //     viewport={{ once: true, amount: 0.1 }}
+                  //     sx={{
+                  //       display: "flex",
+                  //       flexDirection: "column",
+                  //       justifyContent: "space-between",
+                  //       borderRadius: "12px",
+                  //       border: "5px solid #262626",
+                  //       backgroundColor: "#1A1A1A",
+                  //       color: "#fff",
+                  //       padding: "24px",
+                  //       boxShadow: "0px 0px 30px #262626",
+                  //       minHeight: "100%",
+                  //       alignItems: "center",
+                  //       gap: "16px",
+                  //     }}
+                  //   >
+                  //     <Box sx={{ display: "flex", justifyContent: "center" }}>
+                  //       <img
+                  //         src={service.icon || service.image}
+                  //         alt={service.name}
+                  //         className="max-h-36 w-full object-cover rounded-md"
+                  //       />
+                  //     </Box>
+                  //     <Typography variant="h6" fontWeight={600}>
+                  //       {service.name}
+                  //     </Typography>
+                  //     <Typography
+                  //       variant="body2"
+                  //       sx={{
+                  //         color: "#999999",
+                  //         flexGrow: 1,
+                  //         textAlign: "justify",
+                  //       }}
+                  //     >
+                  //       {service.description}
+                  //     </Typography>
+                  //     <Box sx={{ textAlign: "center" }}>
+                  //       <Button
+                  //         onClick={() => openModal(service)}
+                  //         sx={{
+                  //           px: 4,
+                  //           py: 1,
+                  //           border: "2px solid #A187F0",
+                  //           borderRadius: "8px",
+                  //           color: "#A187F0",
+                  //           "&:hover": {
+                  //             backgroundColor: "#A187F0",
+                  //             color: "#fff",
+                  //           },
+                  //         }}
+                  //       >
+                  //         View Details
+                  //       </Button>
+                  //     </Box>
+                  //   </Card>
+                  // </Grid2>
                 ))}
           </Grid2>
         </Container>

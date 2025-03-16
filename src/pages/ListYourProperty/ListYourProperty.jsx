@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import { motion } from "framer-motion";
 import {
   Box,
@@ -15,8 +15,68 @@ import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 import Navbar from "../../components/Navbar";
 import RealEstateCTA from "../../components/RealEstateCTA";
 import FooterComponent from "../../components/footer";
+import StyledTextField from "../../StyledComponents/StyledTextField";
 
 const ListYourProperty = () => {
+  const propertyTypes = ["Residential", "Commercial", "MAHA RERA", "Land", "Shop", "Other"];
+  const transactionTypes = ["Lease", "Sale", "Both", "Other"];
+  const furnishingStatuses = ["Unfurnished", "Semi-Furnished", "Fully-Furnished"];
+  const statusOptions = ["Available", "Sold", "Rented", "Not Disclosed"];
+  const parkingOptions = ["Covered Stilt", "Covered Garage", "Open Fixed", "Open Not Fixed", "Mechanical", "None"];
+  const elevatorAvailable = ["Yes", "No"];
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://www.google.com/recaptcha/api.js";
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
+  }, []);
+
+  const [formData, setFormData] = useState({
+    title: "",
+    slug: "",
+    description: "",
+    phone: "",
+    email: "",
+    images: "",
+    video: "",
+    virtualTour: "",
+    brochure: "",
+    propertyType: "Residential",
+    transactionType: "Lease",
+    furnishingStatus: "Unfurnished",
+    status: "Available",
+    parking: "None",
+    landmark: "",
+    nearby: "",
+    amenities: "",
+    elevator: false,
+  });
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: name === "elevator" ? value === "Yes" : type === "checkbox" ? checked : value,
+    });
+  };
+
+  const handleRecaptcha = (token) => {
+    setFormData((prevState) => ({ ...prevState, recaptchaToken: token }));
+  };
+
+  // const isFormValid = () => {
+  //   return (
+  //     formData.title.trim() !== "" &&
+  //     formData.phone.trim() !== "" &&
+  //     formData.email.trim() !== "" &&
+  //     formData.description.trim() !== "" &&
+  //     (formData.recaptchaToken || "").trim() !== "" // Ensure it's not undefined
+  //   );
+  // };
+  
+
   return (
     <Box id="listyourproperty" sx={{ backgroundColor: "#191919" }}>
       <Navbar />
@@ -70,216 +130,115 @@ const ListYourProperty = () => {
           </Box>
         </Box>
         {/* Contact Form */}
-        <Box
-          component="form"
-          sx={{
-            borderRadius: "8px",
-            padding: { xs: 3, md: 5 },
-            width: "100%",
-            border: "5px solid #262626",
-          }}
-        >
+        <Box component="form" sx={{ borderRadius: "8px", padding: { xs: 3, md: 5 }, width: "100%", border: "5px solid #262626" }}>
           <Grid2 container spacing={2}>
-            <Grid2
-              item
-              size={{ xs: 12, sm: 4 }}
-              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
-            >
-              <Typography variant="body1">First Name</Typography>
-              <TextField
-                fullWidth
-                placeholder="Enter First Name"
-                variant="outlined"
-                InputLabelProps={{ style: { color: "#999999" } }}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    backgroundColor: "#1A1A1A",
-                    "& fieldset": { borderColor: "#262626" },
-                    "&:hover fieldset": { borderColor: "#262626" },
-                    "& .MuiInputBase-input": { color: "#666666" },
-                  },
-                }}
-              />
+            <Grid2 sx={{display:"flex", flexDirection:"column", gap:"8px"}} item size={{xs:12, sm:6}}>
+              <Typography>Title</Typography>
+              <StyledTextField name="title" placeholder="Enter title" value={formData.title} onChange={handleChange} required />
             </Grid2>
-            <Grid2
-              item
-              size={{ xs: 12, sm: 4 }}
-              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
-            >
-              <Typography variant="body1">Last Name</Typography>
-              <TextField
-                fullWidth
-                placeholder="Enter Last Name"
-                variant="outlined"
-                InputLabelProps={{ style: { color: "#999999" } }}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    backgroundColor: "#1A1A1A",
-                    "& fieldset": { borderColor: "#262626" },
-                    "&:hover fieldset": { borderColor: "#262626" },
-                    "& .MuiInputBase-input": { color: "#666666" },
-                  },
-                }}
-              />
+            <Grid2 sx={{display:"flex", flexDirection:"column", gap:"8px"}} item size={{xs:12, sm:6}}>
+              <Typography>Slug</Typography>
+              <StyledTextField name="slug" placeholder="Enter property url" value={formData.slug} onChange={handleChange} />
             </Grid2>
-            <Grid2
-              item
-              size={{ xs: 12, sm: 4 }}
-              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
-            >
-              <Typography variant="body1">Email</Typography>
-              <TextField
-                fullWidth
-                placeholder="Enter Email"
-                variant="outlined"
-                InputLabelProps={{ style: { color: "#999999" } }}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    backgroundColor: "#1A1A1A",
-                    "& fieldset": { borderColor: "#262626" },
-                    "&:hover fieldset": { borderColor: "#262626" },
-                    "& .MuiInputBase-input": { color: "#666666" },
-                  },
-                }}
-              />
+            <Grid2 sx={{display:"flex", flexDirection:"column", gap:"8px"}} item size={{xs:12, sm:6}}>
+              <Typography>Email</Typography>
+              <StyledTextField name="email" placeholder="Enter your email" value={formData.email} onChange={handleChange} />
             </Grid2>
-            <Grid2
-              item
-              size={{ xs: 12, sm: 4 }}
-              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
-            >
-              <Typography variant="body1">Phone</Typography>
-              <TextField
-                fullWidth
-                placeholder="Enter Phone Number"
-                variant="outlined"
-                InputLabelProps={{ style: { color: "#999999" } }}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    backgroundColor: "#1A1A1A",
-                    "& fieldset": { borderColor: "#262626" },
-                    "&:hover fieldset": { borderColor: "#262626" },
-                    "& .MuiInputBase-input": { color: "#666666" },
-                  },
-                }}
-              />
+            <Grid2 sx={{display:"flex", flexDirection:"column", gap:"8px"}} item size={{xs:12, sm:6}}>
+              <Typography>Phone</Typography>
+              <StyledTextField name="phone" placeholder="Enter your phone number" value={formData.phone} onChange={handleChange} required />
             </Grid2>
-            <Grid2
-              item
-              size={{ xs: 12, sm: 4 }}
-              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
-            >
-              <Typography variant="body1">Inquiry Type</Typography>
-              <TextField
-                fullWidth
+            <Grid2 sx={{display:"flex", flexDirection:"column", gap:"8px"}} item size={{xs:12}}>
+              <Typography>Description</Typography>
+              <StyledTextField name="description" placeholder="Description" multiline rows={4} value={formData.description} onChange={handleChange} />
+            </Grid2>
+            <Grid2 sx={{display:"flex", flexDirection:"column", gap:"8px"}} item size={{xs:12, sm:6}}>
+              <Typography>Property Type</Typography>
+              <StyledTextField
                 select
-                placeholder="Select Inquiry Type"
-                variant="outlined"
-                InputLabelProps={{ style: { color: "#999999" } }}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    backgroundColor: "#1A1A1A",
-                    "& fieldset": { borderColor: "#262626" },
-                    "&:hover fieldset": { borderColor: "#262626" },
-                    "& .MuiInputBase-input::placeholder": { color: "#666666" },
-                  },
-                }}
-              >
-                <MenuItem value={"buying"}>Buying</MenuItem>
-                <MenuItem value={"selling"}>Selling</MenuItem>
-                <MenuItem value={"investment"}>Investment</MenuItem>
-              </TextField>
-            </Grid2>
-            <Grid2
-              item
-              size={{ xs: 12, sm: 4 }}
-              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
-            >
-              <Typography variant="body1">
-                How did you hear about us?
-              </Typography>
-              <TextField
-                fullWidth
-                select
-                placeholder="Select"
-                variant="outlined"
-                InputLabelProps={{ style: { color: "#999999" } }}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    backgroundColor: "#1A1A1A",
-                    "& fieldset": { borderColor: "#262626" },
-                    "&:hover fieldset": { borderColor: "#262626" },
-                    "& .MuiInputBase-input": { color: "#666666" },
-                  },
-                }}
-              >
-                <MenuItem value={"social media"}>Social Media</MenuItem>
-                <MenuItem value={"friend"}>Friend</MenuItem>
-                <MenuItem value={"website"}>Website</MenuItem>
-              </TextField>
-            </Grid2>
-            <Grid2
-              item
-              size={{ xs: 12, sm: 12 }}
-              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
-            >
-              <Typography variant="body1">Message</Typography>
-              <TextField
-                fullWidth
-                multiline
-                rows={4}
-                placeholder="Enter your message here.."
-                variant="outlined"
-                InputLabelProps={{ style: { color: "#999999" } }}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    backgroundColor: "#1A1A1A",
-                    "& fieldset": { borderColor: "#262626" },
-                    "&:hover fieldset": { borderColor: "#262626" },
-                    "& .MuiInputBase-input": { color: "#666666" },
-                  },
-                }}
+                name="propertyType"
+                value={formData.propertyType}
+                onChange={handleChange}
+                options={propertyTypes.map((type) => ({ value: type, label: type }))}
               />
             </Grid2>
-            <Grid2
-              container
-              width="100%"
-              size={{ xs: 12, md: 12, sm: 12 }}
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              <Grid2 item>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      sx={{
-                        color: "#262626",
-                        "&.Mui-checked": { color: "#7C4DFF" },
-                      }}
-                    />
-                  }
-                  label={
-                    <Typography variant="body2" color="#999999">
-                      I agree with{" "}
-                      <a href="#" style={{ color: "#999999" }}>
-                        Terms of Use
-                      </a>{" "}
-                      and{" "}
-                      <a href="#" style={{ color: "#999999" }}>
-                        Privacy Policy
-                      </a>
-                    </Typography>
-                  }
-                />
-              </Grid2>
-              <Grid2 item>
-                <Button
-                  variant="contained"
-                  sx={{ backgroundColor: "#7C4DFF", color: "white", px: 4 }}
-                >
-                  Send Your Message
-                </Button>
-              </Grid2>
+            <Grid2 sx={{display:"flex", flexDirection:"column", gap:"8px"}} item size={{xs:12, sm:6}}>
+              <Typography>Transaction Type</Typography>
+              <StyledTextField
+                select
+                name="transactionType"
+                value={formData.transactionType}
+                onChange={handleChange}
+                options={transactionTypes.map((type) => ({ value: type, label: type }))}
+              />
+            </Grid2>
+            <Grid2 sx={{display:"flex", flexDirection:"column", gap:"8px"}} item size={{xs:12, sm:6}}>
+              <Typography>Furnishing Status</Typography>
+              <StyledTextField
+                select
+                name="furnishingStatus"
+                value={formData.furnishingStatus}
+                onChange={handleChange}
+                options={furnishingStatuses.map((status) => ({ value: status, label: status }))}
+              />
+            </Grid2>
+            <Grid2 sx={{display:"flex", flexDirection:"column", gap:"8px"}} item size={{xs:12, sm:6}}>
+              <Typography>Status</Typography>
+              <StyledTextField
+                select
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                options={statusOptions.map((status) => ({ value: status, label: status }))}
+              />
+            </Grid2>
+            <Grid2 sx={{display:"flex", flexDirection:"column", gap:"8px"}} item size={{xs:12}}>
+              <Typography>Landmark</Typography>
+              <StyledTextField name="landmark" placeholder="Enter landmark" value={formData.landmark} onChange={handleChange} />
+            </Grid2>
+            <Grid2 sx={{display:"flex", flexDirection:"column", gap:"8px"}} item size={{xs:12}}>
+              <Typography>Nearby Places</Typography>
+              <StyledTextField name="nearby" placeholder="Enter nearby places" value={formData.nearby} onChange={handleChange} />
+            </Grid2>
+            <Grid2 sx={{display:"flex", flexDirection:"column", gap:"8px"}} item size={{xs:12}}>
+              <Typography>Amenities</Typography>
+              <StyledTextField name="amenities" placeholder="Enter amenities" value={formData.amenities} onChange={handleChange} />
+            </Grid2>
+            <Grid2 sx={{display:"flex", flexDirection:"column", gap:"8px"}} item size={{xs:12, sm:6}}>
+              <Typography>Parking</Typography>
+              <StyledTextField
+                select
+                name="parking"
+                value={formData.parking}
+                onChange={handleChange}
+                options={parkingOptions.map((option) => ({ value: option, label: option }))}
+              />
+            </Grid2>
+            <Grid2 sx={{display:"flex", flexDirection:"column", gap:"8px"}} item size={{xs:12, sm:6}}>
+              <Typography>Elevator Available</Typography>
+              <StyledTextField
+                select
+                name="elevator"
+                value={formData.elevator ? "Yes" : "No"}
+                onChange={handleChange}
+                options={elevatorAvailable.map((option) => ({ value: option, label: option }))}
+              />
+            </Grid2>
+            <Grid2 item size={{xs:12}} mt={"8px"} container justifyContent="space-between" alignItems="center">
+              <Box>
+                <div
+                  className="g-recaptcha"
+                  data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+                  data-callback="handleRecaptcha"
+                ></div>
+              </Box>
+              <Button 
+                variant="contained" 
+                sx={{ backgroundColor: "#7C4DFF", color: "white" }} 
+                // disabled={!isFormValid()}
+              >
+                Submit
+              </Button>
             </Grid2>
           </Grid2>
         </Box>

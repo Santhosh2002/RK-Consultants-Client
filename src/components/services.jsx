@@ -15,6 +15,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import MultiStepForm from "./MultiStepForm"; // ✅ Import the form
+import ServiceCard from "./ServiceCard";
 
 const Services = () => {
   const [services, setServices] = useState([]);
@@ -73,83 +74,84 @@ const Services = () => {
         {/* ✅ Services List */}
         <Grid2 container spacing={4}>
           {services.slice(0, 3).map((service, index) => (
-            <Grid2 item size={{ xs: 12, md: 4, sm: 6 }} key={index}>
-              <motion.div
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.2 }}
-              >
-                <Card
-                  sx={{
-                    backgroundColor: "#222",
-                    color: "#fff",
-                    borderRadius: "12px",
-                    overflow: "hidden",
-                    boxShadow: 4,
-                    height: "100%",
-                  }}
-                >
-                  <CardMedia
-                    component="img"
-                    image={service.image}
-                    alt={service.name}
-                    sx={{ height: 200, objectFit: "cover" }}
-                  />
-                  <CardContent>
-                    <Typography variant="h6" fontWeight="bold" gutterBottom>
-                      {service.name}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="grey.400"
-                      sx={{
-                        height: "150px",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
-                    >
-                      {service.description}
-                    </Typography>
-                    <Box
-                      sx={{
-                        width: "100%",
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                    >
-                      <Button
-                        component={Link}
-                        to="/services"
-                        variant="outlined"
-                        sx={{
-                          mt: 2,
-                          color: "#6A5ACD",
-                          borderColor: "#6A5ACD",
-                          textTransform: "none",
-                        }}
-                      >
-                        View All Services
-                      </Button>
+            <ServiceCard service={service} />
+            // <Grid2 item size={{ xs: 12, md: 4, sm: 6 }} key={index}>
+            //   <motion.div
+            //     initial={{ opacity: 0, y: 50 }}
+            //     animate={{ opacity: 1, y: 0 }}
+            //     transition={{ duration: 0.5, delay: index * 0.2 }}
+            //   >
+            //     <Card
+            //       sx={{
+            //         backgroundColor: "#222",
+            //         color: "#fff",
+            //         borderRadius: "12px",
+            //         overflow: "hidden",
+            //         boxShadow: 4,
+            //         height: "100%",
+            //       }}
+            //     >
+            //       <CardMedia
+            //         component="img"
+            //         image={service.image}
+            //         alt={service.name}
+            //         sx={{ height: 200, objectFit: "cover" }}
+            //       />
+            //       <CardContent>
+            //         <Typography variant="h6" fontWeight="bold" gutterBottom>
+            //           {service.name}
+            //         </Typography>
+            //         <Typography
+            //           variant="body2"
+            //           color="grey.400"
+            //           sx={{
+            //             height: "150px",
+            //             overflow: "hidden",
+            //             textOverflow: "ellipsis",
+            //           }}
+            //         >
+            //           {service.description}
+            //         </Typography>
+            //         <Box
+            //           sx={{
+            //             width: "100%",
+            //             display: "flex",
+            //             flexDirection: "row",
+            //             justifyContent: "center",
+            //             alignItems: "center",
+            //           }}
+            //         >
+            //           <Button
+            //             component={Link}
+            //             to="/services"
+            //             variant="outlined"
+            //             sx={{
+            //               mt: 2,
+            //               color: "#6A5ACD",
+            //               borderColor: "#6A5ACD",
+            //               textTransform: "none",
+            //             }}
+            //           >
+            //             View All Services
+            //           </Button>
 
-                      {/* ✅ Purchase Button - Opens Payment Form */}
-                      <Button
-                        variant="contained"
-                        color="success"
-                        sx={{ ml: 2, mt: 2 }}
-                        onClick={() => {
-                          setSelectedService(service);
-                          setOpen(true);
-                        }}
-                      >
-                        Purchase Service
-                      </Button>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </Grid2>
+            //           {/* ✅ Purchase Button - Opens Payment Form */}
+            //           <Button
+            //             variant="contained"
+            //             color="success"
+            //             sx={{ ml: 2, mt: 2 }}
+            //             onClick={() => {
+            //               setSelectedService(service);
+            //               setOpen(true);
+            //             }}
+            //           >
+            //             Purchase Service
+            //           </Button>
+            //         </Box>
+            //       </CardContent>
+            //     </Card>
+            //   </motion.div>
+            // </Grid2>
           ))}
         </Grid2>
       </Container>
