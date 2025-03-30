@@ -121,27 +121,10 @@ const theme = createTheme({
       },
     },
     MuiIconButton: {
-      defaultProps: {
-        color: "primary.main",
-      },
+      defaultProps: {},
       styleOverrides: {
         root: {
           borderRadius: 8,
-        },
-        sizeMedium: {
-          width: 36,
-          height: 36,
-          maxHeight: 36,
-        },
-        sizeSmall: {
-          width: 32,
-          height: 32,
-          maxHeight: 32,
-        },
-        sizeLarge: {
-          width: 40,
-          height: 40,
-          maxHeight: 40,
         },
       },
     },

@@ -13,9 +13,9 @@ import {
 } from "@mui/material";
 import RealEstateCTA from "../../components/RealEstateCTA";
 import FooterComponent from "../../components/footer";
-import PropertyCategory from "../../components/PropertyCategory";
-import CategoriesList from "../../components/CategoriesList";
 import Navbar from "../../components/Navbar";
+import PropertySpecifications from "../../components/PropertySpecifications";
+import InquiryForm from "../../components/InquiryForm";
 
 const MotionBox = motion(Box);
 
@@ -38,9 +38,10 @@ const PropertyDetails = () => {
           padding: { xs: "16px 16px 16px 16px", sm: "44px 124px 44px 124px" },
         }}
       >
-        <PropertyCategory />
-        <CategoriesList />
+        <PropertySpecifications />
+        <InquiryForm />
       </MotionBox>
+
       <RealEstateCTA />
       <FooterComponent />
     </Box>

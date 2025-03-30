@@ -20,6 +20,8 @@ import AdminSignupPage from "../pages/admin/adminSignup";
 import ListYourProperty from "../pages/ListYourProperty/ListYourProperty";
 import Properties from "../pages/Properties/Properties";
 import PropertieCategories from "../pages/Properties/PropertieCategories";
+import PropertySpecifications from "../components/PropertySpecifications";
+import PropertyDetails from "../pages/Properties/PropertyDetails";
 
 const AppRoutes = () => {
   return (
@@ -29,6 +31,7 @@ const AppRoutes = () => {
       <Route path="/about" element={<AboutUs />} />
       <Route path="/properties" element={<Properties />} />
       <Route path="/category" element={<PropertieCategories />} />
+      <Route path="/details" element={<PropertyDetails />} />
       <Route path="/contact" element={<ContactUs />} />
       <Route path="/listyourproperty" element={<ListYourProperty />} />
       <Route path="/admin/login" element={<AdminLoginPage />} />

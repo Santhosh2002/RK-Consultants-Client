@@ -1,5 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { Helmet } from "react-helmet";
+
 import {
   Box,
   Typography,
@@ -30,6 +32,17 @@ const ContactUs = () => {
   ];
   return (
     <Box id="contact" sx={{ backgroundColor: "#191919", width: "100vw" }}>
+      <Helmet>
+        <title>Contact Us - RK Realtors & Consultants</title>
+        <meta
+          name="description"
+          content="Reach out to RK Realtors & Consultants for inquiries, property consultations, or investment opportunities. We're here to help."
+        />
+        <meta
+          name="description"
+          content="Reach out to RK Realtors & Consultants for inquiries, property consultations, or investment opportunities. We're here to help."
+        />
+      </Helmet>
       <Navbar />
       <MotionBox
         initial={{ opacity: 0, y: 30 }}

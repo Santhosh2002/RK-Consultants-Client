@@ -23,12 +23,8 @@ export const createOrder = createAsyncThunk(
 export const verifyPayment = createAsyncThunk(
   "payment/verifyPayment",
   async (paymentDetails, { rejectWithValue }) => {
-    console.log(paymentDetails);
     try {
-      const response = await axios.post(
-        `/api/payment/verify-payment`,
-        paymentDetails
-      );
+      const response = await axios.post(`/api/payment/verify`, paymentDetails);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -36,13 +32,26 @@ export const verifyPayment = createAsyncThunk(
   }
 );
 
-// 🔹 Fetch Client Payments
-export const fetchClientPayments = createAsyncThunk(
-  "payment/fetchClientPayments",
-  async (clientId, { rejectWithValue }) => {
+// 🔹 Fetch All Payments
+export const fetchAllPayments = createAsyncThunk(
+  "payment/fetchAllPayments",
+  async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`api/client-payments/${clientId}`);
-      return response.data;
+      const response = await axios.get(`/api/payment`);
+      return response.data.payments;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+// 🔹 Fetch Payment by ID
+export const fetchPaymentById = createAsyncThunk(
+  "payment/fetchPaymentById",
+  async (paymentId, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`/api/payment/${paymentId}`);
+      return response.data.payment;
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
@@ -59,6 +68,8 @@ const paymentSlice = createSlice({
     paymentStatus: null,
     clientPayments: [],
     clientDetails: null,
+    payments: [],
+    selectedPayment: null,
   },
   reducers: {
     setClientData: (state, action) => {
@@ -97,15 +108,28 @@ const paymentSlice = createSlice({
         state.error = action.payload;
       })
 
-      // 🔹 Fetch Client Payments
-      .addCase(fetchClientPayments.pending, (state) => {
+      // 🔹 Fetch All Payments
+      .addCase(fetchAllPayments.pending, (state) => {
         state.loading = true;
       })
-      .addCase(fetchClientPayments.fulfilled, (state, action) => {
+      .addCase(fetchAllPayments.fulfilled, (state, action) => {
         state.loading = false;
-        state.clientPayments = action.payload;
+        state.payments = action.payload;
       })
-      .addCase(fetchClientPayments.rejected, (state, action) => {
+      .addCase(fetchAllPayments.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // 🔹 Fetch Payment by ID
+      .addCase(fetchPaymentById.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchPaymentById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.selectedPayment = action.payload;
+      })
+      .addCase(fetchPaymentById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
