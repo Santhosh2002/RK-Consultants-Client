@@ -62,7 +62,7 @@ const FooterComponent = ({
               }}
             >
               <img
-                src="Icons/RK_Logo_White_No_Slogan.svg"
+                src="/Icons/RK_Logo_White_No_Slogan.svg"
                 alt="Logo"
                 className="max-h-40 w-56 object-cover scale-105 mt-2"
               />

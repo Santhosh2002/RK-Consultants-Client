@@ -49,6 +49,8 @@ import SquareFootIcon from "@mui/icons-material/SquareFoot";
 import BalconyIcon from "@mui/icons-material/Balcony";
 import GridOnIcon from "@mui/icons-material/GridOn";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import { getselectedProject } from "../store/projectsSlice";
+import { useSelector } from "react-redux";
 
 const Dot = styled("div")(({ theme, active }) => ({
   height: "8px",
@@ -126,8 +128,43 @@ const property = {
 };
 
 const PropertySpecifications = () => {
-  const [alignment, setAlignment] = useState("East");
+  const property = useSelector(getselectedProject);
 
+  const [alignment, setAlignment] = useState("East");
+  const activeVariant = property?.variants?.[0] || null;
+
+  const features = [
+    {
+      icon: <KingBedIcon />,
+      label: "Bedrooms",
+      value: activeVariant?.bedrooms,
+    },
+    {
+      icon: <BathtubIcon />,
+      label: "Bathrooms",
+      value: activeVariant?.bathrooms,
+    },
+    {
+      icon: <SquareFootIcon />,
+      label: "Carpet Area",
+      value: activeVariant?.carpetArea,
+    },
+    {
+      icon: <BalconyIcon />,
+      label: "Balcony",
+      value: activeVariant?.balcony,
+    },
+    {
+      icon: <GridOnIcon />,
+      label: "Built-up Area",
+      value: activeVariant?.builtUpArea,
+    },
+    {
+      icon: <AccountBalanceIcon />,
+      label: "Floor",
+      value: activeVariant?.floor,
+    },
+  ];
   const handleToggle = (event, newAlignment) => {
     if (newAlignment !== null) {
       setAlignment(newAlignment);
@@ -184,29 +221,46 @@ const PropertySpecifications = () => {
       <Box
         sx={{
           display: "flex",
-          flexDirection: "row",
+          flexDirection: {
+            xs: "column",
+            md: "row",
+          },
           width: "100%",
-          alignItems: "center",
+          alignItems: {
+            xs: "flex-start", // start alignment on small screens
+            md: "center", // center alignment on medium and above
+          },
           gap: "16px",
         }}
       >
         <Box
           sx={{
             display: "flex",
-            flexDirection: "row",
+            flexDirection: {
+              xs: "column", // ⬅ Stack vertically on small screens
+              md: "row",
+            },
+            alignItems: {
+              xs: "flex-start", // start alignment on small screens
+              md: "center", // center alignment on medium and above
+            },
             width: "100%",
-            alignItems: "center",
             gap: "16px",
           }}
         >
-          <Typography variant="h3" fontSize={40} fontWeight={600}>
-            {property.title}
+          <Typography
+            variant="h3"
+            fontSize={{ xs: 32, md: 46 }}
+            fontWeight={600}
+          >
+            {property?.title}
           </Typography>
+
           <Chip
             icon={
               <LocationOnIcon sx={{ color: "#A187F0", fontSize: "medium" }} />
             }
-            label={property.location}
+            label={`${property?.location?.city}, ${property?.location?.state}`}
             variant="outlined"
             sx={{ color: "white", borderRadius: "8px" }}
           />
@@ -278,6 +332,10 @@ const PropertySpecifications = () => {
           sx={{
             display: "flex",
             justifyContent: "center",
+            flexDirection: {
+              xs: "column",
+              md: "row",
+            },
             padding: "20px",
             width: "100%",
             gap: "20px",
@@ -289,8 +347,11 @@ const PropertySpecifications = () => {
             alt="Selected Property"
             sx={{
               borderRadius: "10px",
-              width: "50%",
-              height: "550px",
+              width: {
+                xs: "100%",
+                md: "50%",
+              },
+              maxHeight: "550px",
             }}
           />
           {activeIndex !== property.images.length - 1 && (
@@ -300,8 +361,11 @@ const PropertySpecifications = () => {
               alt="Selected Property"
               sx={{
                 borderRadius: "10px",
-                width: "50%",
-                height: "550px",
+                width: {
+                  xs: "100%",
+                  md: "50%",
+                },
+                maxHeight: "550px",
               }}
             />
           )}

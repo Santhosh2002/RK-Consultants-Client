@@ -31,7 +31,7 @@ const RealEstateCTA = () => {
       {/* Left Background Design - Full Height */}
       <Box
         component="img"
-        src="Icons/square-design-left.svg"
+        src="/Icons/square-design-left.svg"
         alt="Square Design Left"
         sx={{
           position: "absolute",
@@ -49,7 +49,7 @@ const RealEstateCTA = () => {
       {/* Right Background Design - Full Height */}
       <Box
         component="img"
-        src="Icons/squre-design-right.svg"
+        src="/Icons/squre-design-right.svg"
         alt="Square Design Right"
         sx={{
           position: "absolute",

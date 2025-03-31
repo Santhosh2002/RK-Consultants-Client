@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -18,7 +18,6 @@ import ToggleButtonGroup, {
 } from "@mui/material/ToggleButtonGroup";
 
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)({
-  backgroundColor: "#1A1A1A",
   display: "flex",
   gap: "4px",
   padding: "4px",
@@ -29,12 +28,13 @@ const StyledToggleButtonGroup = styled(ToggleButtonGroup)({
     textTransform: "none",
     fontWeight: "bold",
     transition: "all 0.3s ease",
-    border: "none", // Remove any default border
     borderRadius: "8px", // Smooth corners
   },
 });
 import { motion } from "framer-motion";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
+import CategoryCard from "./CategoryCard";
+
 import HomeWorkIcon from "@mui/icons-material/HomeWork";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { Bed } from "@mui/icons-material";
@@ -44,85 +44,120 @@ import SquareFootIcon from "@mui/icons-material/SquareFoot";
 import BalconyIcon from "@mui/icons-material/Balcony";
 import GridOnIcon from "@mui/icons-material/GridOn";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
-
-const property = {
-  title: "Seaside Serenity Villa",
-  location: "Malibu, California",
-  image: "/property-catagory-1.png",
-  size: "1980 sq.ft.",
-  type: "East | Type-2",
-  features: [
-    {
-      icon: <KingBedIcon fontSize="8px" color="#999" />,
-      label: "Bedrooms",
-      value: "04",
-    },
-    {
-      icon: <BathtubIcon fontSize="8px" color="#999" />,
-      label: "Bathrooms",
-      value: "03",
-    },
-    {
-      icon: <SquareFootIcon fontSize="8px" color="#999" />,
-      label: "Rera Carpet Area",
-      value: "1242 sq.ft.",
-    },
-    {
-      icon: <BalconyIcon fontSize="8px" color="#999" />,
-      label: "Balcony Area",
-      value: "138 sq.ft.",
-    },
-    {
-      icon: <GridOnIcon fontSize="8px" color="#999" />,
-      label: "Common Area",
-      value: "464 sq.ft.",
-    },
-    {
-      icon: <AccountBalanceIcon fontSize="8px" color="#999" />,
-      label: "External Wall’s Area",
-      value: "138 sq.ft.",
-    },
-  ],
-};
+import { useSelector } from "react-redux";
+import { getselectedProject } from "../store/projectsSlice";
+import { useNavigate } from "react-router-dom";
 
 const PropertyCategory = () => {
-  const [alignment, setAlignment] = useState("East");
-
+  const property = useSelector(getselectedProject);
+  const navigate = useNavigate();
+  const [alignment, setAlignment] = useState(
+    property?.variants?.[0]?.facing || "East"
+  );
+  const [selectedVariant, setSelectedVariant] = useState(
+    property?.variants?.[0] || null
+  );
+  useEffect(() => {
+    if (property) {
+      setSelectedVariant(property?.variants?.[0]);
+    }
+  }, [property]);
   const handleToggle = (event, newAlignment) => {
     if (newAlignment !== null) {
-      setAlignment(newAlignment);
+      const variant =
+        property?.variants?.find((v) => v.facing === newAlignment) ||
+        property?.variants?.[0];
+      setSelectedVariant(variant);
     }
   };
+
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
+  const activeVariant = selectedVariant;
 
   const handleClose = () => {
     setAnchorEl(null);
   };
+  const features = [
+    {
+      icon: <KingBedIcon />,
+      label: "Bedrooms",
+      value: activeVariant?.bedrooms,
+    },
+    {
+      icon: <BathtubIcon />,
+      label: "Bathrooms",
+      value: activeVariant?.bathrooms,
+    },
+    {
+      icon: <SquareFootIcon />,
+      label: "Carpet Area",
+      value: activeVariant?.carpetArea,
+    },
+    {
+      icon: <BalconyIcon />,
+      label: "Balcony",
+      value: activeVariant?.balcony,
+    },
+    {
+      icon: <GridOnIcon />,
+      label: "Built-up Area",
+      value: activeVariant?.builtUpArea,
+    },
+    {
+      icon: <AccountBalanceIcon />,
+      label: "Floor",
+      value: activeVariant?.floor,
+    },
+  ];
+
+  const groupedVariants =
+    property?.variants?.reduce((acc, variant) => {
+      const key = `${variant.bhk}_${variant.carpetArea}`;
+      if (!acc[key]) acc[key] = [];
+      acc[key].push({
+        title: variant.bhk,
+        size: variant.carpetArea,
+        type: `${variant.facing} | ${variant.floor}`,
+        image:
+          variant.images?.[0] || "https://images.app.goo.gl/LgFWYsKUC67km9XR9",
+        variant,
+      });
+      return acc;
+    }, {}) || {};
+  const bhkOptions = Array.from(new Set(property?.variants?.map((v) => v.bhk)));
+
   return (
     <>
       <Box
         sx={{
           display: "flex",
-          flexDirection: "row",
+          flexDirection: {
+            xs: "column", // ⬅ Stack vertically on small screens
+            md: "row",
+          },
+          alignItems: {
+            xs: "flex-start", // start alignment on small screens
+            md: "center", // center alignment on medium and above
+          },
           width: "100%",
-          alignItems: "center",
           gap: "16px",
           mb: 3,
         }}
       >
-        <Typography variant="h3" fontSize={46} fontWeight={600}>
-          {property.title}
+        <Typography variant="h3" fontSize={{ xs: 32, md: 46 }} fontWeight={600}>
+          {property?.title}
         </Typography>
+
         <Chip
           icon={
             <LocationOnIcon sx={{ color: "#A187F0", fontSize: "medium" }} />
           }
-          label={property.location}
+          label={`${property?.location?.city}, ${property?.location?.state}`}
           variant="outlined"
           sx={{ color: "white", borderRadius: "8px" }}
         />
@@ -130,8 +165,11 @@ const PropertyCategory = () => {
       <Box
         sx={{
           display: "flex",
-          alignItems: "start",
           flexDirection: "column",
+          alignItems: {
+            xs: "start", // start alignment on small screens
+            md: "start", // center alignment on medium and above
+          },
           background: "#1A1A1A",
           borderRadius: "12px",
           padding: "20px",
@@ -152,7 +190,7 @@ const PropertyCategory = () => {
           </Typography>
           <Chip
             icon={<Bed sx={{ color: "#A187F0" }} />}
-            label="3BHK"
+            label={selectedVariant?.bhk}
             variant="outlined"
             sx={{ background: "#262626", color: "white", borderRadius: "8px" }}
           />
@@ -160,7 +198,10 @@ const PropertyCategory = () => {
         <Box
           sx={{
             display: "flex",
-            flexDirection: "row",
+            flexDirection: {
+              xs: "column", // ⬅ Stack vertically on small screens
+              md: "row",
+            },
             padding: "0 16px 0 16px",
             gap: "32px",
             width: "100%",
@@ -169,12 +210,15 @@ const PropertyCategory = () => {
           {/* Left Section - Image */}
           <Box
             component="img"
-            src={property.image}
+            src={selectedVariant?.images?.[0]}
             alt="property"
             sx={{
               borderRadius: "10px",
               objectFit: "cover",
-              width: "40%",
+              width: {
+                xs: "100%",
+                md: "40%",
+              },
             }}
           />
 
@@ -184,7 +228,10 @@ const PropertyCategory = () => {
               display: "flex",
               flexDirection: "column",
               justifyContent: "space-between",
-              width: "50%",
+              width: {
+                xs: "100%",
+                md: "50%",
+              },
               gap: "16px",
             }}
           >
@@ -199,7 +246,7 @@ const PropertyCategory = () => {
               <Typography
                 variant="h4"
                 fontWeight={600}
-                fontSize={42}
+                fontSize={{ xs: 28, md: 42 }}
                 sx={{
                   display: "flex",
                   flexDirection: "row",
@@ -207,13 +254,13 @@ const PropertyCategory = () => {
                   gap: 2,
                 }}
               >
-                {property.size}{" "}
+                {activeVariant?.builtUpArea}{" "}
                 <Typography variant="h4" sx={{ color: "#999" }}>
-                  ({property.type})
+                  ({activeVariant?.facing})
                 </Typography>
               </Typography>
               <Typography variant="h5" sx={{ color: "#999" }}>
-                Homes designed for better living
+                {property?.description}
               </Typography>
 
               <Grid2 container spacing={2} alignItems={"center"}>
@@ -223,52 +270,21 @@ const PropertyCategory = () => {
                     xs: 6,
                   }}
                 >
-                  <StyledToggleButtonGroup
-                    value={alignment}
-                    exclusive
-                    onChange={handleToggle}
+                  <Box
+                    sx={{
+                      backgroundColor: "#333",
+                      padding: "10px 20px",
+                      borderRadius: "8px",
+                      maxWidth: "180px",
+                      color: "white",
+                      fontWeight: "bold",
+                      textAlign: "center",
+                      textTransform: "uppercase",
+                      fontSize: "14px",
+                    }}
                   >
-                    <ToggleButton
-                      value="East"
-                      sx={{
-                        backgroundColor: alignment === "East" ? "#000" : "#333", // Selected: Black, Unselected: Gray
-                        color: "white",
-                        border:
-                          alignment === "West"
-                            ? "1px solid white !important"
-                            : "none", // Ensure white border appears
-                        padding: "10px 20px",
-                        borderRadius: "8px",
-                        "&:hover": {
-                          backgroundColor:
-                            alignment === "East" ? "#111" : "#444", // Slight hover effect
-                        },
-                        maxWidth: "120px",
-                      }}
-                    >
-                      EAST
-                    </ToggleButton>
-                    <ToggleButton
-                      value="West"
-                      sx={{
-                        backgroundColor: alignment === "West" ? "#000" : "#333", // Selected: Black, Unselected: Gray
-                        color: "white",
-                        border:
-                          alignment === "West"
-                            ? "1px solid white !important"
-                            : "none", // Ensure white border appears
-                        padding: "10px 20px",
-                        borderRadius: "8px",
-                        "&:hover": {
-                          backgroundColor:
-                            alignment === "West" ? "#111" : "#444",
-                        },
-                        maxWidth: "120px",
-                      }}
-                    >
-                      WEST
-                    </ToggleButton>
-                  </StyledToggleButtonGroup>
+                    {selectedVariant?.facing || "N/A"}
+                  </Box>
                 </Grid2>
                 <Grid2
                   item
@@ -293,19 +309,31 @@ const PropertyCategory = () => {
                         fontSize="small"
                         sx={{
                           transition: "transform 0.2s ease",
-                          transform: open ? "rotate(90deg)" : "rotate(0deg)", // Rotates when open
+                          transform: open ? "rotate(90deg)" : "rotate(0deg)",
                         }}
                       />
                     }
                   >
-                    Type 2
+                    {selectedVariant?.bhk}
                   </Button>
 
-                  {/* Dropdown Menu */}
                   <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-                    <MenuItem onClick={handleClose}>Option 1</MenuItem>
-                    <MenuItem onClick={handleClose}>Option 2</MenuItem>
-                    <MenuItem onClick={handleClose}>Option 3</MenuItem>
+                    {bhkOptions.map((bhk) => (
+                      <MenuItem
+                        key={bhk}
+                        onClick={() => {
+                          const variantForBHK = property.variants.find(
+                            (v) => v.bhk === bhk
+                          );
+                          if (variantForBHK) {
+                            setSelectedVariant(variantForBHK);
+                          }
+                          handleClose();
+                        }}
+                      >
+                        {bhk}
+                      </MenuItem>
+                    ))}
                   </Menu>
                 </Grid2>
               </Grid2>
@@ -313,7 +341,7 @@ const PropertyCategory = () => {
               <Divider sx={{ borderColor: "#262626" }} />
 
               <Grid2 container spacing={4}>
-                {property.features.map((feature, index) => (
+                {features.map((feature, index) => (
                   <Grid2
                     item
                     size={{
@@ -321,8 +349,8 @@ const PropertyCategory = () => {
                     }}
                     key={index}
                   >
-                    <Stack direction={"row"} spacing={1} alignItems={"center"}>
-                      {feature.icon && <>{feature.icon}</>}
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      {feature.icon}
                       <Typography variant="body1" sx={{ color: "#999" }}>
                         {feature.label}
                       </Typography>
@@ -346,12 +374,89 @@ const PropertyCategory = () => {
                 width: "fit-content",
                 justifyContent: "start",
               }}
+              onClick={() => {
+                navigate(`/properties/details/${property?.slug}`);
+              }}
               endIcon={<ArrowForwardIosIcon fontSize="small" />}
             >
               View More Details
             </Button>
           </Box>
         </Box>
+      </Box>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "start",
+          flexDirection: "column",
+          borderRadius: "12px",
+          border: "1px solid grey",
+          padding: "30px 36px 30px 36px",
+          width: "100%",
+          gap: "20px",
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+          }}
+        >
+          <Typography variant="h5" fontWeight={600}>
+            Browse from here
+          </Typography>
+        </Box>
+
+        {Object.entries(groupedVariants).map(([key, items]) => {
+          const [bhk, size] = key.split("_");
+          return (
+            <Box
+              key={key}
+              sx={{ width: "100%", display: "flex", flexDirection: "column" }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  width: "100%",
+                  gap: 2,
+                  margin: "20px 0 20px 0",
+                }}
+              >
+                <Typography variant="h6" fontWeight={600} color="#fff">
+                  {bhk}
+                </Typography>
+                <Typography variant="body1" sx={{ color: "#999" }}>
+                  ({size})
+                </Typography>
+                <Box sx={{ flexGrow: 1 }}>
+                  <Divider sx={{ backgroundColor: "#444" }} />
+                </Box>
+              </Box>
+
+              <Box
+                sx={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: "10px",
+                }}
+              >
+                {items.map((item, index) => (
+                  <CategoryCard
+                    key={index}
+                    title={item.title}
+                    size={item.size}
+                    type={item.type}
+                    image={item.image}
+                    isSelected={item.variant._id === selectedVariant?._id}
+                    onClick={() => setSelectedVariant(item.variant)} // ✅ Your click handler here
+                  />
+                ))}
+              </Box>
+            </Box>
+          );
+        })}
       </Box>
     </>
   );

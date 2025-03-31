@@ -18,7 +18,10 @@ const InquiryForm = () => {
     <Box
       sx={{
         display: "flex",
-        flexDirection: "row",
+        flexDirection: {
+          xs: "column",
+          md: "row",
+        },
         gap: "24px",
         backgroundColor: "#141414",
         mt: 8,
@@ -30,11 +33,14 @@ const InquiryForm = () => {
           flexDirection: "column",
           alignItems: "flex-start",
           gap: "16px",
-          width: "50%",
+          width: {
+            xs: "100%",
+            md: "50%",
+          },
         }}
       >
         <img
-          src="Icons/abstract-Design.svg"
+          src="/Icons/abstract-Design.svg"
           alt="Icon"
           style={{ width: 70, height: "auto", marginRight: 10 }}
         />
