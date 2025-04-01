@@ -28,7 +28,7 @@ const PropertyDetails = () => {
 
   useEffect(() => {
     dispatch(fetchProjectBySlug(slug));
-  }, [dispatch]);
+  }, [dispatch, slug]);
   return (
     <Box
       id="property-details"

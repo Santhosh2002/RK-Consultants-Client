@@ -59,73 +59,6 @@ const Dot = styled("div")(({ theme, active }) => ({
   backgroundColor: active ? "#A187F0" : "#5f6368", // Active color can be customized
   transition: "all 0.3s ease",
 }));
-const property = {
-  title: "Seaside Serenity Villa",
-  location: "Malibu, California",
-  image: "/property-catagory-1.png",
-  images: [
-    // Add your image URLs here
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    // more images
-  ],
-  size: "1980 sq.ft.",
-  type: "East | Type-2",
-  features: [
-    {
-      icon: <KingBedIcon fontSize="8px" color="#999" />,
-      label: "Bedrooms",
-      value: "04",
-    },
-    {
-      icon: <BathtubIcon fontSize="8px" color="#999" />,
-      label: "Bathrooms",
-      value: "03",
-    },
-    {
-      icon: <SquareFootIcon fontSize="8px" color="#999" />,
-      label: "Rera Carpet Area",
-      value: "1242 sq.ft.",
-    },
-    {
-      icon: <BalconyIcon fontSize="8px" color="#999" />,
-      label: "Balcony Area",
-      value: "138 sq.ft.",
-    },
-    {
-      icon: <GridOnIcon fontSize="8px" color="#999" />,
-      label: "Common Area",
-      value: "464 sq.ft.",
-    },
-    {
-      icon: <AccountBalanceIcon fontSize="8px" color="#999" />,
-      label: "External Wall’s Area",
-      value: "138 sq.ft.",
-    },
-  ],
-};
 
 const PropertySpecifications = () => {
   const property = useSelector(getselectedProject);
@@ -187,7 +120,7 @@ const PropertySpecifications = () => {
   };
 
   const nextImage = () => {
-    if (activeIndex < property.images.length - 1) {
+    if (activeIndex < property?.images?.length - 1) {
       setActiveIndex(activeIndex + 1);
     }
   };
@@ -197,7 +130,7 @@ const PropertySpecifications = () => {
       setActiveIndex(activeIndex - 1);
     }
   };
-  let total = property.images.length;
+  let total = property?.images?.length;
   const maxVisibleDots = 6;
   let start = activeIndex - Math.floor(maxVisibleDots / 2);
   start = Math.max(start, 0);
@@ -276,7 +209,7 @@ const PropertySpecifications = () => {
             Price
           </Typography>
           <Typography variant="h6" fontSize={24} fontWeight={600}>
-            $1,20,000
+            ${activeVariant?.price}
           </Typography>
         </Box>
       </Box>
@@ -307,7 +240,7 @@ const PropertySpecifications = () => {
             backgroundColor: "#141414",
           }}
         >
-          {property.images.map((src, index) => (
+          {property?.images?.map((src, index) => (
             <Box
               key={index}
               component="img"
@@ -343,7 +276,7 @@ const PropertySpecifications = () => {
         >
           <Box
             component="img"
-            src={property.images[activeIndex]}
+            src={property?.images?.[activeIndex]}
             alt="Selected Property"
             sx={{
               borderRadius: "10px",
@@ -354,10 +287,10 @@ const PropertySpecifications = () => {
               maxHeight: "550px",
             }}
           />
-          {activeIndex !== property.images.length - 1 && (
+          {activeIndex !== property?.images?.length - 1 && (
             <Box
               component="img"
-              src={property.images[activeIndex + 1]}
+              src={property?.images?.[activeIndex + 1]}
               alt="Selected Property"
               sx={{
                 borderRadius: "10px",
@@ -410,13 +343,13 @@ const PropertySpecifications = () => {
           </Box>
           <IconButton
             onClick={nextImage}
-            disabled={activeIndex === property.images.length - 1}
+            disabled={activeIndex === property?.images?.length - 1}
             variant="contained"
             size="large"
             sx={{
               borderRadius: "50px",
               border: "1px solid #ffffff",
-              opacity: activeIndex === property.images.length - 1 ? 0.5 : 1,
+              opacity: activeIndex === property?.images?.length - 1 ? 0.5 : 1,
             }}
             color="#ffffff"
           >
