@@ -16,7 +16,6 @@ import Navbar from "../../components/Navbar";
 import RealEstateCTA from "../../components/RealEstateCTA";
 import FooterComponent from "../../components/footer";
 import StyledTextField from "../../StyledComponents/StyledTextField";
-import { Grid } from "lucide-react";
 import ImageUploadComponent from "./ImageUploadComponent";
 import VideoUploadComponent from "./VideoUploadComponent";
 
