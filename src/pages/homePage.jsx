@@ -15,8 +15,15 @@ import OurJourney from "./About/Component/OurJourney";
 import axios from "axios";
 import OurValues from "./About/Component/OurValues";
 import OurAchievements from "./About/Component/OurAchievements";
+import { useDispatch } from "react-redux";
+import { fetchProjects } from "../store/projectsSlice";
 
 function HomePage() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchProjects());
+  }, [dispatch]);
   return (
     <>
       <Navbar />

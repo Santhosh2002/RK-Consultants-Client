@@ -30,8 +30,11 @@ const AppRoutes = () => {
       <Route path="/services" element={<ServicesPage />} />
       <Route path="/about" element={<AboutUs />} />
       <Route path="/properties" element={<Properties />} />
-      <Route path="/category" element={<PropertieCategories />} />
-      <Route path="/details" element={<PropertyDetails />} />
+      <Route
+        path="/properties/category/:slug"
+        element={<PropertieCategories />}
+      />
+      <Route path="/properties/details/:slug" element={<PropertyDetails />} />
       <Route path="/contact" element={<ContactUs />} />
       <Route path="/listyourproperty" element={<ListYourProperty />} />
       <Route path="/admin/login" element={<AdminLoginPage />} />

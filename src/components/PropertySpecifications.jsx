@@ -49,6 +49,8 @@ import SquareFootIcon from "@mui/icons-material/SquareFoot";
 import BalconyIcon from "@mui/icons-material/Balcony";
 import GridOnIcon from "@mui/icons-material/GridOn";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import { getselectedProject } from "../store/projectsSlice";
+import { useSelector } from "react-redux";
 
 const Dot = styled("div")(({ theme, active }) => ({
   height: "8px",
@@ -57,77 +59,45 @@ const Dot = styled("div")(({ theme, active }) => ({
   backgroundColor: active ? "#A187F0" : "#5f6368", // Active color can be customized
   transition: "all 0.3s ease",
 }));
-const property = {
-  title: "Seaside Serenity Villa",
-  location: "Malibu, California",
-  image: "/property-catagory-1.png",
-  images: [
-    // Add your image URLs here
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    "/property-catagory-1.png",
-    // more images
-  ],
-  size: "1980 sq.ft.",
-  type: "East | Type-2",
-  features: [
-    {
-      icon: <KingBedIcon fontSize="8px" color="#999" />,
-      label: "Bedrooms",
-      value: "04",
-    },
-    {
-      icon: <BathtubIcon fontSize="8px" color="#999" />,
-      label: "Bathrooms",
-      value: "03",
-    },
-    {
-      icon: <SquareFootIcon fontSize="8px" color="#999" />,
-      label: "Rera Carpet Area",
-      value: "1242 sq.ft.",
-    },
-    {
-      icon: <BalconyIcon fontSize="8px" color="#999" />,
-      label: "Balcony Area",
-      value: "138 sq.ft.",
-    },
-    {
-      icon: <GridOnIcon fontSize="8px" color="#999" />,
-      label: "Common Area",
-      value: "464 sq.ft.",
-    },
-    {
-      icon: <AccountBalanceIcon fontSize="8px" color="#999" />,
-      label: "External Wall’s Area",
-      value: "138 sq.ft.",
-    },
-  ],
-};
 
 const PropertySpecifications = () => {
-  const [alignment, setAlignment] = useState("East");
+  const property = useSelector(getselectedProject);
 
+  const [alignment, setAlignment] = useState("East");
+  const activeVariant = property?.variants?.[0] || null;
+
+  const features = [
+    {
+      icon: <KingBedIcon />,
+      label: "Bedrooms",
+      value: activeVariant?.bedrooms,
+    },
+    {
+      icon: <BathtubIcon />,
+      label: "Bathrooms",
+      value: activeVariant?.bathrooms,
+    },
+    {
+      icon: <SquareFootIcon />,
+      label: "Carpet Area",
+      value: activeVariant?.carpetArea,
+    },
+    {
+      icon: <BalconyIcon />,
+      label: "Balcony",
+      value: activeVariant?.balcony,
+    },
+    {
+      icon: <GridOnIcon />,
+      label: "Built-up Area",
+      value: activeVariant?.builtUpArea,
+    },
+    {
+      icon: <AccountBalanceIcon />,
+      label: "Floor",
+      value: activeVariant?.floor,
+    },
+  ];
   const handleToggle = (event, newAlignment) => {
     if (newAlignment !== null) {
       setAlignment(newAlignment);
@@ -150,7 +120,7 @@ const PropertySpecifications = () => {
   };
 
   const nextImage = () => {
-    if (activeIndex < property.images.length - 1) {
+    if (activeIndex < property?.images?.length - 1) {
       setActiveIndex(activeIndex + 1);
     }
   };
@@ -160,7 +130,7 @@ const PropertySpecifications = () => {
       setActiveIndex(activeIndex - 1);
     }
   };
-  let total = property.images.length;
+  let total = property?.images?.length;
   const maxVisibleDots = 6;
   let start = activeIndex - Math.floor(maxVisibleDots / 2);
   start = Math.max(start, 0);
@@ -184,29 +154,46 @@ const PropertySpecifications = () => {
       <Box
         sx={{
           display: "flex",
-          flexDirection: "row",
+          flexDirection: {
+            xs: "column",
+            md: "row",
+          },
           width: "100%",
-          alignItems: "center",
+          alignItems: {
+            xs: "flex-start", // start alignment on small screens
+            md: "center", // center alignment on medium and above
+          },
           gap: "16px",
         }}
       >
         <Box
           sx={{
             display: "flex",
-            flexDirection: "row",
+            flexDirection: {
+              xs: "column", // ⬅ Stack vertically on small screens
+              md: "row",
+            },
+            alignItems: {
+              xs: "flex-start", // start alignment on small screens
+              md: "center", // center alignment on medium and above
+            },
             width: "100%",
-            alignItems: "center",
             gap: "16px",
           }}
         >
-          <Typography variant="h3" fontSize={40} fontWeight={600}>
-            {property.title}
+          <Typography
+            variant="h3"
+            fontSize={{ xs: 32, md: 46 }}
+            fontWeight={600}
+          >
+            {property?.title}
           </Typography>
+
           <Chip
             icon={
               <LocationOnIcon sx={{ color: "#A187F0", fontSize: "medium" }} />
             }
-            label={property.location}
+            label={`${property?.location?.city}, ${property?.location?.state}`}
             variant="outlined"
             sx={{ color: "white", borderRadius: "8px" }}
           />
@@ -222,7 +209,7 @@ const PropertySpecifications = () => {
             Price
           </Typography>
           <Typography variant="h6" fontSize={24} fontWeight={600}>
-            $1,20,000
+            ${activeVariant?.price}
           </Typography>
         </Box>
       </Box>
@@ -253,7 +240,7 @@ const PropertySpecifications = () => {
             backgroundColor: "#141414",
           }}
         >
-          {property.images.map((src, index) => (
+          {property?.images?.map((src, index) => (
             <Box
               key={index}
               component="img"
@@ -278,6 +265,10 @@ const PropertySpecifications = () => {
           sx={{
             display: "flex",
             justifyContent: "center",
+            flexDirection: {
+              xs: "column",
+              md: "row",
+            },
             padding: "20px",
             width: "100%",
             gap: "20px",
@@ -285,23 +276,29 @@ const PropertySpecifications = () => {
         >
           <Box
             component="img"
-            src={property.images[activeIndex]}
+            src={property?.images?.[activeIndex]}
             alt="Selected Property"
             sx={{
               borderRadius: "10px",
-              width: "50%",
-              height: "550px",
+              width: {
+                xs: "100%",
+                md: "50%",
+              },
+              maxHeight: "550px",
             }}
           />
-          {activeIndex !== property.images.length - 1 && (
+          {activeIndex !== property?.images?.length - 1 && (
             <Box
               component="img"
-              src={property.images[activeIndex + 1]}
+              src={property?.images?.[activeIndex + 1]}
               alt="Selected Property"
               sx={{
                 borderRadius: "10px",
-                width: "50%",
-                height: "550px",
+                width: {
+                  xs: "100%",
+                  md: "50%",
+                },
+                maxHeight: "550px",
               }}
             />
           )}
@@ -346,13 +343,13 @@ const PropertySpecifications = () => {
           </Box>
           <IconButton
             onClick={nextImage}
-            disabled={activeIndex === property.images.length - 1}
+            disabled={activeIndex === property?.images?.length - 1}
             variant="contained"
             size="large"
             sx={{
               borderRadius: "50px",
               border: "1px solid #ffffff",
-              opacity: activeIndex === property.images.length - 1 ? 0.5 : 1,
+              opacity: activeIndex === property?.images?.length - 1 ? 0.5 : 1,
             }}
             color="#ffffff"
           >

@@ -1,15 +1,32 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { motion } from "framer-motion";
-import { Box, Typography, TextField, Button, MenuItem, InputAdornment, Grid2, OutlinedInput, FormControl } from "@mui/material";
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  MenuItem,
+  InputAdornment,
+  Grid2,
+  OutlinedInput,
+  FormControl,
+} from "@mui/material";
 import { Search } from "@mui/icons-material";
 import Navbar from "../../components/Navbar";
 import RealEstateCTA from "../../components/RealEstateCTA";
 import FooterComponent from "../../components/footer";
 import PropertyListing from "../../components/PropertyListing";
+import { useDispatch } from "react-redux";
+import { fetchProjects } from "../../store/projectsSlice";
 
 const MotionBox = motion(Box);
 
 const Properties = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchProjects());
+  }, [dispatch]);
   return (
     <Box id="properties" sx={{ backgroundColor: "#191919", width: "100vw" }}>
       <Navbar />
@@ -26,37 +43,49 @@ const Properties = () => {
           px: { xs: 2, md: 5, lg: 10 },
           textAlign: "start",
           gap: "24px",
-          paddingBottom:"120px",
-          borderBottom:"1px solid #262626"
+          paddingBottom: "120px",
+          borderBottom: "1px solid #262626",
         }}
       >
         <Typography variant="h3" fontSize={48}>
           Find Your Dream Property
         </Typography>
         <Typography variant="body2" color="#999999" width={"90%"}>
-          Welcome to RK's, where your dream property awaits in every corner of our beautiful world. Explore our curated selection of properties, each offering a unique story and a chance to redefine your life. With categories to suit every dreamer, your journey.
+          Welcome to RK's, where your dream property awaits in every corner of
+          our beautiful world. Explore our curated selection of properties, each
+          offering a unique story and a chance to redefine your life. With
+          categories to suit every dreamer, your journey.
         </Typography>
       </MotionBox>
 
       {/* Search Section */}
       <Box
         sx={{
-          position:'absolute',
+          position: "absolute",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          top:"320px",
-          width:'100%'
+          top: "320px",
+          width: "100%",
         }}
       >
-        <FormControl sx={{ width: '60%' }} variant="outlined">
+        <FormControl sx={{ width: "60%" }} variant="outlined">
           <OutlinedInput
             id="outlined-adornment-search"
-            sx={{ padding: "16px", border: "5px solid #262626", borderBottom:"0px", borderRadius: "16px 16px 0 0", backgroundColor:"#141414" }}
+            sx={{
+              padding: "16px",
+              border: "5px solid #262626",
+              borderBottom: "0px",
+              borderRadius: "16px 16px 0 0",
+              backgroundColor: "#141414",
+            }}
             endAdornment={
               <InputAdornment position="end">
-                <Button variant="contained" sx={{ backgroundColor: "#703BF7", color:"white" }}>
+                <Button
+                  variant="contained"
+                  sx={{ backgroundColor: "#703BF7", color: "white" }}
+                >
                   Find Property
                 </Button>
               </InputAdornment>
@@ -65,32 +94,62 @@ const Properties = () => {
           />
         </FormControl>
 
-        <Grid2 container spacing={1} sx={{ width: "80%", backgroundColor: "#262626", borderRadius: "10px", padding: 1 }}>
-          <Grid2 item size={{xs:12, sm:2.4}}>
-            <TextField sx={{backgroundColor:"#141414", color:"white"}} fullWidth variant="outlined" placeholder="Location">
-            </TextField>
+        <Grid2
+          container
+          spacing={1}
+          sx={{
+            width: "80%",
+            backgroundColor: "#262626",
+            borderRadius: "10px",
+            padding: 1,
+          }}
+        >
+          <Grid2 item size={{ xs: 12, sm: 2.4 }}>
+            <TextField
+              sx={{ backgroundColor: "#141414", color: "white" }}
+              fullWidth
+              variant="outlined"
+              placeholder="Location"
+            ></TextField>
           </Grid2>
-          <Grid2 item size={{xs:12, sm:2.4}}>
-            <TextField sx={{backgroundColor:"#141414", color:"white"}} fullWidth variant="outlined" placeholder="Property Type">
+          <Grid2 item size={{ xs: 12, sm: 2.4 }}>
+            <TextField
+              sx={{ backgroundColor: "#141414", color: "white" }}
+              fullWidth
+              variant="outlined"
+              placeholder="Property Type"
+            >
               {/* <MenuItem value="apartment">Apartment</MenuItem>
               <MenuItem value="villa">Villa</MenuItem> */}
             </TextField>
           </Grid2>
-          <Grid2 item size={{xs:12, sm:2.4}}>
-            <TextField sx={{backgroundColor:"#141414", color:"white"}}  fullWidth variant="outlined" placeholder="Pricing Range">
-            </TextField>
+          <Grid2 item size={{ xs: 12, sm: 2.4 }}>
+            <TextField
+              sx={{ backgroundColor: "#141414", color: "white" }}
+              fullWidth
+              variant="outlined"
+              placeholder="Pricing Range"
+            ></TextField>
           </Grid2>
-          <Grid2 item size={{xs:12, sm:2.4}}>
-            <TextField sx={{backgroundColor:"#141414", color:"white"}} fullWidth variant="outlined" placeholder="Property Size">
-            </TextField>
+          <Grid2 item size={{ xs: 12, sm: 2.4 }}>
+            <TextField
+              sx={{ backgroundColor: "#141414", color: "white" }}
+              fullWidth
+              variant="outlined"
+              placeholder="Property Size"
+            ></TextField>
           </Grid2>
-          <Grid2 item size={{xs:12, sm:2.4}}>
-            <TextField sx={{backgroundColor:"#141414", color:"white"}} fullWidth variant="outlined" placeholder="Build Year">
-            </TextField>
+          <Grid2 item size={{ xs: 12, sm: 2.4 }}>
+            <TextField
+              sx={{ backgroundColor: "#141414", color: "white" }}
+              fullWidth
+              variant="outlined"
+              placeholder="Build Year"
+            ></TextField>
           </Grid2>
         </Grid2>
       </Box>
-      <Box sx={{paddingTop:"90px", backgroundColor:"#141414"}}>
+      <Box sx={{ paddingTop: "90px", backgroundColor: "#141414" }}>
         <PropertyListing />
       </Box>
       <RealEstateCTA />

@@ -67,7 +67,7 @@ const ServicesPage = () => {
             }}
           >
             <img
-              src="Icons/abstract-Design.svg"
+              src="/Icons/abstract-Design.svg"
               alt="Icon"
               style={{ width: 70, height: "auto", marginBottom: 10 }}
             />
@@ -92,7 +92,7 @@ const ServicesPage = () => {
                   </Grid2>
                 ))
               : services.map((service, index) => (
-                <ServiceCard service={service} />
+                  <ServiceCard service={service} />
                   // <Grid2 item size={{ xs: 12, sm: 6, md: 4 }} key={index}>
                   //   <Card
                   //     component={motion.div}

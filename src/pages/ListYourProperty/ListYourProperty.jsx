@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   Box,
@@ -21,11 +21,29 @@ import ImageUploadComponent from "./ImageUploadComponent";
 import VideoUploadComponent from "./VideoUploadComponent";
 
 const ListYourProperty = () => {
-  const propertyTypes = ["Residential", "Commercial", "MAHA RERA", "Land", "Shop", "Other"];
+  const propertyTypes = [
+    "Residential",
+    "Commercial",
+    "MAHA RERA",
+    "Land",
+    "Shop",
+    "Other",
+  ];
   const transactionTypes = ["Lease", "Sale", "Both", "Other"];
-  const furnishingStatuses = ["Unfurnished", "Semi-Furnished", "Fully-Furnished"];
+  const furnishingStatuses = [
+    "Unfurnished",
+    "Semi-Furnished",
+    "Fully-Furnished",
+  ];
   const statusOptions = ["Available", "Sold", "Rented", "Not Disclosed"];
-  const parkingOptions = ["Covered Stilt", "Covered Garage", "Open Fixed", "Open Not Fixed", "Mechanical", "None"];
+  const parkingOptions = [
+    "Covered Stilt",
+    "Covered Garage",
+    "Open Fixed",
+    "Open Not Fixed",
+    "Mechanical",
+    "None",
+  ];
   const elevatorAvailable = ["Yes", "No"];
 
   useEffect(() => {
@@ -61,7 +79,12 @@ const ListYourProperty = () => {
     const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [name]: name === "elevator" ? value === "Yes" : type === "checkbox" ? checked : value,
+      [name]:
+        name === "elevator"
+          ? value === "Yes"
+          : type === "checkbox"
+          ? checked
+          : value,
     });
   };
 
@@ -87,7 +110,6 @@ const ListYourProperty = () => {
   //     (formData.recaptchaToken || "").trim() !== "" // Ensure it's not undefined
   //   );
   // };
-  
 
   return (
     <Box id="listyourproperty" sx={{ backgroundColor: "#191919" }}>
@@ -112,7 +134,7 @@ const ListYourProperty = () => {
           }}
         >
           <img
-            src="Icons/abstract-Design.svg"
+            src="/Icons/abstract-Design.svg"
             alt="Icon"
             style={{ width: 70, height: "auto", marginRight: 10 }}
           />
@@ -142,79 +164,191 @@ const ListYourProperty = () => {
           </Box>
         </Box>
         {/* Contact Form */}
-        <Box component="form" sx={{ borderRadius: "8px", padding: { xs: 3, md: 5 }, width: "100%", border: "5px solid #262626" }}>
+        <Box
+          component="form"
+          sx={{
+            borderRadius: "8px",
+            padding: { xs: 3, md: 5 },
+            width: "100%",
+            border: "5px solid #262626",
+          }}
+        >
           <Grid2 container spacing={2}>
-            <Grid2 sx={{display:"flex", flexDirection:"column", gap:"8px"}} item size={{xs:12, sm:6}}>
+            <Grid2
+              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+              item
+              size={{ xs: 12, sm: 6 }}
+            >
               <Typography>Title</Typography>
-              <StyledTextField name="title" placeholder="Enter title" value={formData.title} onChange={handleChange} required />
+              <StyledTextField
+                name="title"
+                placeholder="Enter title"
+                value={formData.title}
+                onChange={handleChange}
+                required
+              />
             </Grid2>
-            <Grid2 sx={{display:"flex", flexDirection:"column", gap:"8px"}} item size={{xs:12, sm:6}}>
+            <Grid2
+              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+              item
+              size={{ xs: 12, sm: 6 }}
+            >
               <Typography>Slug</Typography>
-              <StyledTextField name="slug" placeholder="Enter property url" value={formData.slug} onChange={handleChange} />
+              <StyledTextField
+                name="slug"
+                placeholder="Enter property url"
+                value={formData.slug}
+                onChange={handleChange}
+              />
             </Grid2>
-            <Grid2 sx={{display:"flex", flexDirection:"column", gap:"8px"}} item size={{xs:12, sm:6}}>
+            <Grid2
+              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+              item
+              size={{ xs: 12, sm: 6 }}
+            >
               <Typography>Email</Typography>
-              <StyledTextField name="email" placeholder="Enter your email" value={formData.email} onChange={handleChange} />
+              <StyledTextField
+                name="email"
+                placeholder="Enter your email"
+                value={formData.email}
+                onChange={handleChange}
+              />
             </Grid2>
-            <Grid2 sx={{display:"flex", flexDirection:"column", gap:"8px"}} item size={{xs:12, sm:6}}>
+            <Grid2
+              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+              item
+              size={{ xs: 12, sm: 6 }}
+            >
               <Typography>Phone</Typography>
-              <StyledTextField name="phone" placeholder="Enter your phone number" value={formData.phone} onChange={handleChange} required />
+              <StyledTextField
+                name="phone"
+                placeholder="Enter your phone number"
+                value={formData.phone}
+                onChange={handleChange}
+                required
+              />
             </Grid2>
-            <Grid2 sx={{display:"flex", flexDirection:"column", gap:"8px"}} item size={{xs:12}}>
+            <Grid2
+              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+              item
+              size={{ xs: 12 }}
+            >
               <Typography>Description</Typography>
-              <StyledTextField name="description" placeholder="Description" multiline rows={4} value={formData.description} onChange={handleChange} />
+              <StyledTextField
+                name="description"
+                placeholder="Description"
+                multiline
+                rows={4}
+                value={formData.description}
+                onChange={handleChange}
+              />
             </Grid2>
-            <Grid2 sx={{display:"flex", flexDirection:"column", gap:"8px"}} item size={{xs:12, sm:6}}>
+            <Grid2
+              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+              item
+              size={{ xs: 12, sm: 6 }}
+            >
               <Typography>Property Type</Typography>
               <StyledTextField
                 select
                 name="propertyType"
                 value={formData.propertyType}
                 onChange={handleChange}
-                options={propertyTypes.map((type) => ({ value: type, label: type }))}
+                options={propertyTypes.map((type) => ({
+                  value: type,
+                  label: type,
+                }))}
               />
             </Grid2>
-            <Grid2 sx={{display:"flex", flexDirection:"column", gap:"8px"}} item size={{xs:12, sm:6}}>
+            <Grid2
+              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+              item
+              size={{ xs: 12, sm: 6 }}
+            >
               <Typography>Transaction Type</Typography>
               <StyledTextField
                 select
                 name="transactionType"
                 value={formData.transactionType}
                 onChange={handleChange}
-                options={transactionTypes.map((type) => ({ value: type, label: type }))}
+                options={transactionTypes.map((type) => ({
+                  value: type,
+                  label: type,
+                }))}
               />
             </Grid2>
-            <Grid2 sx={{display:"flex", flexDirection:"column", gap:"8px"}} item size={{xs:12, sm:6}}>
+            <Grid2
+              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+              item
+              size={{ xs: 12, sm: 6 }}
+            >
               <Typography>Furnishing Status</Typography>
               <StyledTextField
                 select
                 name="furnishingStatus"
                 value={formData.furnishingStatus}
                 onChange={handleChange}
-                options={furnishingStatuses.map((status) => ({ value: status, label: status }))}
+                options={furnishingStatuses.map((status) => ({
+                  value: status,
+                  label: status,
+                }))}
               />
             </Grid2>
-            <Grid2 sx={{display:"flex", flexDirection:"column", gap:"8px"}} item size={{xs:12, sm:6}}>
+            <Grid2
+              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+              item
+              size={{ xs: 12, sm: 6 }}
+            >
               <Typography>Status</Typography>
               <StyledTextField
                 select
                 name="status"
                 value={formData.status}
                 onChange={handleChange}
-                options={statusOptions.map((status) => ({ value: status, label: status }))}
+                options={statusOptions.map((status) => ({
+                  value: status,
+                  label: status,
+                }))}
               />
             </Grid2>
-            <Grid2 sx={{display:"flex", flexDirection:"column", gap:"8px"}} item size={{xs:12}}>
+            <Grid2
+              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+              item
+              size={{ xs: 12 }}
+            >
               <Typography>Landmark</Typography>
-              <StyledTextField name="landmark" placeholder="Enter landmark" value={formData.landmark} onChange={handleChange} />
+              <StyledTextField
+                name="landmark"
+                placeholder="Enter landmark"
+                value={formData.landmark}
+                onChange={handleChange}
+              />
             </Grid2>
-            <Grid2 sx={{display:"flex", flexDirection:"column", gap:"8px"}} item size={{xs:12}}>
+            <Grid2
+              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+              item
+              size={{ xs: 12 }}
+            >
               <Typography>Nearby Places</Typography>
-              <StyledTextField name="nearby" placeholder="Enter nearby places" value={formData.nearby} onChange={handleChange} />
+              <StyledTextField
+                name="nearby"
+                placeholder="Enter nearby places"
+                value={formData.nearby}
+                onChange={handleChange}
+              />
             </Grid2>
-            <Grid2 sx={{display:"flex", flexDirection:"column", gap:"8px"}} item size={{xs:12}}>
+            <Grid2
+              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+              item
+              size={{ xs: 12 }}
+            >
               <Typography>Amenities</Typography>
-              <StyledTextField name="amenities" placeholder="Enter amenities" value={formData.amenities} onChange={handleChange} />
+              <StyledTextField
+                name="amenities"
+                placeholder="Enter amenities"
+                value={formData.amenities}
+                onChange={handleChange}
+              />
             </Grid2>
             <ImageUploadComponent />
             <VideoUploadComponent />
@@ -225,20 +359,37 @@ const ListYourProperty = () => {
                 name="parking"
                 value={formData.parking}
                 onChange={handleChange}
-                options={parkingOptions.map((option) => ({ value: option, label: option }))}
+                options={parkingOptions.map((option) => ({
+                  value: option,
+                  label: option,
+                }))}
               />
             </Grid2>
-            <Grid2 sx={{display:"flex", flexDirection:"column", gap:"8px"}} item size={{xs:12, sm:6}}>
+            <Grid2
+              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+              item
+              size={{ xs: 12, sm: 6 }}
+            >
               <Typography>Elevator Available</Typography>
               <StyledTextField
                 select
                 name="elevator"
                 value={formData.elevator ? "Yes" : "No"}
                 onChange={handleChange}
-                options={elevatorAvailable.map((option) => ({ value: option, label: option }))}
+                options={elevatorAvailable.map((option) => ({
+                  value: option,
+                  label: option,
+                }))}
               />
             </Grid2>
-            <Grid2 item size={{xs:12}} mt={"8px"} container justifyContent="space-between" alignItems="center">
+            <Grid2
+              item
+              size={{ xs: 12 }}
+              mt={"8px"}
+              container
+              justifyContent="space-between"
+              alignItems="center"
+            >
               <Box>
                 <div
                   className="g-recaptcha"
@@ -246,9 +397,9 @@ const ListYourProperty = () => {
                   data-callback="handleRecaptcha"
                 ></div>
               </Box>
-              <Button 
-                variant="contained" 
-                sx={{ backgroundColor: "#7C4DFF", color: "white" }} 
+              <Button
+                variant="contained"
+                sx={{ backgroundColor: "#7C4DFF", color: "white" }}
                 // disabled={!isFormValid()}
               >
                 Submit

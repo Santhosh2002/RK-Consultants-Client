@@ -13,38 +13,12 @@ import {
 } from "@mui/material";
 import { ArrowBackIos, ArrowForwardIos, Star } from "@mui/icons-material";
 import PropertyCard from "./PropertyCard";
-
-const properties = [
-  {
-    id: 1,
-    image: "https://images.unsplash.com/photo-1531973576160-7125cd663d86",
-    title: "Seaside Serenity Villa",
-    description:
-      "A stunning 4-bedroom, 3-bathroom villa in a peaceful suburban neighborhood... A stunning 4-bedroom, 3-bathroom villa in a peaceful suburban neighborhood... A stunning 4-bedroom, 3-bathroom villa in a peaceful suburban neighborhood...",
-    details: ["4-Bedroom", "3-Bathroom", "Villa"],
-    price: "550,000",
-  },
-  {
-    id: 2,
-    image: "https://images.unsplash.com/photo-1533750516457-a7f992034fec",
-    title: "Metropolitan Haven",
-    description:
-      "A chic and fully-furnished 2-bedroom apartment with panoramic city views, A chic and fully-furnished 2-bedroom apartment with panoramic city views, A chic and fully-furnished 2-bedroom apartment with panoramic city views.........",
-    details: ["2-Bedroom", "2-Bathroom", "Villa"],
-    price: "550,000",
-  },
-  {
-    id: 3,
-    image: "https://images.unsplash.com/photo-1599707364961-f88331b13430",
-    title: "Rustic Retreat Cottage",
-    description:
-      "An elegant 3-bedroom, 2.5-bathroom townhouse in a gated community, An elegant 3-bedroom, 2.5-bathroom townhouse in a gated community, An elegant 3-bedroom, 2.5-bathroom townhouse in a gated community, An elegant 3-bedroom, 2.5-bathroom townhouse in a gated community...",
-    details: ["3-Bedroom", "3-Bathroom", "Villa"],
-    price: "550,000",
-  },
-];
+import { useSelector } from "react-redux";
+import { getProjects } from "../store/projectsSlice";
 
 const PropertyListing = () => {
+  var properties = useSelector(getProjects);
+
   return (
     <Box sx={{ backgroundColor: "#141414", color: "#fff", py: 6 }}>
       <Container
@@ -61,7 +35,7 @@ const PropertyListing = () => {
           }}
         >
           <img
-            src="Icons/abstract-Design.svg"
+            src="/Icons/abstract-Design.svg"
             alt="Icon"
             style={{ width: 70, height: "auto", marginRight: 10 }}
           />

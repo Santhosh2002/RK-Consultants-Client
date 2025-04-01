@@ -66,7 +66,7 @@ const Navbar = ({ logo }) => {
         {/* Logo */}
         <Box>
           <img
-            src="Icons/RK_Logo_White_No_Slogan.svg"
+            src="/Icons/RK_Logo_White_No_Slogan.svg"
             alt="Logo"
             style={{ width: "auto", height: "30px" }}
           />
