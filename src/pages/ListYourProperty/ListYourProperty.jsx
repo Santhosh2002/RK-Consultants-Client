@@ -10,12 +10,15 @@ import {
   MenuItem,
   Checkbox,
 } from "@mui/material";
-import { Email, Phone, LocationOn, Language } from "@mui/icons-material";
+import { Email, Phone, LocationOn, Language, Image } from "@mui/icons-material";
 import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 import Navbar from "../../components/Navbar";
 import RealEstateCTA from "../../components/RealEstateCTA";
 import FooterComponent from "../../components/footer";
 import StyledTextField from "../../StyledComponents/StyledTextField";
+import { Grid } from "lucide-react";
+import ImageUploadComponent from "./ImageUploadComponent";
+import VideoUploadComponent from "./VideoUploadComponent";
 
 const ListYourProperty = () => {
   const propertyTypes = ["Residential", "Commercial", "MAHA RERA", "Land", "Shop", "Other"];
@@ -64,6 +67,15 @@ const ListYourProperty = () => {
 
   const handleRecaptcha = (token) => {
     setFormData((prevState) => ({ ...prevState, recaptchaToken: token }));
+  };
+
+  const [imageList, setimageList] = useState({
+    images: [],
+  });
+
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    setimageList((prev) => ({ ...prev, images: files }));
   };
 
   // const isFormValid = () => {
@@ -204,6 +216,8 @@ const ListYourProperty = () => {
               <Typography>Amenities</Typography>
               <StyledTextField name="amenities" placeholder="Enter amenities" value={formData.amenities} onChange={handleChange} />
             </Grid2>
+            <ImageUploadComponent />
+            <VideoUploadComponent />
             <Grid2 sx={{display:"flex", flexDirection:"column", gap:"8px"}} item size={{xs:12, sm:6}}>
               <Typography>Parking</Typography>
               <StyledTextField
