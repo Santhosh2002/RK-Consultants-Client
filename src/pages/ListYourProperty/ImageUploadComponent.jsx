@@ -4,8 +4,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 const MAX_FILE_SIZE_MB = 5;
 
-const ImageUploadComponent = () => {
-  const [formData, setFormData] = useState({ images: [] });
+const ImageUploadComponent = ({ images, setImages }) => {
   const [dragActive, setDragActive] = useState(false);
 
   const handleFileChange = (files) => {
@@ -16,10 +15,7 @@ const ImageUploadComponent = () => {
       return true;
     });
 
-    setFormData((prev) => ({
-      ...prev,
-      images: [...prev.images, ...validFiles],
-    }));
+    setImages([...images, ...validFiles]);
   };
 
   const onInputChange = (e) => {
@@ -28,10 +24,7 @@ const ImageUploadComponent = () => {
   };
 
   const handleRemoveImage = (indexToRemove) => {
-    setFormData((prev) => ({
-      ...prev,
-      images: prev.images.filter((_, index) => index !== indexToRemove),
-    }));
+    setImages(images.filter((_, index) => index !== indexToRemove));
   };
 
   const handleDragOver = (e) => {
@@ -97,9 +90,9 @@ const ImageUploadComponent = () => {
       </Paper> */}
 
       {/* Image thumbnails with delete icon */}
-      {formData.images.length > 0 && (
+      {images.length > 0 && (
         <Box sx={{ mt: 2, display: "flex", flexWrap: "wrap", gap: 2 }}>
-          {formData.images.map((file, index) => (
+          {images.map((file, index) => (
             <Box
               key={`${file.name}-${index}`}
               sx={{

@@ -18,6 +18,7 @@ import FooterComponent from "../../components/footer";
 import StyledTextField from "../../StyledComponents/StyledTextField";
 import ImageUploadComponent from "./ImageUploadComponent";
 import VideoUploadComponent from "./VideoUploadComponent";
+import VariantForm from "./AddVariantComponent";
 
 const ListYourProperty = () => {
   const propertyTypes = [
@@ -57,35 +58,95 @@ const ListYourProperty = () => {
     title: "",
     slug: "",
     description: "",
-    phone: "",
-    email: "",
-    images: "",
-    video: "",
+    contact: {
+      phone: "",
+      email: ""
+    },
+    images: [],
+    video: [],
     virtualTour: "",
     brochure: "",
+    visible: true,
     propertyType: "Residential",
-    transactionType: "Lease",
+    transactionType: "Sale",
     furnishingStatus: "Unfurnished",
     status: "Available",
-    parking: "None",
+    ownership: "Freehold",
     landmark: "",
-    nearby: "",
-    amenities: "",
-    elevator: false,
+    nearby: [],
+    amenities: [],
+    parking: "",
+    location: {
+      street: "",
+      city: "",
+      state: "",
+      country: "",
+      latitude: "",
+      longitude: ""
+    },
+    approval: "Approved",
+    variants: [
+      {
+        bhk: "",
+        carpetArea: "",
+        builtUpArea: "",
+        facing: "",
+        price: "",
+        currency: "INR",
+        bedrooms: 0,
+        bathrooms: 0,
+        images: [],
+        video: [],
+        balcony: 0,
+        floor: "",
+        totalFloors: "",
+        availability: true
+      }
+    ]
   });
+
+  const validateForm = () => {
+    const errors = [];
+  
+    if (!formData.title.trim()) errors.push("Title is required");
+    if (!/^\d{10}$/.test(formData.contact.phone)) errors.push("Phone must be 10 digits");
+    if (!/\S+@\S+\.\S+/.test(formData.contact.email)) errors.push("Invalid email");
+    if (!formData.description.trim()) errors.push("Description is required");
+    
+    formData.variants.forEach((variant, index) => {
+      if (!/^\d+$/.test(variant.bhk)) errors.push(`Variant ${index + 1}: BHK must be a number`);
+      if (!/^\d+$/.test(variant.bathrooms)) errors.push(`Variant ${index + 1}: Bathrooms must be a number`);
+      if (!/^\d+$/.test(variant.bedrooms)) errors.push(`Variant ${index + 1}: Bedrooms must be a number`);
+      if (!/^\d+$/.test(variant.price)) errors.push(`Variant ${index + 1}: Price must be numeric`);
+    });
+  
+    return errors;
+  };
+  
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]:
-        name === "elevator"
-          ? value === "Yes"
-          : type === "checkbox"
-          ? checked
-          : value,
+    if (!name) return;
+  
+    const keys = name.split(".");
+  
+    setFormData((prev) => {
+      const updated = { ...prev };
+      let nested = updated;
+  
+      for (let i = 0; i < keys.length - 1; i++) {
+        if (!nested[keys[i]]) nested[keys[i]] = {};
+        nested = nested[keys[i]];
+      }
+  
+      const finalKey = keys[keys.length - 1];
+      nested[finalKey] = type === "checkbox" ? checked : value;
+  
+      return updated;
     });
   };
+  
+  
 
   const handleRecaptcha = (token) => {
     setFormData((prevState) => ({ ...prevState, recaptchaToken: token }));
@@ -99,6 +160,27 @@ const ListYourProperty = () => {
     const files = Array.from(e.target.files);
     setimageList((prev) => ({ ...prev, images: files }));
   };
+
+  const handleSubmit = () => {
+    const finalPayload = {
+      ...formData,
+      images: formData.images.map(file => file.name),
+      video: formData.video.map(file => file.name),
+      variants: formData.variants.map(variant => ({
+        ...variant,
+        images: Array.isArray(variant.images)
+          ? variant.images.map(file => file.name)
+          : [],
+        video: Array.isArray(variant.video)
+          ? variant.video.map(file => file.name)
+          : [],
+      })),
+    };
+  
+    console.log("📦 Final Form Data:", finalPayload);
+  };
+  
+  
 
   // const isFormValid = () => {
   //   return (
@@ -176,18 +258,24 @@ const ListYourProperty = () => {
             <Grid2
               sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
               item
-              size={{ xs: 12, sm: 6 }}
+              size={{ xs: 12, sm: 12 }}
             >
               <Typography>Title</Typography>
               <StyledTextField
-                name="title"
+                name="formData.title"
+                type="text"
                 placeholder="Enter title"
                 value={formData.title}
-                onChange={handleChange}
+                onChange={(e) => {
+                  setFormData(prev => ({
+                    ...prev,
+                    title: e.target.value,
+                  }));
+                }}
                 required
               />
             </Grid2>
-            <Grid2
+            {/* <Grid2
               sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
               item
               size={{ xs: 12, sm: 6 }}
@@ -199,7 +287,7 @@ const ListYourProperty = () => {
                 value={formData.slug}
                 onChange={handleChange}
               />
-            </Grid2>
+            </Grid2> */}
             <Grid2
               sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
               item
@@ -207,10 +295,18 @@ const ListYourProperty = () => {
             >
               <Typography>Email</Typography>
               <StyledTextField
-                name="email"
+                name="contact.email"
+                value={formData.contact.email}
                 placeholder="Enter your email"
-                value={formData.email}
-                onChange={handleChange}
+                onChange={(e) => {
+                  setFormData(prev => ({
+                    ...prev,
+                    contact: {
+                      ...prev.contact,
+                      email: e.target.value,
+                    }
+                  }));
+                }}
               />
             </Grid2>
             <Grid2
@@ -220,10 +316,17 @@ const ListYourProperty = () => {
             >
               <Typography>Phone</Typography>
               <StyledTextField
-                name="phone"
+                name="contact.phone"
                 placeholder="Enter your phone number"
-                value={formData.phone}
-                onChange={handleChange}
+                value={formData.contact.phone}
+                onChange={(e) =>{
+                  setFormData(prev => ({
+                    ...prev,
+                  contact:{
+                    ...prev.contact,
+                    phone: e.target.value,
+                  }}))
+                }}
                 required
               />
             </Grid2>
@@ -239,7 +342,12 @@ const ListYourProperty = () => {
                 multiline
                 rows={4}
                 value={formData.description}
-                onChange={handleChange}
+                onChange={(e)=>{
+                  setFormData(prev => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }}
               />
             </Grid2>
             <Grid2
@@ -252,7 +360,12 @@ const ListYourProperty = () => {
                 select
                 name="propertyType"
                 value={formData.propertyType}
-                onChange={handleChange}
+                onChange={(e)=>{
+                  setFormData(prev =>({
+                    ...prev,
+                    propertyType: e.target.value,
+                  }))
+                }}
                 options={propertyTypes.map((type) => ({
                   value: type,
                   label: type,
@@ -269,7 +382,12 @@ const ListYourProperty = () => {
                 select
                 name="transactionType"
                 value={formData.transactionType}
-                onChange={handleChange}
+                onChange={(e)=>{
+                  setFormData(prev =>({
+                    ...prev,
+                    transactionType: e.target.value,
+                  }))
+                }}
                 options={transactionTypes.map((type) => ({
                   value: type,
                   label: type,
@@ -286,7 +404,12 @@ const ListYourProperty = () => {
                 select
                 name="furnishingStatus"
                 value={formData.furnishingStatus}
-                onChange={handleChange}
+                onChange={(e)=>{
+                  setFormData(prev =>({
+                    ...prev,
+                    furnishingStatus: e.target.value,
+                  }))
+                }}
                 options={furnishingStatuses.map((status) => ({
                   value: status,
                   label: status,
@@ -303,7 +426,12 @@ const ListYourProperty = () => {
                 select
                 name="status"
                 value={formData.status}
-                onChange={handleChange}
+                onChange={(e)=>{
+                  setFormData(prev =>({
+                    ...prev,
+                    status: e.target.value,
+                  }))
+                }}
                 options={statusOptions.map((status) => ({
                   value: status,
                   label: status,
@@ -320,7 +448,12 @@ const ListYourProperty = () => {
                 name="landmark"
                 placeholder="Enter landmark"
                 value={formData.landmark}
-                onChange={handleChange}
+                onChange={(e)=>{
+                  setFormData(prev =>({
+                    ...prev,
+                    landmark: e.target.value,
+                  }))
+                }}
               />
             </Grid2>
             <Grid2
@@ -333,7 +466,12 @@ const ListYourProperty = () => {
                 name="nearby"
                 placeholder="Enter nearby places"
                 value={formData.nearby}
-                onChange={handleChange}
+                onChange={(e)=>{
+                  setFormData(prev =>({
+                    ...prev,
+                    nearby: e.target.value.split(",").map(x => x.trim())
+                  }))
+                }}                
               />
             </Grid2>
             <Grid2
@@ -346,11 +484,22 @@ const ListYourProperty = () => {
                 name="amenities"
                 placeholder="Enter amenities"
                 value={formData.amenities}
-                onChange={handleChange}
+                onChange={(e) => {
+                  setFormData(prev => ({
+                    ...prev,
+                    amenities: e.target.value.split(",").map(x => x.trim()),
+                  }));
+                }}                
               />
             </Grid2>
-            <ImageUploadComponent />
-            <VideoUploadComponent />
+            <ImageUploadComponent
+              images={formData.images}
+              setImages={(files) => setFormData((prev) => ({ ...prev, images: files }))}
+            />
+            <VideoUploadComponent
+              videos={formData.video}
+              setVideos={(files) => setFormData((prev) => ({ ...prev, video: files }))}
+            />
             <Grid2 sx={{display:"flex", flexDirection:"column", gap:"8px"}} item size={{xs:12, sm:6}}>
               <Typography>Parking</Typography>
               <StyledTextField
@@ -374,13 +523,104 @@ const ListYourProperty = () => {
                 select
                 name="elevator"
                 value={formData.elevator ? "Yes" : "No"}
-                onChange={handleChange}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    elevator: e.target.value === "Yes",
+                  }))
+                }
                 options={elevatorAvailable.map((option) => ({
                   value: option,
                   label: option,
                 }))}
               />
             </Grid2>
+            <Grid2
+              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+              item
+              size={{ xs: 12, sm: 12 }}
+            >
+              <Typography>Location</Typography>
+              <Grid2 direction={"row"} container spacing={2}>
+              <Grid2
+                // sx={{ display: "flex", flexDirection: "row", gap: "8px" }}
+                item
+                size={{ xs: 12, sm: 4 }}
+              >
+              <StyledTextField
+                name="street"
+                placeholder="Street"
+                value={formData.location.street}
+                onChange={(e)=>{setFormData(prev =>({ ...prev, location:{...prev.location,street:e.target.value}}))}}
+              />
+              </Grid2>
+              <Grid2
+                // sx={{ display: "flex", flexDirection: "row", gap: "8px" }}
+                item
+                size={{ xs: 12, sm: 4 }}
+              >
+                <StyledTextField
+                  name="city"
+                  placeholder="City"
+                  value={formData.location.city}
+                  onChange={(e)=>{setFormData(prev =>({ ...prev, location:{...prev.location, city:e.target.value}}))}}
+                />
+              </Grid2>
+              <Grid2
+                sx={{ display: "flex", flexDirection: "row", gap: "8px" }}
+                item
+                size={{ xs: 12, sm: 4 }}
+              >
+                <StyledTextField
+                  name="state"
+                  placeholder="State"
+                  value={formData.location.state}
+                  onChange={(e)=>{setFormData(prev =>({ ...prev, location:{...prev.location, state:e.target.value}}))}}
+                />
+              </Grid2>
+              <Grid2
+                sx={{ display: "flex", flexDirection: "row", gap: "8px" }}
+                item
+                size={{ xs: 12, sm: 4 }}
+              >
+              <StyledTextField
+                name="country"
+                placeholder="Country"
+                value={formData.location.country}
+                onChange={(e)=>{setFormData(prev =>({ ...prev, location:{...prev.location, country:e.target.value}}))}}
+              />
+              </Grid2>
+              <Grid2
+                sx={{ display: "flex", flexDirection: "row", gap: "8px" }}
+                item
+                size={{ xs: 12, sm: 4 }}
+              >
+              <StyledTextField
+                name="latitude"
+                placeholder="Latitude"
+                value={formData.location.latitude}
+                onChange={(e)=>{setFormData(prev =>({ ...prev, location:{...prev.location, latitude:e.target.value}}))}}
+              />
+              </Grid2>
+              <Grid2
+                sx={{ display: "flex", flexDirection: "row", gap: "8px" }}
+                item
+                size={{ xs: 12, sm: 4 }}
+              >
+              <StyledTextField
+                name="location.longitude"
+                placeholder="Longitude"
+                value={formData.location.longitude}
+                onChange={handleChange}
+              />
+              </Grid2>
+              </Grid2>
+            </Grid2>
+            <VariantForm
+              variants={formData.variants}
+              setVariants={(variants) => setFormData((prev) => ({ ...prev, variants }))}
+            />
+
             <Grid2
               item
               size={{ xs: 12 }}
@@ -399,6 +639,7 @@ const ListYourProperty = () => {
               <Button
                 variant="contained"
                 sx={{ backgroundColor: "#7C4DFF", color: "white" }}
+                onClick={handleSubmit}
                 // disabled={!isFormValid()}
               >
                 Submit
