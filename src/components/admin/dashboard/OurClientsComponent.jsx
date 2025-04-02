@@ -2,45 +2,35 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import NewProjectPopup from "../../utils/NewProjectPopUp";
-import UpdateProjectPopup from "../../utils/UpdateProject";
+import ClientCard from "./ClientCard";
 import {
   Container,
   Grid2,
-  Card,
-  CardMedia,
-  CardContent,
   Typography,
   Box,
-  CircularProgress,
   Button,
+  CircularProgress,
 } from "@mui/material";
 import {
-  fetchProjects,
-  getProjects,
-  getProjectsLoader,
-  getProjectsError,
-} from "../../../store/projectsSlice";
-import ProjectCard from "./ProjectCard";
+  fetchClients,
+  getClients,
+  getClientsLoader,
+  getClientsError,
+} from "../../../store/clientSlice";
 
-function AdminProjectsComponent() {
+function OurClientsComponent() {
   const dispatch = useDispatch();
-  const projects = useSelector(getProjects);
-  const loading = useSelector(getProjectsLoader);
-  const error = useSelector(getProjectsError);
-
-  const [isNewPopupOpen, setNewPopupOpen] = useState(false);
-  const [isUpdatePopupOpen, setUpdatePopupOpen] = useState(false);
-  const [selectedProject, setSelectedProject] = useState(null);
-  const [selectedId, setSelectedId] = useState(null);
+  const clients = useSelector(getClients);
+  const loading = useSelector(getClientsLoader);
+  const error = useSelector(getClientsError);
 
   useEffect(() => {
-    dispatch(fetchProjects());
+    dispatch(fetchClients());
   }, [dispatch]);
 
   useEffect(() => {
     if (error) {
-      toast.error(`Failed to fetch projects: ${error}`);
+      toast.error(`Failed to fetch clients: ${error}`);
     }
   }, [error]);
 
@@ -58,18 +48,17 @@ function AdminProjectsComponent() {
           }}
         >
           <Typography variant="h3" sx={{ fontWeight: "bold" }}>
-            Admin Panel: Projects
+            Admin Panel: Clients
           </Typography>
           <Button
             variant="contained"
-            onClick={() => setNewPopupOpen(true)}
             sx={{
               backgroundColor: "#6A5ACD",
               color: "#fff",
               textTransform: "none",
             }}
           >
-            Add New Project
+            Add New Client
           </Button>
         </Box>
         {loading ? (
@@ -85,26 +74,14 @@ function AdminProjectsComponent() {
           </Box>
         ) : (
           <Grid2 container spacing={4}>
-            {projects.map((project) => (
-              <ProjectCard key={project.id} item={project} />
+            {clients.map((client) => (
+              <ClientCard key={client._id} client={client} />
             ))}
           </Grid2>
         )}
       </Container>
-      <NewProjectPopup
-        isOpen={isNewPopupOpen}
-        onClose={() => setNewPopupOpen(false)}
-        onSubmit={() => {}}
-      />
-      <UpdateProjectPopup
-        isOpen={isUpdatePopupOpen}
-        onClose={() => setUpdatePopupOpen(false)}
-        onSubmit={() => {}}
-        projectData={selectedProject}
-        id={selectedId}
-      />
     </Box>
   );
 }
 
-export default AdminProjectsComponent;
+export default OurClientsComponent;

@@ -27,6 +27,7 @@ import {
   getListingsLoader,
   getListingsError,
 } from "../../../store/listingsSlice";
+import ListingCard from "./ListingCard";
 
 function ListingComponent() {
   const dispatch = useDispatch();
@@ -90,109 +91,14 @@ function ListingComponent() {
         ) : (
           <Grid2 container spacing={4}>
             {listings.map((listing) => (
-              <Grid2
-                item
-                size={{
-                  xs: 12,
-                  sm: 6,
-                  md: 4,
-                  lg: 3,
+              <ListingCard
+                key={listing.id}
+                item={listing}
+                onClick={() => {
+                  setSelectedListing(listing);
+                  setIsUpdatePopupOpen(true);
                 }}
-                key={listing._id}
-              >
-                <Card
-                  sx={{
-                    borderRadius: 3,
-                    border: "1px solid #444",
-                    backgroundColor: "#222",
-                    color: "#fff",
-                    boxShadow: 4,
-                    padding: 2,
-                  }}
-                >
-                  {listing.images && listing.images.length > 0 ? (
-                    <Swiper
-                      navigation
-                      modules={[Navigation]}
-                      className="w-full h-48 rounded-md"
-                    >
-                      {listing.images.map((image, index) => (
-                        <SwiperSlide key={index}>
-                          <CardMedia
-                            component="img"
-                            image={image}
-                            alt={listing.title}
-                            sx={{
-                              width: "100%",
-                              height: "200px",
-                              objectFit: "cover",
-                              borderRadius: "10px",
-                            }}
-                          />
-                        </SwiperSlide>
-                      ))}
-                    </Swiper>
-                  ) : (
-                    <CardMedia
-                      component="div"
-                      sx={{
-                        width: "100%",
-                        height: "200px",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        backgroundColor: "#333",
-                        color: "#aaa",
-                        borderRadius: "10px",
-                      }}
-                    >
-                      No Image Available
-                    </CardMedia>
-                  )}
-                  <CardContent>
-                    <Typography variant="h6" fontWeight="bold">
-                      {listing.title}
-                    </Typography>
-                    <Typography variant="body2" color="grey.400">
-                      {listing.description.length > 50
-                        ? `${listing.description.substring(0, 50)}...`
-                        : listing.description}
-                    </Typography>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        marginTop: 2,
-                      }}
-                    >
-                      <Button
-                        variant="contained"
-                        sx={{
-                          backgroundColor: "#6A5ACD",
-                          color: "#fff",
-                          textTransform: "none",
-                        }}
-                        onClick={() => {
-                          setSelectedListing(listing);
-                          setIsUpdatePopupOpen(true);
-                        }}
-                      >
-                        Update
-                      </Button>
-                      <Button
-                        variant="contained"
-                        sx={{
-                          backgroundColor: "#D32F2F",
-                          color: "#fff",
-                          textTransform: "none",
-                        }}
-                      >
-                        Delete
-                      </Button>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Grid2>
+              />
             ))}
           </Grid2>
         )}

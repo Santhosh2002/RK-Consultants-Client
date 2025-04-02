@@ -28,10 +28,20 @@ import AdminProjectsComponent from "./ProjectComponent";
 import GeneralSettings from "./GeneralSettings";
 import ListingComponent from "./ListingComponent";
 import { useNavigate } from "react-router-dom";
-import { Logout } from "@mui/icons-material";
+import {
+  ContactMail,
+  Logout,
+  Payment,
+  Person2,
+  Star,
+} from "@mui/icons-material";
 import RKLogo from "./RkLogo";
 import { useSelector } from "react-redux";
 import { getProfile } from "../../../store/authSlice";
+import OurClientsComponent from "./OurClientsComponent";
+import PaymentsComponent from "./PaymentsComponent";
+import TestimonialsComponent from "./TestimonialsComponent";
+import ContactUsComponent from "./ContactUsComponent";
 
 function MainComponent() {
   const [userName, setUserName] = useState("");
@@ -50,6 +60,14 @@ function MainComponent() {
         return <AdminProjectsComponent />;
       case 3:
         return <ListingComponent />;
+      case 4:
+        return <OurClientsComponent />;
+      case 5:
+        return <PaymentsComponent />;
+      case 6:
+        return <ContactUsComponent />;
+      case 7:
+        return <TestimonialsComponent />;
       default:
         return <GeneralSettings />;
     }
@@ -106,6 +124,11 @@ const Sidebar = ({
     { text: "Services", icon: <BuildIcon /> },
     { text: "Projects", icon: <WorkIcon /> },
     { text: "Listings", icon: <ListIcon /> },
+    { text: "Clients", icon: <Person2 /> },
+    { text: "Payments", icon: <Payment /> },
+    { text: "Contact Us", icon: <ContactMail /> },
+
+    { text: "Testimonials", icon: <Star /> },
     { text: "General Settings", icon: <SettingsIcon /> },
   ];
 

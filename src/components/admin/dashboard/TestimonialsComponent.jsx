@@ -20,7 +20,7 @@ import {
 } from "@mui/material";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 
-function PaymentsComponent() {
+function TestimonialsComponent() {
   const dispatch = useDispatch();
 
   return (
@@ -36,7 +36,7 @@ function PaymentsComponent() {
           }}
         >
           <Typography variant="h3" sx={{ fontWeight: "bold" }}>
-            Admin Panel: Payments
+            Admin Panel: Testimonials
           </Typography>
         </Box>
       </Container>
@@ -44,4 +44,4 @@ function PaymentsComponent() {
   );
 }
 
-export default PaymentsComponent;
+export default TestimonialsComponent;

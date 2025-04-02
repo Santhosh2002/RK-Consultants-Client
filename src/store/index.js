@@ -8,6 +8,8 @@ import listingsReducer from "./listingsSlice";
 import servicesReducer from "./servicesSlice";
 import generalSettingsReducer from "./generalSettingsSlice";
 import fileUploadReducer from "./fileUploadSlice";
+import clientsReducer from "./clientSlice";
+import contactReducer from "./contactSlice";
 const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -19,6 +21,8 @@ const store = configureStore({
     services: servicesReducer,
     settings: generalSettingsReducer,
     files: fileUploadReducer,
+    clients: clientsReducer,
+    contacts: contactReducer,
   },
 });
 
