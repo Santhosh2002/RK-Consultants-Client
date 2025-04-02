@@ -45,7 +45,7 @@ function ListingComponent() {
 
   useEffect(() => {
     if (error) {
-      toast.error(`Failed to fetch listings: ${error}`);
+      toast.error(`Failed to fetch: ${error}`);
     }
   }, [error]);
 
