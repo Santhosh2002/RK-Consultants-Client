@@ -5,9 +5,7 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 
 const MAX_VIDEO_SIZE_MB = 50;
 
-const VideoUploadComponent = () => {
-  const [videos, setVideos] = useState([]);
-  const [dragActive, setDragActive] = useState(false);
+const VideoUploadComponent = ({ videos, setVideos }) => {
 
   const handleFileChange = (files) => {
     const selectedFiles = Array.from(files);
@@ -17,16 +15,17 @@ const VideoUploadComponent = () => {
       return true;
     });
 
-    setVideos(prev => [...prev, ...validFiles]);
+    setVideos([...videos, ...validFiles]);
   };
+
+  const handleRemoveVideo = (indexToRemove) => {
+    setVideos(videos.filter((_, index) => index !== indexToRemove));
+  };
+  const [dragActive, setDragActive] = useState(false);
 
   const onInputChange = (e) => {
     handleFileChange(e.target.files);
     e.target.value = null;
-  };
-
-  const handleRemoveVideo = (indexToRemove) => {
-    setVideos(prev => prev.filter((_, index) => index !== indexToRemove));
   };
 
   const handleDragOver = (e) => {
