@@ -129,7 +129,16 @@ const PropertyCategory = () => {
       });
       return acc;
     }, {}) || {};
-  const bhkOptions = Array.from(new Set(property?.variants?.map((v) => v.bhk)));
+  
+    const bhkOptions = Array.from(new Set(property?.variants?.map((v) => v.bhk)));
+
+    const getYoutubeEmbedUrl = (url) => {
+      const regExp =
+        /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+      const match = url.match(regExp);
+      return match ? `https://www.youtube.com/embed/${match[1]}` : null;
+    };
+    
 
   return (
     <>
@@ -457,6 +466,55 @@ const PropertyCategory = () => {
             </Box>
           );
         })}
+        {(property?.brochure?.length > 0 || property?.video?.length > 0) && (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: {
+                xs: "column",
+                md: "row",
+              },
+              gap: 4,
+              mt: 5,
+              width: "100%",
+            }}
+          >
+            {/* Brochure Preview */}
+            {property.brochure?.[0] && (
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
+                  Project Brochure
+                </Typography>
+                <iframe
+                  src={property.brochure?.[0]}
+                  width="100%"
+                  height="500px"
+                  style={{ border: "1px solid #444", borderRadius: "8px" }}
+                  title="Brochure Preview"
+                ></iframe>
+              </Box>
+            )}
+
+            {/* YouTube Video Preview */}
+            {property.video?.[0] && (
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
+                  Project Walkthrough
+                </Typography>
+                <iframe
+                  width="100%"
+                  height="500px"
+                  style={{ border: "none", borderRadius: "8px" }}
+                  src={getYoutubeEmbedUrl(property.video?.[0])}
+                  title="YouTube video player"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              </Box>
+            )}
+          </Box>
+        )}
+
       </Box>
     </>
   );

@@ -71,7 +71,7 @@ const ServicesPage = () => {
               alt="Icon"
               style={{ width: 70, height: "auto", marginBottom: 10 }}
             />
-            <Typography variant="h3" fontWeight={600}>
+            <Typography variant="h3" fontWeight={600} fontSize={48}>
               Services We Provide
             </Typography>
             <Typography

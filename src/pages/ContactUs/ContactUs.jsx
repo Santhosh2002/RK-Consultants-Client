@@ -121,7 +121,7 @@ const ContactUs = () => {
         <Typography variant="h3" fontSize={48}>
           Get in Touch with RK Realtors & Consultants
         </Typography>
-        <Typography variant="body2" color="#999999" width={"90%"}>
+        <Typography variant="body1" color="#999999" width={"90%"}>
           Welcome to RK's Contact Us page. We’re here to assist you with any
           inquiries, requests, or feedback you may have. Whether you’re looking
           to buy or sell a property, explore investment opportunities, or simply
@@ -246,7 +246,9 @@ const ContactUs = () => {
             alt="Icon"
             style={{ width: 70, height: "auto", marginRight: 10 }}
           />
-          <Typography variant="h3">Let's Connect</Typography>
+          <Typography variant="h3" fontWeight={600} fontSize={48}>
+            Let's Connect
+          </Typography>
           <Box
             sx={{
               display: "flex",
@@ -257,7 +259,7 @@ const ContactUs = () => {
             }}
           >
             <Typography
-              variant="body2"
+              variant="body1"
               sx={{ textAlign: "left", width: "90%", color: "#999999" }}
             >
               We're excited to connect with you and learn more about your real
