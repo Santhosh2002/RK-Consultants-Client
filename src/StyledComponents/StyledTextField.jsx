@@ -82,7 +82,7 @@ const StyledTextField = ({
             backgroundColor: "#1A1A1A",
             "& fieldset": { borderColor: "#262626" },
             "&:hover fieldset": { borderColor: "#262626" },
-            "& .MuiInputBase-input": { color: "#666666" },
+            "& .MuiInputBase-input": { color: "#ffffff" },
           },
         }}
         {...props}

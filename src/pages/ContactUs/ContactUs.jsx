@@ -1,4 +1,5 @@
-import React from "react";
+import React, {useState, useEffect} from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { motion } from "framer-motion";
 import { Helmet } from "react-helmet";
 
@@ -12,24 +13,82 @@ import {
   MenuItem,
   Checkbox,
 } from "@mui/material";
-import { Email, Phone, LocationOn, Language } from "@mui/icons-material";
+import { Email, Phone, LocationOn, Language, Facebook, Instagram, YouTube } from "@mui/icons-material";
 import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 import Navbar from "../../components/Navbar";
 import RealEstateCTA from "../../components/RealEstateCTA";
 import FooterComponent from "../../components/footer";
+import StyledTextField from "../../StyledComponents/StyledTextField";
+import {submitContactInquiry, getContactsLoader} from "../../store/contactSlice";
+import { getGeneralSettings } from '../../store/generalSettingsSlice';
 
 const MotionBox = motion(Box);
 
 const ContactUs = () => {
+  const dispatch = useDispatch();
+  const loading = useSelector(getContactsLoader);
+  const settings = useSelector(getGeneralSettings);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [showForm, setShowForm] = useState(true);
+
   const services = [
     {
       src: "/Icons/Location-Icon.svg",
       title: "B-102 Sen Nagar Santacruz East , Mumbai - 400055",
+      mapUrl: "https://www.google.com/maps?q=B-102+Sen+Nagar+Santacruz+East,+Mumbai+-+400055",
     },
-    { src: "/Icons/Phone-Icon.svg", title: "+91 7715021942" },
-    { src: "/Icons/Email-Icon.svg", title: "nfo@rkrealco.com" },
-    { src: "/Icons/Social-Icon.svg", title: "Social Media" },
+    { src: "/Icons/Phone-Icon.svg", title: "+91 7715021942", phoneUrl: "tel:+917715021942" },
+    { src: "/Icons/Email-Icon.svg", title: "nfo@rkrealco.com", emailUrl: "mailto:nfo@rkrealco.com", },
+    { 
+      src: "/Icons/Social-Icon.svg", 
+      title: "Social Media", 
+      defaultUrl: settings?.instagram,
+      socialLinks: {
+        instagram: settings?.instagram,
+        facebook: settings?.facebook,
+        youtube: "https://www.youtube.com/@RKRealtorsConsultants",
+      }, },
   ];
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    inquiryType: "Buying",
+    heardFrom: "Social Media",
+    message: "",
+  });
+  
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    dispatch(submitContactInquiry(formData))
+      .then((response)=>{
+        if(response.error){
+          console.error("Error submitting inquiry:", response.error.message);
+        }else{
+          console.log("Inquiry submitted successfully:", response.payload);
+          // Reset form data after successful submission
+          setFormData({
+            firstName: "",
+            lastName: "",
+            email: "",
+            phone: "",
+            inquiryType: "Buying",
+            heardFrom: "Social Media",
+            message: "",
+          });
+          setShowForm(false);
+          setShowSuccessMessage(true);
+          setTimeout(()=>{
+            setShowForm(true);
+            setShowSuccessMessage(false);
+          }, 60000);
+        }
+      })
+  };
+  
+
+  
   return (
     <Box id="contact" sx={{ backgroundColor: "#191919", width: "100vw" }}>
       <Helmet>
@@ -85,6 +144,17 @@ const ContactUs = () => {
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: 0.3 }}
+                onClick={() => {
+                  if (service.mapUrl) {
+                    window.open(service.mapUrl, "_blank", "noopener,noreferrer");
+                  } else if (service.emailUrl) {
+                    window.open(service.emailUrl);
+                  } else if (service.defaultUrl) {
+                    window.open(service.defaultUrl, "_blank", "noopener,noreferrer");
+                  } else if (service.phoneUrl) {
+                    window.location.href = service.phoneUrl;
+                  }
+                }}
                 style={{
                   position: "relative", // Ensure the arrow icon is positioned correctly
                   background: "#1A1A1A",
@@ -97,6 +167,7 @@ const ContactUs = () => {
                   alignItems: "center",
                   cursor: "pointer",
                   gap: "16px",
+                  minHeight:"170px",
                 }}
               >
                 {/* Arrow Icon positioned at top-right */}
@@ -118,7 +189,35 @@ const ContactUs = () => {
                     style={{ width: "60px", height: "60px" }}
                   />
                 </Box>
-                <Typography variant="body2">{service.title}</Typography>
+                <Typography variant="body2">
+                  {service.title}
+                </Typography>
+                {/* Render Social Icons if it's Social Media card */}
+                {/* {service.socialLinks && (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      gap: 2,
+                      mt: 1,
+                      justifyContent: "center",
+                      zIndex: 10,
+                    }}
+                    onClick={(e) => e.stopPropagation()} // Prevent parent click
+                  >
+                    <Instagram
+                      sx={{ color: "#E1306C", cursor: "pointer" }}
+                      onClick={() => window.open(service.socialLinks.instagram, "_blank")}
+                    />
+                    <Facebook
+                      sx={{ color: "#1877F2", cursor: "pointer" }}
+                      onClick={() => window.open(service.socialLinks.facebook, "_blank")}
+                    />
+                    <YouTube
+                      sx={{ color: "#FF0000", cursor: "pointer" }}
+                      onClick={() => window.open(service.socialLinks.youtube, "_blank")}
+                    />
+                  </Box>
+                )} */}
               </motion.div>
             </Grid2>
           ))}
@@ -169,187 +268,225 @@ const ContactUs = () => {
             </Typography>
           </Box>
         </Box>
+        {!showForm && showSuccessMessage && (
+          <Box
+            sx={{
+              textAlign: "center",
+              border: "5px solid #262626",
+              borderRadius: "12px",
+              padding: "40px",
+              backgroundColor: "#1A1A1A",
+              color: "#7C4DFF",
+            }}
+          >
+            <Typography variant="h4" gutterBottom>
+              Thank You!
+            </Typography>
+            <Typography variant="body1">
+              We’ve received your message and will contact you shortly.
+            </Typography>
+          </Box>
+        )}
+        {loading && !showSuccessMessage && (
+          <Box
+            sx={{
+              textAlign: "center",
+              border: "5px solid #262626",
+              borderRadius: "12px",
+              padding: "40px",
+              backgroundColor: "#1A1A1A",
+              color: "#ffffff",
+            }}
+          >
+            <Typography variant="body1">Submitting your inquiry...</Typography>
+          </Box>
+        )}
         {/* Contact Form */}
-        <Box
-          component="form"
-          sx={{
-            borderRadius: "8px",
-            padding: { xs: 3, md: 5 },
-            width: "100%",
-            border: "5px solid #262626",
-          }}
-        >
-          <Grid2 container spacing={2}>
-            <Grid2
-              item
-              size={{ xs: 12, sm: 4 }}
-              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
-            >
-              <Typography variant="body1">First Name</Typography>
-              <TextField
-                fullWidth
-                placeholder="Enter First Name"
-                variant="outlined"
-                InputLabelProps={{ style: { color: "#999999" } }}
-                sx={inputStyles}
-              />
-            </Grid2>
-            <Grid2
-              item
-              size={{ xs: 12, sm: 4 }}
-              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
-            >
-              <Typography variant="body1">Last Name</Typography>
-              <TextField
-                fullWidth
-                placeholder="Enter Last Name"
-                variant="outlined"
-                InputLabelProps={{ style: { color: "#999999" } }}
-                sx={inputStyles}
-              />
-            </Grid2>
-            <Grid2
-              item
-              size={{ xs: 12, sm: 4 }}
-              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
-            >
-              <Typography variant="body1">Email</Typography>
-              <TextField
-                fullWidth
-                placeholder="Enter Email"
-                variant="outlined"
-                InputLabelProps={{ style: { color: "#999999" } }}
-                sx={inputStyles}
-              />
-            </Grid2>
-            <Grid2
-              item
-              size={{ xs: 12, sm: 4 }}
-              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
-            >
-              <Typography variant="body1">Phone</Typography>
-              <TextField
-                fullWidth
-                placeholder="Enter Phone Number"
-                variant="outlined"
-                InputLabelProps={{ style: { color: "#999999" } }}
-                sx={inputStyles}
-              />
-            </Grid2>
-            <Grid2
-              item
-              size={{ xs: 12, sm: 4 }}
-              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
-            >
-              <Typography variant="body1">Inquiry Type</Typography>
-              <TextField
-                fullWidth
-                select
-                placeholder="Select Inquiry Type"
-                variant="outlined"
-                InputLabelProps={{ style: { color: "#999999" } }}
-                sx={inputStyles}
+        {showForm && !loading && (
+          <Box
+            component="form"
+            sx={{
+              borderRadius: "8px",
+              padding: { xs: 3, md: 5 },
+              width: "100%",
+              border: "5px solid #262626",
+            }}
+          >
+            <Grid2 container spacing={2}>
+              <Grid2
+                item
+                size={{ xs: 12, sm: 4 }}
+                sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
               >
-                <MenuItem value={"buying"}>Buying</MenuItem>
-                <MenuItem value={"selling"}>Selling</MenuItem>
-                <MenuItem value={"investment"}>Investment</MenuItem>
-              </TextField>
-            </Grid2>
-            <Grid2
-              item
-              size={{ xs: 12, sm: 4 }}
-              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
-            >
-              <Typography variant="body1">
-                How did you hear about us?
-              </Typography>
-              <TextField
-                fullWidth
-                select
-                placeholder="Select"
-                variant="outlined"
-                InputLabelProps={{ style: { color: "#999999" } }}
-                sx={inputStyles}
+                <Typography variant="body1">First Name</Typography>
+                <StyledTextField
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={(e)=>{
+                    setFormData((prev) => ({ ...prev, firstName: e.target.value }));
+                  }}
+                  placeholder="Enter First Name"
+                />
+
+              </Grid2>
+              <Grid2
+                item
+                size={{ xs: 12, sm: 4 }}
+                sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
               >
-                <MenuItem value={"social media"}>Social Media</MenuItem>
-                <MenuItem value={"friend"}>Friend</MenuItem>
-                <MenuItem value={"website"}>Website</MenuItem>
-              </TextField>
-            </Grid2>
-            <Grid2
-              item
-              size={{ xs: 12, sm: 12 }}
-              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
-            >
-              <Typography variant="body1">Message</Typography>
-              <TextField
-                fullWidth
-                multiline
-                rows={4}
-                placeholder="Enter your message here.."
-                variant="outlined"
-                InputLabelProps={{ style: { color: "#999999" } }}
-                sx={inputStyles}
-              />
-            </Grid2>
-            <Grid2
-              container
-              width="100%"
-              size={{ xs: 12, md: 12, sm: 12 }}
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              <Grid2 item>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      sx={{
-                        color: "#262626",
-                        "&.Mui-checked": { color: "#7C4DFF" },
-                      }}
-                    />
-                  }
-                  label={
-                    <Typography variant="body2" color="#999999">
-                      I agree with{" "}
-                      <a href="#" style={{ color: "#999999" }}>
-                        Terms of Use
-                      </a>{" "}
-                      and{" "}
-                      <a href="#" style={{ color: "#999999" }}>
-                        Privacy Policy
-                      </a>
-                    </Typography>
-                  }
+                <Typography variant="body1">Last Name</Typography>
+                <StyledTextField
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={(e)=>{
+                    setFormData((prev) => ({ ...prev, lastName: e.target.value }));
+                  }}
+                  placeholder="Enter Last Name"
+                />
+
+              </Grid2>
+              <Grid2
+                item
+                size={{ xs: 12, sm: 4 }}
+                sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+              >
+                <Typography variant="body1">Email</Typography>
+                <StyledTextField
+                  name="email"
+                  value={formData.email}
+                  onChange={(e)=>{
+                    setFormData((prev) => ({ ...prev, email: e.target.value }));
+                  }}
+                  placeholder="Enter email"
+                />
+
+              </Grid2>
+              <Grid2
+                item
+                size={{ xs: 12, sm: 4 }}
+                sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+              >
+                <Typography variant="body1">Phone</Typography>
+                <StyledTextField
+                  name="phone"
+                  value={formData.phone}
+                  onChange={(e)=>{
+                    setFormData((prev) => ({ ...prev, phone: e.target.value }));
+                  }}
+                  placeholder="Enter phone number"
                 />
               </Grid2>
-              <Grid2 item>
-                <Button
-                  variant="contained"
-                  sx={{ backgroundColor: "#7C4DFF", color: "white", px: 4 }}
-                >
-                  Send Your Message
-                </Button>
+              <Grid2
+                item
+                size={{ xs: 12, sm: 4 }}
+                sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+              >
+                <Typography variant="body1">Inquiry Type</Typography>
+                <StyledTextField
+                  name="inquiryType"
+                  value={formData.inquiryType}
+                  onChange={(e)=>{
+                    setFormData((prev)=>({...prev, inquiryType: e.target.value}))
+                  }}
+                  select
+                  options={[
+                    { value: "Buying", label: "Buying" },
+                    { value: "Selling", label: "Selling" },
+                    { value: "Investment", label: "Investment" },
+                  ]}
+                  placeholder="Select Inquiry Type"
+                />
+              </Grid2>
+              <Grid2
+                item
+                size={{ xs: 12, sm: 4 }}
+                sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+              >
+                <Typography variant="body1">
+                  How did you hear about us?
+                </Typography>
+                <StyledTextField
+                  name="heardFrom"
+                  value={formData.heardFrom}
+                  onChange={(e)=>{
+                    setFormData((prev)=>({...prev, heardFrom: e.target.value}))
+                  }}
+                  select
+                  options={[
+                    { value: "Social Media", label: "Social Media" },
+                    { value: "Friend", label: "Friend" },
+                    { value: "Website", label: "Website" },
+                  ]}
+                  placeholder="Select Option"
+                />
+              </Grid2>
+              <Grid2
+                item
+                size={{ xs: 12, sm: 12 }}
+                sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+              >
+                <Typography variant="body1">Message</Typography>
+                <StyledTextField
+                  name="message"
+                  value={formData.message}
+                  onChange={(e)=>{
+                    setFormData((prev)=>({...prev, message: e.target.value}))
+                  }}
+                  placeholder="Enter your message here..."
+                  multiline={true}
+                  rows={4}
+                />
+              </Grid2>
+              <Grid2
+                container
+                width="100%"
+                size={{ xs: 12, md: 12, sm: 12 }}
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Grid2 item>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        sx={{
+                          color: "#262626",
+                          "&.Mui-checked": { color: "#7C4DFF" },
+                        }}
+                      />
+                    }
+                    label={
+                      <Typography variant="body2" color="#999999">
+                        I agree with{" "}
+                        <a href="#" style={{ color: "#999999" }}>
+                          Terms of Use
+                        </a>{" "}
+                        and{" "}
+                        <a href="#" style={{ color: "#999999" }}>
+                          Privacy Policy
+                        </a>
+                      </Typography>
+                    }
+                  />
+                </Grid2>
+                <Grid2 item>
+                  <Button
+                    variant="contained"
+                    sx={{ backgroundColor: "#7C4DFF", color: "white", px: 4 }}
+                    onClick={handleSubmit}
+                  >
+                    Send Your Message
+                  </Button>
+                </Grid2>
               </Grid2>
             </Grid2>
-          </Grid2>
-        </Box>
+          </Box>
+        )}
       </Box>
 
       <RealEstateCTA />
       <FooterComponent />
     </Box>
   );
-};
-const inputStyles = {
-  "& .MuiOutlinedInput-root": {
-    backgroundColor: "#1A1A1A",
-    minHeight: "50px",
-    color: "#ffffff",
-    "& fieldset": { borderColor: "#262626" },
-    "&:hover fieldset": { borderColor: "#7C4DFF" },
-    "& .MuiInputBase-input": { color: "#ffffff" },
-  },
 };
 
 export default ContactUs;

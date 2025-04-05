@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Box,
   Typography,
@@ -19,8 +19,10 @@ import StyledTextField from "../../StyledComponents/StyledTextField";
 import ImageUploadComponent from "./ImageUploadComponent";
 import VideoUploadComponent from "./VideoUploadComponent";
 import VariantForm from "./AddVariantComponent";
+import { uploadFile, getUploadedFileUrl } from "../../store/fileUploadSlice";
 
 const ListYourProperty = () => {
+  const dispatch = useDispatch();
   const propertyTypes = [
     "Residential",
     "Commercial",
@@ -161,7 +163,7 @@ const ListYourProperty = () => {
     setimageList((prev) => ({ ...prev, images: files }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const finalPayload = {
       ...formData,
       images: formData.images.map(file => file.name),
@@ -176,8 +178,63 @@ const ListYourProperty = () => {
           : [],
       })),
     };
-  
+
     console.log("📦 Final Form Data:", finalPayload);
+
+    try {
+      // 1. Upload main images
+      const uploadedImageUrls = await Promise.all(
+        formData.images.map((file) =>
+          dispatch(uploadFile(file)).unwrap() // gets URL directly
+        )
+      );
+  
+      // 2. Upload main videos
+      const uploadedVideoUrls = await Promise.all(
+        formData.video.map((file) =>
+          dispatch(uploadFile(file)).unwrap()
+        )
+      );
+  
+      // 3. Upload variant files
+      const updatedVariants = await Promise.all(
+        formData.variants.map(async (variant) => {
+          const uploadedVariantImages = await Promise.all(
+            (variant.images || []).map((file) =>
+              dispatch(uploadFile(file)).unwrap()
+            )
+          );
+  
+          const uploadedVariantVideos = await Promise.all(
+            (variant.video || []).map((file) =>
+              dispatch(uploadFile(file)).unwrap()
+            )
+          );
+  
+          return {
+            ...variant,
+            images: uploadedVariantImages,
+            video: uploadedVariantVideos,
+          };
+        })
+      );
+  
+      // 4. Create final payload
+      const finalPayload = {
+        ...formData,
+        images: uploadedImageUrls,
+        video: uploadedVideoUrls,
+        variants: updatedVariants,
+      };
+      console.log("✅ Final payload to submit:", finalPayload);
+
+      // 👉 TODO: Submit to your backend here
+      // await axios.post('/api/properties', finalPayload);
+
+    } catch (error) {
+      console.error("❌ File upload failed:", error);
+      alert("Failed to upload media. Please try again.");
+    }
   };
   
   
