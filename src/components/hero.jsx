@@ -1,18 +1,44 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Box, Button, Typography, Grid2 } from "@mui/material";
 import { motion } from "framer-motion";
+import { fetchStats } from "../store/statsSlice";
 
 const HeroSection = () => {
+  const dispatch = useDispatch();
   const [stats, setStats] = useState([
-    { title: "Happy Customer", value: 200, divisor: 1, suffix: "" },
-    {
-      title: "Properties For Clients",
-      value: 10000,
-      divisor: 1000,
-      suffix: "K",
-    },
-    { title: "Years of Experience", value: 16, divisor: 1, suffix: "" },
+    { title: "Happy Customer", value: 0, apiKey: "happyClients", divisor: 1, suffix: "" },
+    { title: "Properties For Clients", value: 0, apiKey: "projects", divisor: 1, suffix: "K" },
+    { title: "Years of Experience", value: 0, apiKey: "daysOfWork", divisor: 365, suffix: "" },
   ]);
+  
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await dispatch(fetchStats());
+        console.log("Full payload:", response.payload);
+  
+        if (response.meta.requestStatus === "fulfilled") {
+          const statsData = response.payload; // <--- Fix is here
+  
+          setStats((prevStats) =>
+            prevStats.map((stat) => ({
+              ...stat,
+              value: Math.floor((statsData?.[stat.apiKey] || 0) / stat.divisor),
+            }))
+          );
+        }
+      } catch (err) {
+        console.error("Failed to fetch stats:", err);
+      }
+    };
+  
+    fetchData();
+  }, [dispatch]);
+  
+  
+
   return (
     <Box
       sx={{
@@ -98,7 +124,7 @@ const HeroSection = () => {
           sx={{ width: "100%" }}
           direction={{ xs: "column", sm: "row" }}
         >
-          {stats.map((item, index) => (
+          {stats.map((stat, index) => (
             <Grid2 item size={{ xs: 12, sm: 4 }} key={index} sx={{ flex: 1 }}>
               <Box
                 sx={{
@@ -113,13 +139,15 @@ const HeroSection = () => {
                 }}
               >
                 <Typography variant="h4">
-                  {`${item.value / item.divisor}${item.suffix}+`}
+                  {stat.value}
+                  {stat.suffix}
+                  +
                 </Typography>
                 <Typography
                   variant="body2"
                   sx={{ color: "#b0b0b0", whiteSpace: "nowrap" }}
                 >
-                  {item.title}
+                  {stat.title}
                 </Typography>
               </Box>
             </Grid2>

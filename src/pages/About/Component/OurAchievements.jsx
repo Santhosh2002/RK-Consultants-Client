@@ -16,8 +16,8 @@ const testimonials = [
   {
     id: 1,
     explanation:
-      "With over 3 years in the industry, we've amassed a wealth of knowledge and experience, becoming a go-to resource for all things real estate.",
-    title: "3+ Years of Excellence",
+      "With over 2 years in the industry, we've amassed a wealth of knowledge and experience, becoming a go-to resource for all things real estate.",
+    title: "2+ Years of Excellence",
   },
   {
     id: 2,
