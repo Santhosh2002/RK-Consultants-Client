@@ -16,13 +16,15 @@ import Navbar from "../../components/Navbar";
 import RealEstateCTA from "../../components/RealEstateCTA";
 import FooterComponent from "../../components/footer";
 import PropertyListing from "../../components/PropertyListing";
-import { useDispatch } from "react-redux";
-import { fetchProjects } from "../../store/projectsSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchProjects, getProjects } from "../../store/projectsSlice";
+import PropertyCard from "../../components/PropertyCard";
 
 const MotionBox = motion(Box);
 
 const Properties = () => {
   const dispatch = useDispatch();
+  var properties = useSelector(getProjects);
 
   useEffect(() => {
     dispatch(fetchProjects());
@@ -149,8 +151,13 @@ const Properties = () => {
           </Grid2>
         </Grid2>
       </Box>
-      <Box sx={{ paddingTop: "90px", backgroundColor: "#141414" }}>
-        <PropertyListing />
+      <Box sx={{ backgroundColor: "#141414", padding: "150px 100px" }}>
+        <Grid2 container spacing={4}>
+          {properties.map((property) => (
+            <PropertyCard key={property.id} item={property} />
+          ))}
+        </Grid2>
+        {/* <PropertyListing /> */}
       </Box>
       <RealEstateCTA />
       <FooterComponent />
