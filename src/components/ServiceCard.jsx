@@ -71,7 +71,7 @@ const ServiceCard = ({ service }) => {
             >
               <Box sx={{ display: "flex", flexDirection: "column" }}>
                 <Typography variant="body2" sx={{ color: "#9999", fontSize: "14px" }}>
-                  Price
+                  Price Upto
                 </Typography>
                 <Typography variant="subtitle1" sx={{ fontWeight: "bold", fontSize: "18px" }}>
                   ₹{service?.price}
@@ -101,14 +101,15 @@ const ServiceCard = ({ service }) => {
 
       {/* ✅ Payment Modal */}
       <Modal open={open} onClose={() => setOpen(false)}>
-        <Paper sx={{ p: 4, maxWidth: 600, mx: "auto", mt: 4 }}>
+        <Box sx={{ p: 4, maxWidth: 600, mx: "auto", mt: 4 }}>
           {selectedService && (
             <MultiStepForm
-              amount={"1000"} // ✅ Pass the amount
+              amount={0} // ✅ Pass the amount
               serviceName={selectedService.name}
+              subServices={selectedService.subServices}
             />
           )}
-        </Paper>
+        </Box>
       </Modal>
     </Grid2>
   );

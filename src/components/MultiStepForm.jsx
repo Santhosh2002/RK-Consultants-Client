@@ -14,13 +14,15 @@ import {
   StepLabel,
   Button,
   Typography,
-  Paper,
+  Divider,
+  Checkbox,
+  FormControlLabel,
 } from "@mui/material";
 import StyledTextField from "../StyledComponents/StyledTextField";
 
-const steps = ["Client Details", "Confirm Details", "Payment"];
+const steps = ["Select Services", "Client Details", "Confirm & Pay"];
 
-const MultiStepForm = ({ amount }) => {
+const MultiStepForm = ({ amount = 0, subServices = [], serviceName }) => {
   const dispatch = useDispatch();
   const clientData = useSelector(getClientDetails);
 
@@ -29,46 +31,59 @@ const MultiStepForm = ({ amount }) => {
     handleSubmit,
     formState: { errors },
   } = useForm();
+
   const [activeStep, setActiveStep] = useState(0);
   const [isRazorpayLoaded, setIsRazorpayLoaded] = useState(false);
+  const [selectedSubServices, setSelectedSubServices] = useState([]);
+  const [totalAmount, setTotalAmount] = useState(amount);
 
   useEffect(() => {
     const loadRazorpay = () => {
-      return new Promise((resolve) => {
-        const script = document.createElement("script");
-        script.src = "https://checkout.razorpay.com/v1/checkout.js";
-        script.onload = () => {
-          setIsRazorpayLoaded(true);
-          resolve(true);
-        };
-        script.onerror = () => resolve(false);
-        document.body.appendChild(script);
-      });
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => setIsRazorpayLoaded(true);
+      document.body.appendChild(script);
     };
     loadRazorpay();
   }, []);
 
+  const handleSubServiceToggle = (subService) => {
+    const exists = selectedSubServices.some((s) => s._id === subService._id);
+    const updated = exists
+      ? selectedSubServices.filter((s) => s._id !== subService._id)
+      : [...selectedSubServices, subService];
+
+    setSelectedSubServices(updated);
+
+    const newTotal =
+      updated.length > 0
+        ? updated.reduce((sum, item) => sum + (item.price || 0), 0)
+        : amount;
+
+    setTotalAmount(newTotal);
+  };
+
   const onSubmitClientDetails = (data) => {
     dispatch(setClientData(data));
-    setActiveStep(1);
+    setActiveStep(2);
   };
 
   const handlePayment = async () => {
     if (!isRazorpayLoaded) {
-      alert("Razorpay failed to load. Please check your internet connection.");
+      alert("Razorpay failed to load.");
       return;
     }
 
-    dispatch(createOrder({ clientData, amount })).then((res) => {
+    dispatch(createOrder({ clientData, amount: totalAmount })).then((res) => {
       if (res.payload) {
         const options = {
           key: import.meta.env.VITE_RAZORPAY_KEY_ID,
           amount: res.payload.amount,
           currency: res.payload.currency,
           name: "RK Services",
-          description: "Payment for services",
+          description: serviceName,
           order_id: res.payload.id,
-          handler: async function (response) {
+          handler: (response) => {
             dispatch(verifyPayment(response));
             setActiveStep(3);
           },
@@ -81,30 +96,67 @@ const MultiStepForm = ({ amount }) => {
   };
 
   return (
-    // <Paper elevation={3} sx={{ p: 4, maxWidth: 600, mx: "auto", mt: 4 }}>
-    <Box>
+    <Box sx={{ background: "#111", color: "#fff", borderRadius: 3, p: 4 }}>
       <Typography variant="h5" align="center" gutterBottom>
-        Service Payment
+        {serviceName}
       </Typography>
 
-      <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
-        {steps.map((label, index) => (
-          <Step key={index}>
-            <StepLabel>{label}</StepLabel>
+      <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
+        {steps.map((label, i) => (
+          <Step key={i}>
+            <StepLabel sx={{ color: "#fff !important" }}>{label}</StepLabel>
           </Step>
         ))}
       </Stepper>
 
+      {/* Step 0 - Sub-service selection */}
       {activeStep === 0 && (
-        <form onSubmit={handleSubmit(onSubmitClientDetails)} style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+        <Box>
+          <Typography variant="subtitle1" gutterBottom>
+            Select required services:
+          </Typography>
+          {subServices.map((sub) => (
+            <Box key={sub._id} sx={{ mb: 1, display: "flex", justifyContent: "space-between" }}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={!!selectedSubServices.find((s) => s._id === sub._id)}
+                    onChange={() => handleSubServiceToggle(sub)}
+                    sx={{ color: "#6A5ACD" }}
+                  />
+                }
+                label={<Typography color="#fff">{sub.name}</Typography>}
+              />
+              <Typography variant="body2">₹{sub.price}</Typography>
+            </Box>
+          ))}
+          <Divider sx={{ my: 2, borderColor: "#333" }} />
+          <Typography variant="h6">Total: ₹{totalAmount}</Typography>
+
+          <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
+            <Button
+              variant="contained"
+              onClick={() => setActiveStep(1)}
+              sx={{ backgroundColor: "#6A5ACD" }}
+              disabled={subServices.length > 0 && selectedSubServices.length === 0}
+            >
+              Next
+            </Button>
+          </Box>
+        </Box>
+      )}
+
+      {/* Step 1 - Client details */}
+      {activeStep === 1 && (
+        <form onSubmit={handleSubmit(onSubmitClientDetails)} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           <Controller
             name="name"
             control={control}
             rules={{ required: "Name is required" }}
             render={({ field }) => (
-              <StyledTextField 
+              <StyledTextField
                 {...field}
-                placeholder="Name"
+                placeholder="Full Name"
                 error={!!errors.name}
                 helperText={errors.name?.message}
                 required
@@ -118,7 +170,7 @@ const MultiStepForm = ({ amount }) => {
             render={({ field }) => (
               <StyledTextField
                 {...field}
-                placeholder="Email"
+                placeholder="Email (optional)"
                 type="email"
               />
             )}
@@ -129,9 +181,9 @@ const MultiStepForm = ({ amount }) => {
             control={control}
             rules={{ required: "Phone is required" }}
             render={({ field }) => (
-              <StyledTextField 
+              <StyledTextField
                 {...field}
-                placeholder="Phone"
+                placeholder="Phone Number"
                 error={!!errors.phone}
                 helperText={errors.phone?.message}
                 required
@@ -139,51 +191,64 @@ const MultiStepForm = ({ amount }) => {
             )}
           />
 
-          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
-            <Button type="submit" variant="contained" sx={{ backgroundColor: "#7C4DFF", color: "white" }}>
+          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
+            <Button variant="outlined" onClick={() => setActiveStep(0)} color="error">
+              Back
+            </Button>
+            <Button type="submit" variant="contained" sx={{ backgroundColor: "#6A5ACD" }}>
               Next
             </Button>
           </Box>
         </form>
       )}
 
-      {activeStep === 1 && (
+      {/* Step 2 - Confirm + Payment */}
+      {activeStep === 2 && (
         <Box>
-          <Typography variant="h6">Confirm Details</Typography>
+          <Typography variant="h6" gutterBottom>
+            Confirm & Pay
+          </Typography>
+
           <Typography>Name: {clientData?.name}</Typography>
           <Typography>Email: {clientData?.email}</Typography>
           <Typography>Phone: {clientData?.phone}</Typography>
 
-          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
-            <Button variant="outlined" onClick={() => setActiveStep(0)} color="error">
-              Back
-            </Button>
-            <Button variant="contained" onClick={() => setActiveStep(2)} sx={{ backgroundColor: "#7C4DFF", color: "white" }}>
-              Proceed to Payment
-            </Button>
-          </Box>
-        </Box>
-      )}
+          <Divider sx={{ my: 2, borderColor: "#333" }} />
 
-      {activeStep === 2 && (
-        <Box textAlign="center">
-          <Typography variant="h6">Total Amount: ₹{amount}</Typography>
-          <Button
-            variant="contained"
-            color="success"
-            onClick={handlePayment}
-            sx={{ mt: 3 }}
-          >
-            {isRazorpayLoaded ? "Pay Now" : "Loading Payment..."}
-          </Button>
-          <Box sx={{ mt: 3 }}>
+          <Typography variant="subtitle1">Selected Services:</Typography>
+          {selectedSubServices.length > 0 ? (
+            <ul style={{ marginLeft: 16 }}>
+              {selectedSubServices.map((s) => (
+                <li key={s._id}>
+                  {s.name} — ₹{s.price}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <Typography>Base Service Only — ₹{totalAmount}</Typography>
+          )}
+
+          <Typography variant="h6" sx={{ mt: 2 }}>
+            Total: ₹{totalAmount}
+          </Typography>
+
+          <Box sx={{ mt: 3, display: "flex", justifyContent: "space-between" }}>
             <Button variant="outlined" onClick={() => setActiveStep(1)} color="error">
               Back
             </Button>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={handlePayment}
+              disabled={!isRazorpayLoaded}
+            >
+              {isRazorpayLoaded ? "Pay Now" : "Loading..."}
+            </Button>
           </Box>
         </Box>
       )}
 
+      {/* Step 3 - Success */}
       {activeStep === 3 && (
         <Box textAlign="center">
           <Typography variant="h5" color="success.main">
@@ -192,7 +257,6 @@ const MultiStepForm = ({ amount }) => {
           <Typography>Thank you for your payment.</Typography>
         </Box>
       )}
-    {/* // </Paper> */}
     </Box>
   );
 };
