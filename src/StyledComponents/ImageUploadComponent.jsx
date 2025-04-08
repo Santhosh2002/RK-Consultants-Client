@@ -1,105 +1,112 @@
 import React, { useState } from "react";
-import { Typography, Button, Box, IconButton, Paper, Grid2 } from "@mui/material";
-import DeleteIcon from '@mui/icons-material/Delete';
-
+import { Typography, Button, Box, IconButton, Grid2 } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { useDispatch } from "react-redux";
+import {
+  uploadFile,
+  getUploadedFileUrl,
+  resetUploadState,
+} from "../store/fileUploadSlice";
+import { useSelector } from "react-redux";
+import { useEffect } from "react";
 const MAX_FILE_SIZE_MB = 5;
 
-const ImageUploadComponent = () => {
-  const [formData, setFormData] = useState({ images: [] });
-  const [dragActive, setDragActive] = useState(false);
+const ImageUploadComponent = ({ variantIndex, onImagesUploaded }) => {
+  const [images, setImages] = useState([]);
+  const [fileQueue, setFileQueue] = useState([]);
+  const dispatch = useDispatch();
+  const uploadedUrls = useSelector(getUploadedFileUrl);
 
   const handleFileChange = (files) => {
     const selectedFiles = Array.from(files);
-    const validFiles = selectedFiles.filter(file => {
+    const validFiles = selectedFiles.filter((file) => {
       if (!file.type.startsWith("image/")) return false;
       if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) return false;
       return true;
     });
 
-    setFormData((prev) => ({
-      ...prev,
-      images: [...prev.images, ...validFiles],
-    }));
+    setImages((prev) => [...prev, ...validFiles]);
+    setFileQueue((prev) => [...prev, ...validFiles]);
   };
 
   const onInputChange = (e) => {
     handleFileChange(e.target.files);
-    e.target.value = null; // allow re-select of same file
+    e.target.value = null;
+  };
+
+  const handleUploadClick = () => {
+    if (fileQueue.length === 0) return;
+    dispatch(resetUploadState()); // optional, clean previous
+    dispatch(uploadFile(fileQueue));
+    setFileQueue([]);
   };
 
   const handleRemoveImage = (indexToRemove) => {
-    setFormData((prev) => ({
-      ...prev,
-      images: prev.images.filter((_, index) => index !== indexToRemove),
-    }));
+    setImages((prev) => prev.filter((_, index) => index !== indexToRemove));
+    setFileQueue((prev) => prev.filter((_, index) => index !== indexToRemove));
   };
 
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    setDragActive(true);
-  };
-
-  const handleDragLeave = () => {
-    setDragActive(false);
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    setDragActive(false);
-    if (e.dataTransfer.files.length > 0) {
-      handleFileChange(e.dataTransfer.files);
+  useEffect(() => {
+    if (uploadedUrls?.length > 0) {
+      onImagesUploaded(uploadedUrls);
     }
-  };
+  }, [uploadedUrls]);
 
   return (
-    <Grid2 sx={{ display: "flex", flexDirection: "column", gap: "8px" }} item size={{ xs: 12, sm: 6 }}>
-      <Grid2 sx={{ display: "flex", flexDirection: "row", gap: "8px", justifyContent:"space-between" }} item size={{ xs: 12, sm: 12 }}>
-      <Typography>Images</Typography>
-
-      {/* File input */}
-      <input
-        id="images"
-        type="file"
-        accept="image/*"
-        multiple
-        onChange={onInputChange}
-        style={{ display: "none" }}
-      />
-
-      {/* Upload Button */}
-      <label htmlFor="images">
-        <Button
-          variant="outlined"
-          size="small"
-          component="span"
-          sx={{ color: "#7C4DFF" }}
-        >
-          Upload Images
-        </Button>
-      </label>
-      </Grid2>
-      {/* Drag & Drop area */}
-      {/* <Paper
-        variant="outlined"
+    <Grid2
+      sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+      item
+      size={{ xs: 12, sm: 6 }}
+    >
+      <Grid2
         sx={{
-          mt: 2,
-          p: 2,
-          borderStyle: dragActive ? 'dashed' : 'solid',
-          backgroundColor: dragActive ? '#f3e5f5' : 'inherit',
-          textAlign: "center",
-          cursor: "pointer",
+          display: "flex",
+          flexDirection: "row",
+          gap: "8px",
+          justifyContent: "space-between",
+          alignItems: "center",
         }}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
+        item
+        size={{ xs: 12, sm: 12 }}
       >
-        <Typography variant="body2">Or drag & drop images here</Typography>
-      </Paper> */}
+        <Typography>Images</Typography>
 
-      {/* Image thumbnails with delete icon */}
-      {formData.images.length > 0 && (
+        <div>
+          <input
+            id={`images-${variantIndex}`}
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={onInputChange}
+            style={{ display: "none" }}
+          />
+          <label htmlFor={`images-${variantIndex}`}>
+            <Button
+              variant="outlined"
+              size="small"
+              component="span"
+              sx={{ color: "#7C4DFF", mr: 1 }}
+            >
+              Choose Images
+            </Button>
+          </label>
+
+          <Button
+            variant="contained"
+            size="small"
+            sx={{ backgroundColor: "#7C4DFF", color: "white" }}
+            onClick={handleUploadClick}
+            disabled={fileQueue.length === 0}
+          >
+            Upload
+          </Button>
+        </div>
+      </Grid2>
+
+      {/* Image preview */}
+      {images.length > 0 && (
         <Box sx={{ mt: 2, display: "flex", flexWrap: "wrap", gap: 2 }}>
-          {formData.images.map((file, index) => (
+          {images.map((file, index) => (
             <Box
               key={`${file.name}-${index}`}
               sx={{

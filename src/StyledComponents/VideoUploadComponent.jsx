@@ -1,7 +1,14 @@
 import React, { useState } from "react";
-import { Typography, Button, Box, IconButton, Paper, Grid2 } from "@mui/material";
-import DeleteIcon from '@mui/icons-material/Delete';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import {
+  Typography,
+  Button,
+  Box,
+  IconButton,
+  Paper,
+  Grid2,
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 
 const MAX_VIDEO_SIZE_MB = 50;
 
@@ -11,13 +18,13 @@ const VideoUploadComponent = () => {
 
   const handleFileChange = (files) => {
     const selectedFiles = Array.from(files);
-    const validFiles = selectedFiles.filter(file => {
+    const validFiles = selectedFiles.filter((file) => {
       if (!file.type.startsWith("video/")) return false;
       if (file.size > MAX_VIDEO_SIZE_MB * 1024 * 1024) return false;
       return true;
     });
 
-    setVideos(prev => [...prev, ...validFiles]);
+    setVideos((prev) => [...prev, ...validFiles]);
   };
 
   const onInputChange = (e) => {
@@ -26,7 +33,7 @@ const VideoUploadComponent = () => {
   };
 
   const handleRemoveVideo = (indexToRemove) => {
-    setVideos(prev => prev.filter((_, index) => index !== indexToRemove));
+    setVideos((prev) => prev.filter((_, index) => index !== indexToRemove));
   };
 
   const handleDragOver = (e) => {
@@ -47,28 +54,42 @@ const VideoUploadComponent = () => {
   };
 
   return (
-    <Grid2 sx={{ display: "flex", flexDirection: "column", gap: "8px" }} item size={{ xs: 12, sm: 6 }}>
-      <Grid2 sx={{ display: "flex", flexDirection: "row", gap: "8px", justifyContent:"space-between" }} item size={{ xs: 12, sm: 12 }}>
-      <Typography>Videos</Typography>
+    <Grid2
+      sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+      item
+      size={{ xs: 12, sm: 6 }}
+      width={"100%"}
+    >
+      <Grid2
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          gap: "8px",
+          justifyContent: "space-between",
+        }}
+        item
+        size={{ xs: 12, sm: 12 }}
+      >
+        <Typography>Videos</Typography>
 
-      <input
-        id="videos"
-        type="file"
-        accept="video/*"
-        multiple
-        onChange={onInputChange}
-        style={{ display: "none" }}
-      />
-      <label htmlFor="videos">
-        <Button
-          variant="outlined"
-          component="span"
-          size="small"
-          sx={{ color: "#7C4DFF" }}
-        >
-          Upload Videos
-        </Button>
-      </label>
+        <input
+          id="videos"
+          type="file"
+          accept="video/*"
+          multiple
+          onChange={onInputChange}
+          style={{ display: "none" }}
+        />
+        <label htmlFor="videos">
+          <Button
+            variant="outlined"
+            component="span"
+            size="small"
+            sx={{ color: "#7C4DFF" }}
+          >
+            Upload Videos
+          </Button>
+        </label>
       </Grid2>
 
       {/* Drag & Drop */}

@@ -2,51 +2,36 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
 // Async thunk for uploading files
-export const uploadFile = createAsyncThunk(
-  "files/uploadFile",
-  async (file, { rejectWithValue }) => {
-    if (!file) return rejectWithValue("No file provided");
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { storage } from "../../firebaseConfig"; // adjust path
 
-    const formData = new FormData();
-    formData.append("file", file, `RK Consultants/${file.name}`);
-    const uploadUrl = `${
-      process.env.REACT_APP_UPLOAD_URL
-    }?name=${encodeURIComponent(`RK Consultants/${file.name}`)}`;
+export const uploadFile = createAsyncThunk(
+  "files/uploadFiles",
+  async (files, { rejectWithValue }) => {
+    if (!Array.isArray(files) || files.length === 0) {
+      return rejectWithValue("No files provided");
+    }
 
     try {
-      const response = await axios.post(uploadUrl, formData, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-          "Content-Type": "multipart/form-data",
-        },
+      const uploadPromises = files.map((file) => {
+        const fileRef = ref(storage, `RK Consultants/${file.name}`);
+        return uploadBytesResumable(fileRef, file).then((snapshot) =>
+          getDownloadURL(snapshot.ref)
+        );
       });
-      if (
-        !response.data ||
-        !response.data.bucket ||
-        !response.data.name ||
-        !response.data.downloadTokens
-      ) {
-        throw new Error("Invalid upload response");
-      }
 
-      // Construct the download URL
-      const downloadURL = `https://firebasestorage.googleapis.com/v0/b/${
-        response.data.bucket
-      }/o/${encodeURIComponent(response.data.name)}?alt=media&token=${
-        response.data.downloadTokens
-      }`;
-
-      return downloadURL;
+      const urls = await Promise.all(uploadPromises);
+      console.log("✅ All files uploaded:", urls);
+      return urls; // ⬅️ array of download URLs
     } catch (error) {
-      return rejectWithValue(error.response.data || error.message);
+      return rejectWithValue(error.message);
     }
   }
 );
-
 const fileUploadSlice = createSlice({
   name: "files",
   initialState: {
-    uploadedFileUrl: null,
+    uploadedFileUrl: [],
     uploading: false,
     error: null,
   },
@@ -65,8 +50,9 @@ const fileUploadSlice = createSlice({
       })
       .addCase(uploadFile.fulfilled, (state, action) => {
         state.uploading = false;
-        state.uploadedFileUrl = action.payload; // Assuming the API returns the URL of the uploaded file
+        state.uploadedFileUrls = action.payload; // ⬅️ store the array of URLs
       })
+
       .addCase(uploadFile.rejected, (state, action) => {
         state.uploading = false;
         state.error = action.payload;

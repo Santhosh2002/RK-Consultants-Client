@@ -1,309 +1,587 @@
-import React, { useState } from 'react';
+// ✅ Refactored NewProjectPopUp using MUI + StyledTextField
+import React, { useState, useEffect } from "react";
+import { Box, Typography, Button, Modal, Grid2 } from "@mui/material";
+import StyledTextField from "../../StyledComponents/StyledTextField";
+import ImageUploadComponent from "../../StyledComponents/ImageUploadComponent";
+import VideoUploadComponent from "../../StyledComponents/VideoUploadComponent";
+import VariantForm from "../../StyledComponents/AddVariantComponent";
 
-function NewProjectPopup({ isOpen, onClose, onSubmit }) {
+const propertyTypes = [
+  "Residential",
+  "Commercial",
+  "MAHA RERA",
+  "Land",
+  "Shop",
+  "Other",
+];
+const transactionTypes = ["Lease", "Sale", "Both", "Other"];
+const furnishingStatuses = ["Unfurnished", "Semi-Furnished", "Fully-Furnished"];
+const statusOptions = ["Available", "Sold", "Rented", "Not Disclosed"];
+const parkingOptions = [
+  "Covered Stilt",
+  "Covered Garage",
+  "Open Fixed",
+  "Open Not Fixed",
+  "Mechanical",
+  "None",
+];
+const elevatorAvailable = ["Yes", "No"];
+
+function NewProjectPopUp({ isOpen, onClose, onSubmit }) {
   const [formData, setFormData] = useState({
-    title: '',
-    brochure: null,
-    image: null,
-    description: '',
-    startDate: '',
-    status: 'active',
-    price: '',
-    visible: false,
-    bhk: '',
-    carpetArea: '',
-    transactionType: 'Rent',
-    furnishingStatus: 'Unfurnished',
-    floor: '',
-    facing: '',
-    parking: '',
-    amenities: '',
-    ownership: '',
-    age: '',
-    landmark: '',
-    bedrooms: '',
-    bathrooms: '',
-    balcony: '',
-    video:""
+    title: "",
+    slug: "",
+    description: "",
+    contact: { phone: "", email: "" },
+    images: [],
+    video: [],
+    virtualTour: "",
+    brochure: "",
+    visible: true,
+    propertyType: "Residential",
+    transactionType: "Sale",
+    furnishingStatus: "Unfurnished",
+    status: "Available",
+    ownership: "Freehold",
+    landmark: "",
+    nearby: [],
+    amenities: [],
+    parking: "",
+    location: {
+      street: "",
+      city: "",
+      state: "",
+      country: "",
+      latitude: "",
+      longitude: "",
+    },
+    approval: "Approved",
+    variants: [
+      {
+        bhk: "",
+        carpetArea: "",
+        builtUpArea: "",
+        facing: "",
+        price: "",
+        currency: "INR",
+        bedrooms: 0,
+        bathrooms: 0,
+        images: [],
+        video: [],
+        balcony: 0,
+        floor: "",
+        totalFloors: "",
+        availability: true,
+      },
+    ],
   });
-  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    if (files) {
-      const file = files[0];
-      if (file.size > 5 * 1024 * 1024) {
-        alert('File size should not exceed 5MB.');
-        return;
+    const { name, value, type, checked } = e.target;
+    if (!name) return;
+
+    const keys = name.split(".");
+
+    setFormData((prev) => {
+      const updated = { ...prev };
+      let nested = updated;
+
+      for (let i = 0; i < keys.length - 1; i++) {
+        if (!nested[keys[i]]) nested[keys[i]] = {};
+        nested = nested[keys[i]];
       }
-      setFormData((prevState) => ({ ...prevState, [name]: file }));
-    } else {
-      setFormData((prevState) => ({ ...prevState, [name]: value }));
-    }
+
+      const finalKey = keys[keys.length - 1];
+      nested[finalKey] = type === "checkbox" ? checked : value;
+
+      return updated;
+    });
   };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    const processedData = {
+  const handleSubmit = () => {
+    const finalPayload = {
       ...formData,
-      startDate: new Date().toISOString(),
-      amenities: formData.amenities.split(',').map((amenity) => amenity.trim()),
+      images: formData.images.map((file) => file.name),
+      video: formData.video.map((file) => file.name),
+      variants: formData.variants.map((variant) => ({
+        ...variant,
+        images: Array.isArray(variant.images)
+          ? variant.images.map((file) => file.name)
+          : [],
+        video: Array.isArray(variant.video)
+          ? variant.video.map((file) => file.name)
+          : [],
+      })),
     };
 
-    console.log('Submitted Data:', processedData);
-    await onSubmit(processedData);
-    setIsLoading(false);
+    console.log("📦 Final Form Data:", finalPayload);
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white rounded-lg p-6 w-11/12 max-w-3xl max-h-[600px] overflow-y-scroll ">
-        <h2 className="text-xl font-bold mb-4 text-black">Add New Project</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-600">Title</label>
-              <input
-                type="text"
-                name="title"
-                value={formData.title}
-                onChange={handleChange}
-                className="w-full p-2 border rounded text-gray-600 bg-white"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-600">Price</label>
-              <input
-                type="number"
-                name="price"
-                value={formData.price}
-                onChange={handleChange}
-                className="w-full p-2 border rounded text-gray-600 bg-white"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-600">BHK</label>
-              <input
-                type="text"
-                name="bhk"
-                value={formData.bhk}
-                onChange={handleChange}
-                className="w-full p-2 border rounded text-gray-600 bg-white"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-600">Carpet Area</label>
-              <input
-                type="text"
-                name="carpetArea"
-                value={formData.carpetArea}
-                onChange={handleChange}
-                className="w-full p-2 border rounded text-gray-600 bg-white"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-600">Transaction Type</label>
-              <select
-                name="transactionType"
-                value={formData.transactionType}
-                onChange={handleChange}
-                className="w-full p-2 border rounded bg-white text-gray-600"
-              >
-                <option value="Rent">Rent</option>
-                <option value="Sale">Sale</option>
-                <option value="Lease">Lease</option>
-                
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-600">Bedrooms</label>
-              <input
-                type="text"
-                name="bedrooms"
-                value={formData.bedrooms}
-                onChange={handleChange}
-                className="w-full p-2 border rounded text-gray-600 bg-white"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-600">Bathrooms</label>
-              <input
-                type="text"
-                name="bathrooms"
-                value={formData.bathrooms}
-                onChange={handleChange}
-                className="w-full p-2 border rounded text-gray-600 bg-white"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-600">Balcony</label>
-              <input
-                type="text"
-                name="balcony"
-                value={formData.balcony}
-                onChange={handleChange}
-                className="w-full p-2 border rounded text-gray-600 bg-white"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-600">Status</label>
-              <select
-                name="status"
-                value={formData.status}
-                onChange={handleChange}
-                className="w-full p-2 border rounded bg-white text-gray-600"
-              >
-                <option value="active">Active</option>
-                <option value="closed">Closed</option>
-              </select>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-600">Furnishing Status</label>
-              <select
-                name="furnishingStatus"
-                value={formData.furnishingStatus}
-                onChange={handleChange}
-                className="w-full p-2 border rounded bg-white text-gray-600"
-              >
-                <option value="Unfurnished">Unfurnished</option>
-                <option value="Furnished">Furnished</option>
-                <option value="Semi-Furnished">Semi-Furnished</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-600">Floor</label>
-              <input
-                type="text"
-                name="floor"
-                value={formData.floor}
-                onChange={handleChange}
-                className="w-full p-2 border rounded text-gray-600 bg-white"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-600">Facing</label>
-              <input
-                type="text"
-                name="facing"
-                value={formData.facing}
-                onChange={handleChange}
-                className="w-full p-2 border rounded text-gray-600 bg-white"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-600">Parking</label>
-              <input
-                type="text"
-                name="parking"
-                value={formData.parking}
-                onChange={handleChange}
-                className="w-full p-2 border rounded text-gray-600 bg-white"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-600">Video</label>
-              <input
-                type="text"
-                name="video"
-                value={formData.video}
-                onChange={handleChange}
-                className="w-full p-2 border rounded text-gray-600 bg-white"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-600">Ownership</label>
-              <input
-                type="text"
-                name="ownership"
-                value={formData.ownership}
-                onChange={handleChange}
-                className="w-full p-2 border rounded text-gray-600 bg-white"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-600">Age</label>
-              <input
-                type="text"
-                name="age"
-                value={formData.age}
-                onChange={handleChange}
-                className="w-full p-2 border rounded text-gray-600 bg-white"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-600">Landmark</label>
-              <input
-                type="text"
-                name="landmark"
-                value={formData.landmark}
-                onChange={handleChange}
-                className="w-full p-2 border rounded text-gray-600 bg-white"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-600">Amenities</label>
-              <input
-                type="text"
-                name="amenities"
-                value={formData.amenities}
-                onChange={handleChange}
-                className="w-full p-2 border rounded text-gray-600 bg-white"
-                placeholder="Enter amenities separated by commas"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-600">Brochure (PDF only)</label>
-              <input
-                type="file"
-                name="brochure"
-                onChange={handleChange}
-                className="w-full p-2 border rounded bg-white text-gray-600"
-                accept=".pdf"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-600">Image</label>
-              <input
-                type="file"
-                name="image"
-                onChange={handleChange}
-                className="w-full p-2 border rounded bg-white text-gray-600"
-              />
-            </div>
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-600">Description</label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              className="w-full p-2 border rounded text-gray-600 bg-white"
+    <Modal
+      open={isOpen}
+      onClose={onClose}
+      sx={{
+        maxWidth: "50%",
+        margin: "auto",
+        overflowY: "auto",
+        scrollbarWidth: "none",
+        maxHeight: "90vh",
+        backgroundColor: "#141414",
+      }}
+    >
+      <Box
+        component="form"
+        sx={{
+          borderRadius: "8px",
+          padding: { xs: 3, md: 5 },
+          border: "5px solid #262626",
+
+          width: "100%",
+        }}
+      >
+        <Grid2 container spacing={2}>
+          <Grid2
+            sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+            item
+            size={{ xs: 12, sm: 12 }}
+          >
+            <Typography>Title</Typography>
+            <StyledTextField
+              name="formData.title"
+              type="text"
+              placeholder="Enter title"
+              value={formData.title}
+              onChange={(e) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  title: e.target.value,
+                }));
+              }}
               required
             />
-          </div>
-          <div className="flex justify-end gap-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 bg-gray-300 rounded"
+          </Grid2>
+          {/* <Grid2
+              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+              item
+              size={{ xs: 12, sm: 6 }}
             >
-              Cancel
-            </button>
-            <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded">
-              {isLoading ? 'Submitting...' : 'Submit'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+              <Typography>Slug</Typography>
+              <StyledTextField
+                name="slug"
+                placeholder="Enter property url"
+                value={formData.slug}
+                onChange={handleChange}
+              />
+            </Grid2> */}
+          <Grid2
+            sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+            item
+            size={{ xs: 12, sm: 6 }}
+          >
+            <Typography>Email</Typography>
+            <StyledTextField
+              name="contact.email"
+              value={formData.contact.email}
+              placeholder="Enter your email"
+              onChange={(e) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  contact: {
+                    ...prev.contact,
+                    email: e.target.value,
+                  },
+                }));
+              }}
+            />
+          </Grid2>
+          <Grid2
+            sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+            item
+            size={{ xs: 12, sm: 6 }}
+          >
+            <Typography>Phone</Typography>
+            <StyledTextField
+              name="contact.phone"
+              placeholder="Enter your phone number"
+              value={formData.contact.phone}
+              onChange={(e) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  contact: {
+                    ...prev.contact,
+                    phone: e.target.value,
+                  },
+                }));
+              }}
+              required
+            />
+          </Grid2>
+          <Grid2
+            sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+            item
+            size={{ xs: 12 }}
+          >
+            <Typography>Description</Typography>
+            <StyledTextField
+              name="description"
+              placeholder="Description"
+              multiline
+              rows={4}
+              value={formData.description}
+              onChange={(e) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  description: e.target.value,
+                }));
+              }}
+            />
+          </Grid2>
+          <Grid2
+            sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+            item
+            size={{ xs: 12, sm: 6 }}
+          >
+            <Typography>Property Type</Typography>
+            <StyledTextField
+              select
+              name="propertyType"
+              value={formData.propertyType}
+              onChange={(e) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  propertyType: e.target.value,
+                }));
+              }}
+              options={propertyTypes.map((type) => ({
+                value: type,
+                label: type,
+              }))}
+            />
+          </Grid2>
+          <Grid2
+            sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+            item
+            size={{ xs: 12, sm: 6 }}
+          >
+            <Typography>Transaction Type</Typography>
+            <StyledTextField
+              select
+              name="transactionType"
+              value={formData.transactionType}
+              onChange={(e) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  transactionType: e.target.value,
+                }));
+              }}
+              options={transactionTypes.map((type) => ({
+                value: type,
+                label: type,
+              }))}
+            />
+          </Grid2>
+          <Grid2
+            sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+            item
+            size={{ xs: 12, sm: 6 }}
+          >
+            <Typography>Furnishing Status</Typography>
+            <StyledTextField
+              select
+              name="furnishingStatus"
+              value={formData.furnishingStatus}
+              onChange={(e) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  furnishingStatus: e.target.value,
+                }));
+              }}
+              options={furnishingStatuses.map((status) => ({
+                value: status,
+                label: status,
+              }))}
+            />
+          </Grid2>
+          <Grid2
+            sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+            item
+            size={{ xs: 12, sm: 6 }}
+          >
+            <Typography>Status</Typography>
+            <StyledTextField
+              select
+              name="status"
+              value={formData.status}
+              onChange={(e) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  status: e.target.value,
+                }));
+              }}
+              options={statusOptions.map((status) => ({
+                value: status,
+                label: status,
+              }))}
+            />
+          </Grid2>
+          <Grid2
+            sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+            item
+            size={{ xs: 12 }}
+          >
+            <Typography>Landmark</Typography>
+            <StyledTextField
+              name="landmark"
+              placeholder="Enter landmark"
+              value={formData.landmark}
+              onChange={(e) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  landmark: e.target.value,
+                }));
+              }}
+            />
+          </Grid2>
+          <Grid2
+            sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+            item
+            size={{ xs: 12 }}
+          >
+            <Typography>Nearby Places</Typography>
+            <StyledTextField
+              name="nearby"
+              placeholder="Enter nearby places"
+              value={formData.nearby}
+              onChange={(e) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  nearby: e.target.value.split(",").map((x) => x.trim()),
+                }));
+              }}
+            />
+          </Grid2>
+          <Grid2
+            sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+            item
+            size={{ xs: 12 }}
+          >
+            <Typography>Amenities</Typography>
+            <StyledTextField
+              name="amenities"
+              placeholder="Enter amenities"
+              value={formData.amenities}
+              onChange={(e) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  amenities: e.target.value.split(",").map((x) => x.trim()),
+                }));
+              }}
+            />
+          </Grid2>
+          <ImageUploadComponent
+            images={formData.images}
+            setImages={(files) =>
+              setFormData((prev) => ({ ...prev, images: files }))
+            }
+          />
+          <VideoUploadComponent
+            videos={formData.video}
+            setVideos={(files) =>
+              setFormData((prev) => ({ ...prev, video: files }))
+            }
+          />
+          <Grid2
+            sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+            item
+            size={{ xs: 12, sm: 6 }}
+          >
+            <Typography>Parking</Typography>
+            <StyledTextField
+              select
+              name="parking"
+              value={formData.parking}
+              onChange={handleChange}
+              options={parkingOptions.map((option) => ({
+                value: option,
+                label: option,
+              }))}
+            />
+          </Grid2>
+          <Grid2
+            sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+            item
+            size={{ xs: 12, sm: 6 }}
+          >
+            <Typography>Elevator Available</Typography>
+            <StyledTextField
+              select
+              name="elevator"
+              value={formData.elevator ? "Yes" : "No"}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  elevator: e.target.value === "Yes",
+                }))
+              }
+              options={elevatorAvailable.map((option) => ({
+                value: option,
+                label: option,
+              }))}
+            />
+          </Grid2>
+          <Grid2
+            sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+            item
+            size={{ xs: 12, sm: 12 }}
+          >
+            <Typography>Location</Typography>
+            <Grid2 direction={"row"} container spacing={2}>
+              <Grid2
+                // sx={{ display: "flex", flexDirection: "row", gap: "8px" }}
+                item
+                size={{ xs: 12, sm: 4 }}
+              >
+                <StyledTextField
+                  name="street"
+                  placeholder="Street"
+                  value={formData.location.street}
+                  onChange={(e) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      location: {
+                        ...prev.location,
+                        street: e.target.value,
+                      },
+                    }));
+                  }}
+                />
+              </Grid2>
+              <Grid2
+                // sx={{ display: "flex", flexDirection: "row", gap: "8px" }}
+                item
+                size={{ xs: 12, sm: 4 }}
+              >
+                <StyledTextField
+                  name="city"
+                  placeholder="City"
+                  value={formData.location.city}
+                  onChange={(e) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      location: { ...prev.location, city: e.target.value },
+                    }));
+                  }}
+                />
+              </Grid2>
+              <Grid2
+                sx={{ display: "flex", flexDirection: "row", gap: "8px" }}
+                item
+                size={{ xs: 12, sm: 4 }}
+              >
+                <StyledTextField
+                  name="state"
+                  placeholder="State"
+                  value={formData.location.state}
+                  onChange={(e) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      location: { ...prev.location, state: e.target.value },
+                    }));
+                  }}
+                />
+              </Grid2>
+              <Grid2
+                sx={{ display: "flex", flexDirection: "row", gap: "8px" }}
+                item
+                size={{ xs: 12, sm: 4 }}
+              >
+                <StyledTextField
+                  name="country"
+                  placeholder="Country"
+                  value={formData.location.country}
+                  onChange={(e) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      location: {
+                        ...prev.location,
+                        country: e.target.value,
+                      },
+                    }));
+                  }}
+                />
+              </Grid2>
+              <Grid2
+                sx={{ display: "flex", flexDirection: "row", gap: "8px" }}
+                item
+                size={{ xs: 12, sm: 4 }}
+              >
+                <StyledTextField
+                  name="latitude"
+                  placeholder="Latitude"
+                  value={formData.location.latitude}
+                  onChange={(e) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      location: {
+                        ...prev.location,
+                        latitude: e.target.value,
+                      },
+                    }));
+                  }}
+                />
+              </Grid2>
+              <Grid2
+                sx={{ display: "flex", flexDirection: "row", gap: "8px" }}
+                item
+                size={{ xs: 12, sm: 4 }}
+              >
+                <StyledTextField
+                  name="location.longitude"
+                  placeholder="Longitude"
+                  value={formData.location.longitude}
+                  onChange={handleChange}
+                />
+              </Grid2>
+            </Grid2>
+          </Grid2>
+          <VariantForm
+            variants={formData.variants}
+            setVariants={(variantsUpdater) =>
+              setFormData((prev) => {
+                const updatedVariants =
+                  typeof variantsUpdater === "function"
+                    ? variantsUpdater(prev.variants)
+                    : variantsUpdater;
+
+                return {
+                  ...prev,
+                  variants: updatedVariants,
+                };
+              })
+            }
+          />
+
+          <Grid2
+            item
+            size={{ xs: 12 }}
+            mt={"8px"}
+            container
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Button
+              variant="contained"
+              sx={{ backgroundColor: "#7C4DFF", color: "white" }}
+              onClick={handleSubmit}
+              // disabled={!isFormValid()}
+            >
+              Submit
+            </Button>
+          </Grid2>
+        </Grid2>
+      </Box>
+    </Modal>
   );
 }
 
-export default NewProjectPopup;
+export default NewProjectPopUp;
