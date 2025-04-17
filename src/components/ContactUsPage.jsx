@@ -8,7 +8,7 @@ const ContactUs = () => {
       <Container maxWidth="lg">
         <Grid2 container spacing={4}>
           <Grid2 item size={{xs:12, md:4}}>
-            <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>Estatein</Typography>
+            <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>RK Realtors & Consultants</Typography>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1, backgroundColor: "#222", p: 1, borderRadius: "8px" }}>
               <TextField
                 variant="standard"
@@ -56,7 +56,7 @@ const ContactUs = () => {
           </Grid2>
         </Grid2>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 6, borderTop: "1px solid #999999", pt: 3 }}>
-          <Typography variant="body2" sx={{ color: "#999999" }}>©2023 Estatein. All Rights Reserved.</Typography>
+          <Typography variant="body2" sx={{ color: "#999999" }}>©2025 RK Realtors & Consultants. All Rights Reserved.</Typography>
           <Typography variant="body2" sx={{ color: "#999999" }}>Terms & Conditions</Typography>
           <Box>
             <IconButton sx={{ color: "#fff" }}><Facebook /></IconButton>

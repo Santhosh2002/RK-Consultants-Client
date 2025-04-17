@@ -19,7 +19,7 @@ const testimonials = [
     location: "USA, California",
     rating: 5,
     feedback:
-      "Our experience with Estatein was outstanding. Their team's dedication and professionalism made finding our dream home a breeze. Highly recommended! Estatein has truly exceeded our expectations with their incredible service.",
+      "Our experience with RK Realtors was outstanding. Their team's dedication and professionalism made finding our dream home a breeze. Highly recommended! RK Realtors & Consultants has truly exceeded our expectations with their incredible service.",
     avatar: "https://randomuser.me/api/portraits/men/32.jpg",
     title: "Exceptional Service!",
   },
@@ -29,7 +29,7 @@ const testimonials = [
     location: "USA, Florida",
     rating: 5,
     feedback:
-      "Estatein provided us with top-notch service. They helped us sell our property quickly and at a great price. We couldn't be happier with the results. The team was professional, friendly, and incredibly efficient!",
+      "RK Realtors & Consultants provided us with top-notch service. They helped us sell our property quickly and at a great price. We couldn't be happier with the results. The team was professional, friendly, and incredibly efficient!",
     avatar: "https://randomuser.me/api/portraits/women/44.jpg",
     title: "Efficient and Reliable",
   },
@@ -39,7 +39,7 @@ const testimonials = [
     location: "USA, Nevada",
     rating: 5,
     feedback:
-      "The Estatein team guided us through the entire buying process. Their knowledge and commitment to our needs were impressive. Thank you for your support! Estatein made our home-buying experience smooth and stress-free.",
+      "The RK Realtors & Consultants team guided us through the entire buying process. Their knowledge and commitment to our needs were impressive. Thank you for your support! RK Realtors & Consultants made our home-buying experience smooth and stress-free.",
     avatar: "https://randomuser.me/api/portraits/men/45.jpg",
     title: "Trusted Advisors",
   },
@@ -89,7 +89,7 @@ const OurClients = () => {
               sx={{ textAlign: "left", width: "70%", color: "#999999" }}
             >
               Read the success stories and heartfelt testimonials from our
-              valued clients. Discover why they chose Estatein for their real
+              valued clients. Discover why they chose RK Realtors & Consultants for their real
               estate needs.
             </Typography>
             <Button
