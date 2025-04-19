@@ -10,6 +10,8 @@ import generalSettingsReducer from "./generalSettingsSlice";
 import fileUploadReducer from "./fileUploadSlice";
 import clientsReducer from "./clientSlice";
 import contactReducer from "./contactSlice";
+import testimonialsReducer from "./testimonialSlice";
+
 const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -23,6 +25,7 @@ const store = configureStore({
     files: fileUploadReducer,
     clients: clientsReducer,
     contacts: contactReducer,
+    testimonials: testimonialsReducer,
   },
 });
 

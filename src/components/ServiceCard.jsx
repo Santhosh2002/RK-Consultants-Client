@@ -1,11 +1,29 @@
-import { useState } from "react";
-import { Card, CardContent, CardMedia, Typography, Box, Chip, Button, Grid2, Modal, Paper } from "@mui/material";
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardMedia, Typography, Box, Chip, Button, Grid2, Modal, Fade } from "@mui/material";
 import MultiStepForm from "./MultiStepForm";
 
 const ServiceCard = ({ service }) => {
   const [expanded, setExpanded] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [open, setOpen] = useState(false);
+  const [imageIndex, setImageIndex] = useState(0);
+  const [fadeIn, setFadeIn] = useState(true);
+  const images = service.images || [];
+
+  useEffect(() => {
+    if (images.length <= 1) return;
+
+    const interval = setInterval(() => {
+      setFadeIn(false); // Start fade out
+
+      setTimeout(() => {
+        setImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+        setFadeIn(true); // Fade in new image
+      }, 300); // timing for fade effect
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [images]);
 
   return (
     <Grid2 item size={{xs:12, sm:6, md:4}} key={service.id}>
@@ -20,17 +38,32 @@ const ServiceCard = ({ service }) => {
           transition: "all 0.3s ease-in-out"
         }}
       >
-        <CardMedia
-          component="img"
-          image={service.images[0]}
-          alt={service.name}
+        <Box
           sx={{
             width: "100%",
             height: "200px",
-            objectFit: "cover",
             borderRadius: "10px",
+            overflow: "hidden",
+            position: "relative",
           }}
-        />
+        >
+          <Fade in={fadeIn} timeout={500}>
+            <Box
+              component="img"
+              src={images[imageIndex]}
+              alt={service.name}
+              sx={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                position: "absolute",
+                top: 0,
+                left: 0,
+                transition: "transform 0.5s ease-in-out",
+              }}
+            />
+          </Fade>
+        </Box>
         <CardContent>
           <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             <Typography variant="h6" fontWeight="bold">

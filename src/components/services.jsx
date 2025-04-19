@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Container,
   Box,
@@ -18,6 +19,7 @@ import MultiStepForm from "./MultiStepForm"; // ✅ Import the form
 import ServiceCard from "./ServiceCard";
 
 const Services = () => {
+  const navigate = useNavigate();
   const [services, setServices] = useState([]);
   const [selectedService, setSelectedService] = useState(null);
   const [open, setOpen] = useState(false);
@@ -33,7 +35,7 @@ const Services = () => {
   }, []);
 
   return (
-    <Box sx={{ backgroundColor: "#111", color: "#fff", py: 8 }} id="services">
+    <Box sx={{ backgroundColor: "#141414", color: "#fff", py: 8 }} id="services">
       <Container maxWidth="lg">
         <Box
           sx={{
@@ -68,6 +70,19 @@ const Services = () => {
               Empowering you with innovative solutions, tailored to exceed your
               expectations!
             </Typography>
+            <Button
+              onClick={() => {
+                navigate("/services");
+              }}
+              variant="outlined"
+              sx={{
+                whiteSpace: "nowrap",
+                color: "white",
+                border: "1px solid #999999",
+              }}
+            >
+              View All Services
+            </Button>
           </Box>
         </Box>
 

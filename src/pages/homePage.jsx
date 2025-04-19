@@ -17,6 +17,7 @@ import OurValues from "./About/Component/OurValues";
 import OurAchievements from "./About/Component/OurAchievements";
 import { useDispatch } from "react-redux";
 import { fetchProjects } from "../store/projectsSlice";
+import FileUploadTester from "./test";
 
 function HomePage() {
   const dispatch = useDispatch();
@@ -27,6 +28,7 @@ function HomePage() {
   return (
     <>
       <Navbar />
+      <FileUploadTester />
       <HeroSection />
       <ServicesSection />
       {/* <WhyChooseUs about={general.about}/> */}

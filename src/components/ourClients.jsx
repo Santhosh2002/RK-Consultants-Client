@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Container,
   Grid2,
@@ -10,50 +11,66 @@ import {
   IconButton,
   Avatar,
 } from "@mui/material";
-import { ArrowBackIos, ArrowForwardIos, Star } from "@mui/icons-material";
+import { ArrowBackIos, ArrowForwardIos, Star, StarHalf, StarBorder } from "@mui/icons-material";
+import { fetchTestimonials, getTestimonials, getTestimonialLoader } from "../store/testimonialSlice";
 
-const testimonials = [
-  {
-    id: 1,
-    name: "Wade Warren",
-    location: "USA, California",
-    rating: 5,
-    feedback:
-      "Our experience with RK Realtors was outstanding. Their team's dedication and professionalism made finding our dream home a breeze. Highly recommended! RK Realtors & Consultants has truly exceeded our expectations with their incredible service.",
-    avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-    title: "Exceptional Service!",
-  },
-  {
-    id: 2,
-    name: "Emelie Thomson",
-    location: "USA, Florida",
-    rating: 5,
-    feedback:
-      "RK Realtors & Consultants provided us with top-notch service. They helped us sell our property quickly and at a great price. We couldn't be happier with the results. The team was professional, friendly, and incredibly efficient!",
-    avatar: "https://randomuser.me/api/portraits/women/44.jpg",
-    title: "Efficient and Reliable",
-  },
-  {
-    id: 3,
-    name: "John Mans",
-    location: "USA, Nevada",
-    rating: 5,
-    feedback:
-      "The RK Realtors & Consultants team guided us through the entire buying process. Their knowledge and commitment to our needs were impressive. Thank you for your support! RK Realtors & Consultants made our home-buying experience smooth and stress-free.",
-    avatar: "https://randomuser.me/api/portraits/men/45.jpg",
-    title: "Trusted Advisors",
-  },
-];
+// const testimonials = [
+//   {
+//     id: 1,
+//     name: "Wade Warren",
+//     location: "USA, California",
+//     rating: 5,
+//     message:
+//       "Our experience with RK Realtors was outstanding. Their team's dedication and professionalism made finding our dream home a breeze. Highly recommended! RK Realtors & Consultants has truly exceeded our expectations with their incredible service.",
+//     avatar: "https://randomuser.me/api/portraits/men/32.jpg",
+//     title: "Exceptional Service!",
+//   },
+//   {
+//     id: 2,
+//     name: "Emelie Thomson",
+//     location: "USA, Florida",
+//     rating: 5,
+//     message:
+//       "RK Realtors & Consultants provided us with top-notch service. They helped us sell our property quickly and at a great price. We couldn't be happier with the results. The team was professional, friendly, and incredibly efficient!",
+//     avatar: "https://randomuser.me/api/portraits/women/44.jpg",
+//     title: "Efficient and Reliable",
+//   },
+//   {
+//     id: 3,
+//     name: "John Mans",
+//     location: "USA, Nevada",
+//     rating: 5,
+//     message:
+//       "The RK Realtors & Consultants team guided us through the entire buying process. Their knowledge and commitment to our needs were impressive. Thank you for your support! RK Realtors & Consultants made our home-buying experience smooth and stress-free.",
+//     avatar: "https://randomuser.me/api/portraits/men/45.jpg",
+//     title: "Trusted Advisors",
+//   },
+// ];
 
 const OurClients = () => {
+  const dispatch = useDispatch();
+  const testimonials = useSelector(getTestimonials);
+  const loader = useSelector(getTestimonialLoader);
   const [expanded, setExpanded] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const testimonialsPerPage = 3; 
+  const indexOfLast = currentPage * testimonialsPerPage;
+  const indexOfFirst = indexOfLast - testimonialsPerPage;
+  const currentTestimonials = testimonials.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(testimonials.length / testimonialsPerPage);
+
+
+
+  useEffect(() => {
+    dispatch(fetchTestimonials());
+  }, []);
 
   const toggleExpand = (id) => {
     setExpanded((prevState) => ({ ...prevState, [id]: !prevState[id] }));
   };
 
   return (
-    <Box sx={{ backgroundColor: "#111", color: "#fff", py: 6 }}>
+    <Box sx={{ backgroundColor: "#141414", color: "#fff", py: 6 }}>
       <Container
         maxWidth="lg"
         sx={{ display: "flex", flexDirection: "column", gap: "16px" }}
@@ -106,7 +123,7 @@ const OurClients = () => {
         </Box>
         {/* Testimonials Grid2 */}
         <Grid2 container spacing={4}>
-          {testimonials.map((testimonial) => (
+        {currentTestimonials.map((testimonial) => (
             <Grid2 item size={{ xs: 12, md: 4, sm: 6 }} key={testimonial.id}>
               <Card
                 sx={{
@@ -121,13 +138,16 @@ const OurClients = () => {
               >
                 {/* Star Ratings */}
                 <Box sx={{ display: "flex", gap: 0.5, mb: 2 }}>
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} sx={{ color: "#FFD700" }} />
-                  ))}
+                  {[...Array(5)].map((_, i) => {
+                    const diff = testimonial.rating - i;
+                    if (diff >= 1) return <Star key={i} sx={{ color: "#FFD700" }} />;
+                    if (diff >= 0.5) return <StarHalf key={i} sx={{ color: "#FFD700" }} />;
+                    return <StarBorder key={i} sx={{ color: "#FFD700" }} />;
+                  })}
                 </Box>
                 {/* Testimonial Content */}
                 <Typography variant="h6" fontWeight="bold" gutterBottom>
-                  {testimonial.title}
+                  {testimonial?.title}
                 </Typography>
                 <Typography
                   variant="body2"
@@ -138,9 +158,9 @@ const OurClients = () => {
                     textOverflow: "ellipsis",
                   }}
                 >
-                  {testimonial.feedback}
+                  {testimonial.message}
                 </Typography>
-                {testimonial.feedback.length > 150 && (
+                {testimonial.message.length > 150 && (
                   <Button
                     size="small"
                     onClick={() => toggleExpand(testimonial.id)}
@@ -154,16 +174,17 @@ const OurClients = () => {
                   sx={{ display: "flex", alignItems: "center", gap: 2, mt: 2 }}
                 >
                   <Avatar
-                    src={testimonial.avatar}
-                    alt={testimonial.name}
+                    src="https://randomuser.me/api/portraits/men/32.jpg" //{testimonial?.author?.avatarUrl}
+                    alt={testimonial?.author?.name}
                     sx={{ width: 40, height: 40 }}
                   />
                   <Box>
                     <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-                      {testimonial.name}
+                      {testimonial?.author?.name}
                     </Typography>
                     <Typography variant="body2" sx={{ color: "grey.500" }}>
-                      {testimonial.location}
+                      {testimonial?.author?.location?.state},{" "}
+                      {testimonial?.author?.location?.country}
                     </Typography>
                   </Box>
                 </Box>
@@ -183,31 +204,35 @@ const OurClients = () => {
           }}
         >
           <Typography variant="body2" sx={{ color: "#888", pt: 2 }}>
-            01 of 10
+            {String(currentPage).padStart(2, '0')} of {String(totalPages).padStart(2, '0')}
           </Typography>
           <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
-            <IconButton
-              sx={{
-                color: "#fff",
-                border: "1px solid #999",
-                borderRadius: "50%",
-                width: 40,
-                height: 40,
-              }}
-            >
-              <ArrowBackIos fontSize="small" />
-            </IconButton>
-            <IconButton
-              sx={{
-                color: "#fff",
-                border: "1px solid #999",
-                borderRadius: "50%",
-                width: 40,
-                height: 40,
-              }}
-            >
-              <ArrowForwardIos fontSize="small" />
-            </IconButton>
+          <IconButton
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            sx={{
+              color: "#fff",
+              border: "1px solid #999",
+              borderRadius: "50%",
+              width: 40,
+              height: 40,
+            }}
+          >
+            <ArrowBackIos fontSize="small" />
+          </IconButton>
+          <IconButton
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            sx={{
+              color: "#fff",
+              border: "1px solid #999",
+              borderRadius: "50%",
+              width: 40,
+              height: 40,
+            }}
+          >
+            <ArrowForwardIos fontSize="small" />
+          </IconButton>
           </Box>
         </Box>
       </Container>

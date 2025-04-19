@@ -96,7 +96,18 @@ const MultiStepForm = ({ amount = 0, subServices = [], serviceName }) => {
   };
 
   return (
-    <Box sx={{ background: "#111", color: "#fff", borderRadius: 3, p: 4 }}>
+    <Box
+      sx={{
+        background: "#111",
+        color: "#fff",
+        borderRadius: 3,
+        p: 4,
+        height: "auto",
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <Typography variant="h5" align="center" gutterBottom>
         {serviceName}
       </Typography>
@@ -115,25 +126,30 @@ const MultiStepForm = ({ amount = 0, subServices = [], serviceName }) => {
           <Typography variant="subtitle1" gutterBottom>
             Select required services:
           </Typography>
-          {subServices.map((sub) => (
-            <Box key={sub._id} sx={{ mb: 1, display: "flex", justifyContent: "space-between" }}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={!!selectedSubServices.find((s) => s._id === sub._id)}
-                    onChange={() => handleSubServiceToggle(sub)}
-                    sx={{ color: "#6A5ACD" }}
-                  />
-                }
-                label={<Typography color="#fff">{sub.name}</Typography>}
-              />
-              <Typography variant="body2">₹{sub.price}</Typography>
-            </Box>
-          ))}
+          <Box sx={{ overflowY: "auto", maxHeight: "calc(80vh - 280px)", pr: 1 }}>
+            {subServices.map((sub) => (
+              <Box
+                key={sub._id}
+                sx={{ mb: 1, display: "flex", justifyContent: "space-between", alignItems: "center" }}
+              >
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={!!selectedSubServices.find((s) => s._id === sub._id)}
+                      onChange={() => handleSubServiceToggle(sub)}
+                      sx={{ color: "#6A5ACD" }}
+                    />
+                  }
+                  label={<Typography color="#fff">{sub.name}</Typography>}
+                />
+                <Typography variant="body2">₹{sub.price}</Typography>
+              </Box>
+            ))}
+          </Box>
           <Divider sx={{ my: 2, borderColor: "#333" }} />
-          <Typography variant="h6">Total: ₹{totalAmount}</Typography>
 
-          <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Typography variant="h6">Total: ₹{totalAmount}</Typography>
             <Button
               variant="contained"
               onClick={() => setActiveStep(1)}
