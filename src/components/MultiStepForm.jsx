@@ -18,6 +18,7 @@ import {
   Divider,
   Checkbox,
   FormControlLabel,
+  Grid2,
 } from "@mui/material";
 import StyledTextField from "../StyledComponents/StyledTextField";
 
@@ -174,64 +175,156 @@ const MultiStepForm = ({
           onSubmit={handleSubmit(onSubmitClientDetails)}
           style={{ display: "flex", flexDirection: "column", gap: "16px" }}
         >
-          <Controller
-            name="name"
-            control={control}
-            rules={{ required: "Name is required" }}
-            render={({ field }) => (
-              <StyledTextField
-                {...field}
-                placeholder="Full Name"
-                error={!!errors.name}
-                helperText={errors.name?.message}
-                required
+          <Grid2 container spacing={2}>
+            {/* ---------- full‑width fields ---------- */}
+            <Grid2 item size={{ xs: 12, sm: 6 }}>
+              <Controller
+                name="name"
+                control={control}
+                rules={{ required: "Name is required" }}
+                render={({ field }) => (
+                  <StyledTextField
+                    {...field}
+                    placeholder="Full Name"
+                    error={!!errors.name}
+                    helperText={errors.name?.message}
+                    required
+                    fullWidth
+                  />
+                )}
               />
-            )}
-          />
-
-          <Controller
-            name="email"
-            control={control}
-            render={({ field }) => (
-              <StyledTextField
-                {...field}
-                placeholder="Email (optional)"
-                type="email"
+            </Grid2>
+            <Grid2 item size={{ xs: 12, sm: 6 }}>
+              <Controller
+                name="phone"
+                control={control}
+                rules={{ required: "Phone is required" }}
+                render={({ field }) => (
+                  <StyledTextField
+                    {...field}
+                    placeholder="Phone Number"
+                    error={!!errors.phone}
+                    helperText={errors.phone?.message}
+                    required
+                    fullWidth
+                  />
+                )}
               />
-            )}
-          />
-
-          <Controller
-            name="phone"
-            control={control}
-            rules={{ required: "Phone is required" }}
-            render={({ field }) => (
-              <StyledTextField
-                {...field}
-                placeholder="Phone Number"
-                error={!!errors.phone}
-                helperText={errors.phone?.message}
-                required
+            </Grid2>
+            <Grid2 item size={{ xs: 12 }}>
+              <Controller
+                name="email"
+                control={control}
+                rules={{ required: "Email is required" }}
+                render={({ field }) => (
+                  <StyledTextField
+                    {...field}
+                    placeholder="Email"
+                    type="email"
+                    error={!!errors.email}
+                    helperText={errors.email?.message}
+                    required
+                    fullWidth
+                  />
+                )}
               />
-            )}
-          />
+            </Grid2>
 
-          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
-            <Button
-              variant="outlined"
-              onClick={() => setActiveStep(0)}
-              color="error"
-            >
-              Back
-            </Button>
-            <Button
-              type="submit"
-              variant="contained"
-              sx={{ backgroundColor: "#6A5ACD" }}
-            >
-              Next
-            </Button>
-          </Box>
+            <Grid2 item size={{ xs: 12 }}>
+              <Controller
+                name="companyName"
+                control={control}
+                rules={{ required: "Company Name is required" }}
+                render={({ field }) => (
+                  <StyledTextField
+                    {...field}
+                    placeholder="Company Name"
+                    error={!!errors.companyName}
+                    helperText={errors.companyName?.message}
+                    required
+                    fullWidth
+                  />
+                )}
+              />
+            </Grid2>
+
+            {/* ---------- half‑width fields ---------- */}
+            <Grid2 item size={{ xs: 12, sm: 6 }}>
+              <Controller
+                name="location.city"
+                control={control}
+                rules={{ required: "City is required" }}
+                render={({ field }) => (
+                  <StyledTextField
+                    {...field}
+                    placeholder="City"
+                    error={!!errors?.location?.city}
+                    helperText={errors?.location?.city?.message}
+                    required
+                    fullWidth
+                  />
+                )}
+              />
+            </Grid2>
+
+            <Grid2 item size={{ xs: 12, sm: 6 }}>
+              <Controller
+                name="location.state"
+                control={control}
+                rules={{ required: "State is required" }}
+                render={({ field }) => (
+                  <StyledTextField
+                    {...field}
+                    placeholder="State"
+                    error={!!errors?.location?.state}
+                    helperText={errors?.location?.state?.message}
+                    required
+                    fullWidth
+                  />
+                )}
+              />
+            </Grid2>
+
+            <Grid2 item size={{ xs: 12, sm: 6 }}>
+              <Controller
+                name="location.country"
+                control={control}
+                rules={{ required: "Country is required" }}
+                render={({ field }) => (
+                  <StyledTextField
+                    {...field}
+                    placeholder="Country"
+                    error={!!errors?.location?.country}
+                    helperText={errors?.location?.country?.message}
+                    required
+                    fullWidth
+                  />
+                )}
+              />
+            </Grid2>
+
+            {/* ---------- buttons span full width ---------- */}
+            <Grid2 item size={{ xs: 12 }}>
+              <Box
+                sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}
+              >
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={() => setActiveStep(0)}
+                >
+                  Back
+                </Button>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{ backgroundColor: "#6A5ACD" }}
+                >
+                  Next
+                </Button>
+              </Box>
+            </Grid2>
+          </Grid2>
         </form>
       )}
 
