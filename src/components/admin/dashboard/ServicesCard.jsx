@@ -32,7 +32,7 @@ const ServiceCard = ({ service }) => {
       >
         <CardMedia
           component="img"
-          image={service.images[0]}
+          src={service?.images?.[0]}
           alt={service.name}
           sx={{
             width: "100%",
