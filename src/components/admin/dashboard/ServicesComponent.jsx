@@ -75,45 +75,55 @@ function ServicesComponent() {
         py: 6,
       }}
     >
-      <Container maxWidth="xl">
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "40px",
-          }}
-        >
-          <Typography variant="h4" sx={{ color: "#fff" }}>
-            Services
-          </Typography>
-          <Button
-            onClick={() => setNewPopupOpen(true)}
+      <Container
+        maxWidth="xl"
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          height: `calc(100vh - 170px)`,
+        }}
+      >
+        <Box display={"flex"} flexDirection="column" gap={4}>
+          <Box
             sx={{
-              backgroundColor: "#A187F0",
-              color: "#fff",
-              "&:hover": { backgroundColor: "#805AD5" },
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "40px",
             }}
           >
-            Add New Service
-          </Button>
+            <Typography variant="h4" sx={{ color: "#fff" }}>
+              Services
+            </Typography>
+            <Button
+              onClick={() => setNewPopupOpen(true)}
+              sx={{
+                backgroundColor: "#A187F0",
+                color: "#fff",
+                "&:hover": { backgroundColor: "#805AD5" },
+              }}
+            >
+              Add New Service
+            </Button>
+          </Box>
+          <Grid2 container spacing={4}>
+            {services.map((service) => (
+              <ServiceCard service={service} />
+            ))}
+          </Grid2>
+          <NewServicePopup
+            isOpen={isNewPopupOpen}
+            onClose={() => setNewPopupOpen(false)}
+            onSubmit={() => {}}
+          />
+          <UpdateServicePopup
+            isOpen={isUpdatePopupOpen}
+            onClose={() => setUpdatePopupOpen(false)}
+            onSubmit={() => {}}
+            serviceData={selectedService}
+          />
         </Box>
-        <Grid2 container spacing={4}>
-          {services.map((service) => (
-            <ServiceCard service={service} />
-          ))}
-        </Grid2>
-        <NewServicePopup
-          isOpen={isNewPopupOpen}
-          onClose={() => setNewPopupOpen(false)}
-          onSubmit={() => {}}
-        />
-        <UpdateServicePopup
-          isOpen={isUpdatePopupOpen}
-          onClose={() => setUpdatePopupOpen(false)}
-          onSubmit={() => {}}
-          serviceData={selectedService}
-        />
       </Container>
     </Box>
   );

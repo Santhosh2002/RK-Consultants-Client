@@ -1,140 +1,249 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {
+  Box,
+  Button,
+  Divider,
+  TextField,
+  Typography,
+  useMediaQuery,
+  CircularProgress,
+  Snackbar,
+  Alert,
+} from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import GoogleIcon from "@mui/icons-material/Google";
 import { useDispatch, useSelector } from "react-redux";
 import {
   registerUser,
   selectAuthLoading,
   selectAuthError,
 } from "../../store/authSlice";
-import {
-  Container,
-  Box,
-  TextField,
-  Button,
-  Typography,
-  Card,
-  CircularProgress,
-  Snackbar,
-  Alert,
-} from "@mui/material";
-import { useTheme } from "@mui/material/styles";
 
 const AdminSignupPage = () => {
-  const theme = useTheme(); // Access the theme
-  const [username, setUsername] = useState("");
-  const [role, setRole] = useState("");
-  const [password, setPassword] = useState("");
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const loading = useSelector(selectAuthLoading);
   const error = useSelector(selectAuthError);
 
-  const handleSubmit = (e) => {
+  const [username, setUsername] = useState("");
+  const [role, setRole] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!username || !role || !password) return;
-    dispatch(registerUser({ username, role, password })).then((result) => {
-      if (result.meta.requestStatus === "fulfilled") {
-        navigate("/admin/login");
-      }
-    });
+    if (!username || !role || !password || !confirmPassword) return;
+
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    const result = await dispatch(registerUser({ username, role, password }));
+    if (result.meta.requestStatus === "fulfilled") {
+      alert("Account created! Please login.");
+      navigate(`/admin/login`);
+    }
   };
 
   return (
     <Box
       sx={{
-        height: "100vh",
         display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundImage: "url(/slider-img-02.jpg)",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundColor: theme.palette.background.paper,
+        flexDirection: { xs: "column", md: "row" },
+        minHeight: "100vh",
+        width: "100%",
+        backgroundColor: "#000000",
       }}
     >
-      <Container>
-        <Card
-          sx={{
-            p: theme.spacing(4),
-            borderRadius: theme.shape.borderRadius,
-            boxShadow: theme.shadows[4],
-            maxWidth: "400px",
-            width: "100%",
-            textAlign: "center",
-          }}
-        >
-          <Box mb={2}>
-            <img src="/new_logo_bg.png" alt="Logo" style={{ height: "80px" }} />
-          </Box>
-          <Typography
-            variant="h5"
-            fontWeight={theme.typography.fontWeightBold}
-            gutterBottom
-          >
+      {/* Left Panel */}
+      <Box
+        sx={{
+          flex: 1,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+
+          flexDirection: "column",
+          p: 4,
+          backgroundColor: "#000",
+        }}
+      >
+        <Box mb={20}>
+          <img
+            src="/Icons/RK_Logo_White_No_Slogan.svg"
+            alt="Logo"
+            style={{ height: "40px" }}
+          />
+        </Box>
+        <Box sx={{ width: "100%", maxWidth: 400 }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+            Get started
+          </Typography>
+
+          <Typography variant="h5" fontWeight={600} gutterBottom>
             Admin Sign Up
           </Typography>
+          <Typography variant="body2" color="text.secondary" mb={3}>
+            Join us to access your dashboard and more!
+          </Typography>
+
           <form onSubmit={handleSubmit}>
             <TextField
-              fullWidth
               label="Username"
+              type="text"
               variant="outlined"
-              margin="normal"
+              fullWidth
+              size="large"
+              sx={{
+                mb: 2,
+                input: { color: "#fff" },
+                label: { color: "#ccc" },
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    borderColor: "#555",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#888",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#2563eb",
+                  },
+                },
+              }}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
             />
+
             <TextField
-              fullWidth
               label="Role"
+              type="text"
               variant="outlined"
-              margin="normal"
+              fullWidth
+              size="large"
+              sx={{
+                mb: 2,
+                input: { color: "#fff" },
+                label: { color: "#ccc" },
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    borderColor: "#555",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#888",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#2563eb",
+                  },
+                },
+              }}
               value={role}
               onChange={(e) => setRole(e.target.value)}
               required
             />
+
             <TextField
-              fullWidth
               label="Password"
-              variant="outlined"
-              margin="normal"
               type="password"
+              variant="outlined"
+              fullWidth
+              size="large"
+              sx={{
+                mb: 2,
+                input: { color: "#fff" },
+                label: { color: "#ccc" },
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    borderColor: "#555",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#888",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#2563eb",
+                  },
+                },
+              }}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-            <Button
+
+            <TextField
+              label="Confirm Password"
+              type="password"
+              variant="outlined"
               fullWidth
+              size="large"
+              sx={{
+                mb: 2,
+                input: { color: "#fff" },
+                label: { color: "#ccc" },
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    borderColor: "#555",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#888",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#2563eb",
+                  },
+                },
+              }}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+            />
+
+            <Button
               type="submit"
               variant="contained"
-              color="primary"
-              sx={{
-                mt: theme.spacing(2),
-                py: theme.spacing(1.5),
-                borderRadius: theme.shape.borderRadius,
-              }}
+              fullWidth
+              sx={{ backgroundColor: "#2563eb", color: "#fff", mb: 2 }}
               disabled={loading}
             >
               {loading ? (
                 <CircularProgress size={24} color="inherit" />
               ) : (
-                "Sign Up"
+                "Create Account"
               )}
             </Button>
           </form>
-          <Box mt={2}>
-            <Typography variant="body2">
-              Already have an account?{" "}
-              <Button
-                variant="text"
-                color="secondary"
-                onClick={() => navigate("/admin/login")}
-              >
-                Login
-              </Button>
-            </Typography>
-          </Box>
-        </Card>
-      </Container>
+
+          {/* <Divider sx={{ my: 2 }}>or</Divider>
+
+          <Button variant="outlined" fullWidth startIcon={<GoogleIcon />}>
+            Sign up with Google
+          </Button> */}
+
+          <Typography variant="body2" sx={{ textAlign: "center", mt: 2 }}>
+            Already have an account?{" "}
+            <a href={`/admin/login`} style={{ color: "#2563eb" }}>
+              Sign in
+            </a>
+          </Typography>
+        </Box>
+      </Box>
+
+      {/* Right Panel */}
+      <Box
+        sx={{
+          flex: 1,
+          height: { xs: "250px", md: "100vh" },
+          backgroundImage: "url(/slider-img-02.jpg)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          borderTopRightRadius: { xs: 0, md: "16px" },
+          borderBottomRightRadius: { xs: 0, md: "16px" },
+        }}
+      />
+
       <Snackbar
         open={Boolean(error)}
         autoHideDuration={4000}

@@ -26,7 +26,7 @@ const ServiceCard = ({ service }) => {
   }, [images]);
 
   return (
-    <Grid2 item size={{xs:12, sm:6, md:4}} key={service.id}>
+    <Grid2 item size={{ xs: 12, sm: 6, md: 4 }} key={service.id}>
       <Card
         sx={{
           borderRadius: 3,
@@ -35,7 +35,7 @@ const ServiceCard = ({ service }) => {
           color: "#fff",
           boxShadow: 4,
           padding: 2,
-          transition: "all 0.3s ease-in-out"
+          transition: "all 0.3s ease-in-out",
         }}
       >
         <Box
@@ -70,7 +70,9 @@ const ServiceCard = ({ service }) => {
               {service.name}
             </Typography>
             <Typography variant="body2" color="grey.400">
-              {expanded ? service.description : `${service.description.slice(0, 100)}... `}
+              {expanded
+                ? service.description
+                : `${service.description.slice(0, 100)}... `}
               <Typography
                 component="span"
                 sx={{ color: "#6A5ACD", cursor: "pointer" }}
@@ -103,13 +105,18 @@ const ServiceCard = ({ service }) => {
               }}
             >
               <Box sx={{ display: "flex", flexDirection: "column" }}>
-                <Typography variant="body2" sx={{ color: "#9999", fontSize: "14px" }}>
+                <Typography
+                  variant="body2"
+                  sx={{ color: "#9999", fontSize: "14px" }}
+                >
                   Price Upto
                 </Typography>
-                <Typography variant="subtitle1" sx={{ fontWeight: "bold", fontSize: "18px" }}>
+                <Typography
+                  variant="subtitle1"
+                  sx={{ fontWeight: "bold", fontSize: "18px" }}
+                >
                   ₹{service?.price}
                 </Typography>
-
               </Box>
               {/* ✅ Purchase Button - Opens Payment Form */}
               <Button
@@ -134,12 +141,13 @@ const ServiceCard = ({ service }) => {
 
       {/* ✅ Payment Modal */}
       <Modal open={open} onClose={() => setOpen(false)}>
-        <Box sx={{ p: 4, maxWidth: 600, mx: "auto", mt: 4 }}>
+        <Box sx={{ p: 4, maxWidth: 800, mx: "auto", mt: 4 }}>
           {selectedService && (
             <MultiStepForm
               amount={0} // ✅ Pass the amount
               serviceName={selectedService.name}
               subServices={selectedService.subServices}
+              serviceId={selectedService._id}
             />
           )}
         </Box>

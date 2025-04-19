@@ -4,14 +4,9 @@ import axios from "axios";
 // 🔹 Create Razorpay Order
 export const createOrder = createAsyncThunk(
   "payment/createOrder",
-  async ({ clientId, amount, currency, services }, { rejectWithValue }) => {
+  async (order, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`/api/payment/create-order`, {
-        clientId,
-        amount,
-        currency,
-        services,
-      });
+      const response = await axios.post(`/api/payment/create-order`, order);
       return response.data.order; // Return the order object
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -44,7 +39,18 @@ export const fetchAllPayments = createAsyncThunk(
     }
   }
 );
-
+// Async thunk to create a new client
+export const createClient = createAsyncThunk(
+  "clients/createClient",
+  async (clientData, { rejectWithValue }) => {
+    try {
+      const response = await axios.post("/api/client/createClient", clientData);
+      return response.data.client;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
 // 🔹 Fetch Payment by ID
 export const fetchPaymentById = createAsyncThunk(
   "payment/fetchPaymentById",
@@ -130,6 +136,18 @@ const paymentSlice = createSlice({
         state.selectedPayment = action.payload;
       })
       .addCase(fetchPaymentById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // 🔹 Fetch Payment by ID
+      .addCase(createClient.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(createClient.fulfilled, (state, action) => {
+        state.loading = false;
+        state.clientDetails = action.payload;
+      })
+      .addCase(createClient.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

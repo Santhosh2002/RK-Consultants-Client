@@ -47,49 +47,59 @@ function AdminProjectsComponent() {
   return (
     <Box sx={{ backgroundColor: "#111", color: "#fff", py: 6 }}>
       <ToastContainer />
-      <Container maxWidth="xl">
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
-            gap: "16px",
-            marginBottom: "40px",
-          }}
-        >
-          <Typography variant="h3" sx={{ fontWeight: "bold" }}>
-            Admin Panel: Projects
-          </Typography>
-          <Button
-            variant="contained"
-            onClick={() => setNewPopupOpen(true)}
-            sx={{
-              backgroundColor: "#6A5ACD",
-              color: "#fff",
-              textTransform: "none",
-            }}
-          >
-            Add New Project
-          </Button>
-        </Box>
-        {loading ? (
+      <Container
+        maxWidth="xl"
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          height: `calc(100vh - 170px)`,
+        }}
+      >
+        <Box display={"flex"} flexDirection="column" gap={4}>
           <Box
             sx={{
               display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "100vh",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              gap: "16px",
+              marginBottom: "40px",
             }}
           >
-            <CircularProgress />
+            <Typography variant="h3" sx={{ fontWeight: "bold" }}>
+              Admin Panel: Projects
+            </Typography>
+            <Button
+              variant="contained"
+              onClick={() => setNewPopupOpen(true)}
+              sx={{
+                backgroundColor: "#6A5ACD",
+                color: "#fff",
+                textTransform: "none",
+              }}
+            >
+              Add New Project
+            </Button>
           </Box>
-        ) : (
-          <Grid2 container spacing={4}>
-            {projects.map((project) => (
-              <ProjectCard key={project.id} item={project} />
-            ))}
-          </Grid2>
-        )}
+          {loading ? (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100vh",
+              }}
+            >
+              <CircularProgress />
+            </Box>
+          ) : (
+            <Grid2 container spacing={4}>
+              {projects.map((project) => (
+                <ProjectCard key={project.id} item={project} />
+              ))}
+            </Grid2>
+          )}
+        </Box>
       </Container>
       <NewProjectPopup
         isOpen={isNewPopupOpen}

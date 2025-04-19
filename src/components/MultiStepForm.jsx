@@ -6,6 +6,7 @@ import {
   createOrder,
   verifyPayment,
   getClientDetails,
+  createClient,
 } from "../store/paymentSlice";
 import {
   Box,
@@ -17,12 +18,18 @@ import {
   Divider,
   Checkbox,
   FormControlLabel,
+  Grid2,
 } from "@mui/material";
 import StyledTextField from "../StyledComponents/StyledTextField";
 
 const steps = ["Select Services", "Client Details", "Confirm & Pay"];
 
-const MultiStepForm = ({ amount = 0, subServices = [], serviceName }) => {
+const MultiStepForm = ({
+  amount = 0,
+  subServices = [],
+  serviceName,
+  serviceId,
+}) => {
   const dispatch = useDispatch();
   const clientData = useSelector(getClientDetails);
 
@@ -36,7 +43,7 @@ const MultiStepForm = ({ amount = 0, subServices = [], serviceName }) => {
   const [isRazorpayLoaded, setIsRazorpayLoaded] = useState(false);
   const [selectedSubServices, setSelectedSubServices] = useState([]);
   const [totalAmount, setTotalAmount] = useState(amount);
-
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
   useEffect(() => {
     const loadRazorpay = () => {
       const script = document.createElement("script");
@@ -64,7 +71,7 @@ const MultiStepForm = ({ amount = 0, subServices = [], serviceName }) => {
   };
 
   const onSubmitClientDetails = (data) => {
-    dispatch(setClientData(data));
+    dispatch(createClient(data));
     setActiveStep(2);
   };
 
@@ -73,8 +80,13 @@ const MultiStepForm = ({ amount = 0, subServices = [], serviceName }) => {
       alert("Razorpay failed to load.");
       return;
     }
-
-    dispatch(createOrder({ clientData, amount: totalAmount })).then((res) => {
+    const order = {
+      amount: totalAmount,
+      clientId: clientData._id,
+      currency: "INR",
+      serviceId: serviceId,
+    };
+    dispatch(createOrder(order)).then((res) => {
       if (res.payload) {
         const options = {
           key: import.meta.env.VITE_RAZORPAY_KEY_ID,
@@ -84,7 +96,11 @@ const MultiStepForm = ({ amount = 0, subServices = [], serviceName }) => {
           description: serviceName,
           order_id: res.payload.id,
           handler: (response) => {
-            dispatch(verifyPayment(response));
+            dispatch(verifyPayment(response)).then((res) => {
+              if (res.payload.success) {
+                setPaymentSuccess(true);
+              }
+            });
             setActiveStep(3);
           },
         };
@@ -154,7 +170,9 @@ const MultiStepForm = ({ amount = 0, subServices = [], serviceName }) => {
               variant="contained"
               onClick={() => setActiveStep(1)}
               sx={{ backgroundColor: "#6A5ACD" }}
-              disabled={subServices.length > 0 && selectedSubServices.length === 0}
+              disabled={
+                subServices.length > 0 && selectedSubServices.length === 0
+              }
             >
               Next
             </Button>
@@ -164,57 +182,160 @@ const MultiStepForm = ({ amount = 0, subServices = [], serviceName }) => {
 
       {/* Step 1 - Client details */}
       {activeStep === 1 && (
-        <form onSubmit={handleSubmit(onSubmitClientDetails)} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-          <Controller
-            name="name"
-            control={control}
-            rules={{ required: "Name is required" }}
-            render={({ field }) => (
-              <StyledTextField
-                {...field}
-                placeholder="Full Name"
-                error={!!errors.name}
-                helperText={errors.name?.message}
-                required
+        <form
+          onSubmit={handleSubmit(onSubmitClientDetails)}
+          style={{ display: "flex", flexDirection: "column", gap: "16px" }}
+        >
+          <Grid2 container spacing={2}>
+            {/* ---------- full‑width fields ---------- */}
+            <Grid2 item size={{ xs: 12, sm: 6 }}>
+              <Controller
+                name="name"
+                control={control}
+                rules={{ required: "Name is required" }}
+                render={({ field }) => (
+                  <StyledTextField
+                    {...field}
+                    placeholder="Full Name"
+                    error={!!errors.name}
+                    helperText={errors.name?.message}
+                    required
+                    fullWidth
+                  />
+                )}
               />
-            )}
-          />
-
-          <Controller
-            name="email"
-            control={control}
-            render={({ field }) => (
-              <StyledTextField
-                {...field}
-                placeholder="Email (optional)"
-                type="email"
+            </Grid2>
+            <Grid2 item size={{ xs: 12, sm: 6 }}>
+              <Controller
+                name="phone"
+                control={control}
+                rules={{ required: "Phone is required" }}
+                render={({ field }) => (
+                  <StyledTextField
+                    {...field}
+                    placeholder="Phone Number"
+                    error={!!errors.phone}
+                    helperText={errors.phone?.message}
+                    required
+                    fullWidth
+                  />
+                )}
               />
-            )}
-          />
-
-          <Controller
-            name="phone"
-            control={control}
-            rules={{ required: "Phone is required" }}
-            render={({ field }) => (
-              <StyledTextField
-                {...field}
-                placeholder="Phone Number"
-                error={!!errors.phone}
-                helperText={errors.phone?.message}
-                required
+            </Grid2>
+            <Grid2 item size={{ xs: 12 }}>
+              <Controller
+                name="email"
+                control={control}
+                rules={{ required: "Email is required" }}
+                render={({ field }) => (
+                  <StyledTextField
+                    {...field}
+                    placeholder="Email"
+                    type="email"
+                    error={!!errors.email}
+                    helperText={errors.email?.message}
+                    required
+                    fullWidth
+                  />
+                )}
               />
-            )}
-          />
+            </Grid2>
 
-          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
-            <Button variant="outlined" onClick={() => setActiveStep(0)} color="error">
-              Back
-            </Button>
-            <Button type="submit" variant="contained" sx={{ backgroundColor: "#6A5ACD" }}>
-              Next
-            </Button>
-          </Box>
+            <Grid2 item size={{ xs: 12 }}>
+              <Controller
+                name="companyName"
+                control={control}
+                rules={{ required: "Company Name is required" }}
+                render={({ field }) => (
+                  <StyledTextField
+                    {...field}
+                    placeholder="Company Name"
+                    error={!!errors.companyName}
+                    helperText={errors.companyName?.message}
+                    required
+                    fullWidth
+                  />
+                )}
+              />
+            </Grid2>
+
+            {/* ---------- half‑width fields ---------- */}
+            <Grid2 item size={{ xs: 12, sm: 6 }}>
+              <Controller
+                name="location.city"
+                control={control}
+                rules={{ required: "City is required" }}
+                render={({ field }) => (
+                  <StyledTextField
+                    {...field}
+                    placeholder="City"
+                    error={!!errors?.location?.city}
+                    helperText={errors?.location?.city?.message}
+                    required
+                    fullWidth
+                  />
+                )}
+              />
+            </Grid2>
+
+            <Grid2 item size={{ xs: 12, sm: 6 }}>
+              <Controller
+                name="location.state"
+                control={control}
+                rules={{ required: "State is required" }}
+                render={({ field }) => (
+                  <StyledTextField
+                    {...field}
+                    placeholder="State"
+                    error={!!errors?.location?.state}
+                    helperText={errors?.location?.state?.message}
+                    required
+                    fullWidth
+                  />
+                )}
+              />
+            </Grid2>
+
+            <Grid2 item size={{ xs: 12, sm: 6 }}>
+              <Controller
+                name="location.country"
+                control={control}
+                rules={{ required: "Country is required" }}
+                render={({ field }) => (
+                  <StyledTextField
+                    {...field}
+                    placeholder="Country"
+                    error={!!errors?.location?.country}
+                    helperText={errors?.location?.country?.message}
+                    required
+                    fullWidth
+                  />
+                )}
+              />
+            </Grid2>
+
+            {/* ---------- buttons span full width ---------- */}
+            <Grid2 item size={{ xs: 12 }}>
+              <Box
+                sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}
+              >
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={() => setActiveStep(0)}
+                >
+                  Back
+                </Button>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{ backgroundColor: "#6A5ACD" }}
+                >
+                  Next
+                </Button>
+              </Box>
+            </Grid2>
+          </Grid2>
         </form>
       )}
 
@@ -249,7 +370,11 @@ const MultiStepForm = ({ amount = 0, subServices = [], serviceName }) => {
           </Typography>
 
           <Box sx={{ mt: 3, display: "flex", justifyContent: "space-between" }}>
-            <Button variant="outlined" onClick={() => setActiveStep(1)} color="error">
+            <Button
+              variant="outlined"
+              onClick={() => setActiveStep(1)}
+              color="error"
+            >
               Back
             </Button>
             <Button
@@ -266,12 +391,33 @@ const MultiStepForm = ({ amount = 0, subServices = [], serviceName }) => {
 
       {/* Step 3 - Success */}
       {activeStep === 3 && (
-        <Box textAlign="center">
-          <Typography variant="h5" color="success.main">
-            Payment Successful! 🎉
-          </Typography>
-          <Typography>Thank you for your payment.</Typography>
-        </Box>
+        <>
+          {paymentSuccess ? (
+            <Box alignItems={"center"} display={"flex"} flexDirection="column">
+              <img
+                src="/payment-success.gif"
+                alt="Success"
+                style={{ height: 400, borderRadius: "15px", marginBottom: 16 }}
+              />
+              {/* <Typography variant="h5" color="success.main" sx={{ mb: 2 }}>
+                Payment Successful! 🎉
+              </Typography>
+              <Typography>Thank you for your payment.</Typography> */}
+            </Box>
+          ) : (
+            <Box alignItems={"center"} display={"flex"} flexDirection="column">
+              <img
+                src="/payment-failed.gif"
+                alt="Failed"
+                style={{ height: 400, borderRadius: "15px", marginBottom: 16 }}
+              />
+              {/* <Typography variant="h5" color="error.main" sx={{ mb: 2 }}>
+                Payment Failed! ❌
+              </Typography>
+              <Typography>Please try again.</Typography> */}
+            </Box>
+          )}
+        </>
       )}
     </Box>
   );
