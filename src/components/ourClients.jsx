@@ -63,7 +63,7 @@ const OurClients = () => {
 
   useEffect(() => {
     dispatch(fetchTestimonials());
-  }, []);
+  }, [dispatch]);
 
   const toggleExpand = (id) => {
     setExpanded((prevState) => ({ ...prevState, [id]: !prevState[id] }));
@@ -210,28 +210,28 @@ const OurClients = () => {
           <IconButton
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
+            variant="contained"
+            size="large"
             sx={{
               color: "#fff",
               border: "1px solid #999",
-              borderRadius: "50%",
-              width: 40,
-              height: 40,
+              borderRadius: "50px",
             }}
           >
-            <ArrowBackIos fontSize="small" />
+            <ArrowBackIos />
           </IconButton>
           <IconButton
             onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
             disabled={currentPage === totalPages}
+            size="large"
+            variant="contained"
             sx={{
               color: "#fff",
               border: "1px solid #999",
-              borderRadius: "50%",
-              width: 40,
-              height: 40,
+              borderRadius: "50px",
             }}
           >
-            <ArrowForwardIos fontSize="small" />
+            <ArrowForwardIos />
           </IconButton>
           </Box>
         </Box>

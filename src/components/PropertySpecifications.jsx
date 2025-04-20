@@ -62,9 +62,12 @@ const Dot = styled("div")(({ theme, active }) => ({
 
 const PropertySpecifications = () => {
   const property = useSelector(getselectedProject);
-
   const [alignment, setAlignment] = useState("East");
   const activeVariant = property?.variants?.[0] || null;
+
+  useEffect(()=>{
+    console.log("Property", property);
+  },[property]);
 
   const features = [
     {

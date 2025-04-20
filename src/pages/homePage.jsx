@@ -28,7 +28,7 @@ function HomePage() {
   return (
     <>
       <Navbar />
-      <FileUploadTester />
+      {/* <FileUploadTester />  This is for testing Upload  */}
       <HeroSection />
       <ServicesSection />
       {/* <WhyChooseUs about={general.about}/> */}

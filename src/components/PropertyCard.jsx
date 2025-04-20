@@ -49,9 +49,18 @@ const PropertyCard = ({ item }) => {
         />
         <CardContent>
           <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-            <Typography variant="h6" fontWeight="bold">
-              {item?.title}
-            </Typography>
+          <Typography
+            variant="h6"
+            fontWeight="bold"
+            sx={{
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            {item?.title}
+          </Typography>
+
             <Box sx={{ position: "relative" }}>
               <Typography
                 variant="body2"
@@ -59,9 +68,10 @@ const PropertyCard = ({ item }) => {
                 sx={{
                   display: "-webkit-box",
                   WebkitBoxOrient: "vertical",
-                  WebkitLineClamp: expanded ? "none" : 2,
+                  WebkitLineClamp: 2,
                   overflow: "hidden",
                   textOverflow: "ellipsis",
+                  minHeight: "48px", // reserve space for 2 lines always
                 }}
               >
                 {item?.description}

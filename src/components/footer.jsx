@@ -43,7 +43,7 @@ const FooterComponent = ({
   }, [dispatch]);
 
   return (
-    <Box sx={{ backgroundColor: "#141414", color: "#fff", width: "100%" }}>
+    <Box sx={{ backgroundColor: "#141414", color: "#fff", width: "100%", borderTop:"1px solid #262626" }}>
       <Box sx={{ padding: isMobile ? "80px 16px" : "80px" }}>
         <Grid2
           container

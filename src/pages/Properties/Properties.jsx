@@ -29,6 +29,7 @@ const Properties = () => {
   useEffect(() => {
     dispatch(fetchProjects());
   }, [dispatch]);
+  
   return (
     <Box id="properties" sx={{ backgroundColor: "#191919", width: "100vw" }}>
       <Navbar />
@@ -63,24 +64,26 @@ const Properties = () => {
       {/* Search Section */}
       <Box
         sx={{
-          position: "absolute",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          top: "320px",
-          width: "100%",
+          gap: 0,
+          px: { xs: 2, sm: 4 },
+          py: { xs: 4, sm: 6 },
+          mt: -10, // Pull up slightly but avoid overlap
+          zIndex: 2,
         }}
       >
-        <FormControl sx={{ width: "60%" }} variant="outlined">
+        <FormControl sx={{ width: "100%", maxWidth: "700px", backgroundColor: "#262626", pt:1, px:1, borderRadius: "10px 10px 0 0", }} variant="outlined">
           <OutlinedInput
             id="outlined-adornment-search"
             sx={{
               padding: "16px",
-              border: "5px solid #262626",
-              borderBottom: "0px",
-              borderRadius: "16px 16px 0 0",
+              border: "1px solid #262626",
+              borderRadius: "16px",
               backgroundColor: "#141414",
+              color: "white",
             }}
             endAdornment={
               <InputAdornment position="end">
@@ -100,66 +103,34 @@ const Properties = () => {
           container
           spacing={1}
           sx={{
-            width: "80%",
+            width: "100%",
+            maxWidth: "900px",
             backgroundColor: "#262626",
             borderRadius: "10px",
-            padding: 1,
+            p: 1,
           }}
         >
-          <Grid2 item size={{ xs: 12, sm: 2.4 }}>
-            <TextField
-              sx={{ backgroundColor: "#141414", color: "white" }}
-              fullWidth
-              variant="outlined"
-              placeholder="Location"
-            ></TextField>
-          </Grid2>
-          <Grid2 item size={{ xs: 12, sm: 2.4 }}>
-            <TextField
-              sx={{ backgroundColor: "#141414", color: "white" }}
-              fullWidth
-              variant="outlined"
-              placeholder="Property Type"
-            >
-              {/* <MenuItem value="apartment">Apartment</MenuItem>
-              <MenuItem value="villa">Villa</MenuItem> */}
-            </TextField>
-          </Grid2>
-          <Grid2 item size={{ xs: 12, sm: 2.4 }}>
-            <TextField
-              sx={{ backgroundColor: "#141414", color: "white" }}
-              fullWidth
-              variant="outlined"
-              placeholder="Pricing Range"
-            ></TextField>
-          </Grid2>
-          <Grid2 item size={{ xs: 12, sm: 2.4 }}>
-            <TextField
-              sx={{ backgroundColor: "#141414", color: "white" }}
-              fullWidth
-              variant="outlined"
-              placeholder="Property Size"
-            ></TextField>
-          </Grid2>
-          <Grid2 item size={{ xs: 12, sm: 2.4 }}>
-            <TextField
-              sx={{ backgroundColor: "#141414", color: "white" }}
-              fullWidth
-              variant="outlined"
-              placeholder="Build Year"
-            ></TextField>
-          </Grid2>
-        </Grid2>
-      </Box>
-      <Box sx={{ backgroundColor: "#141414", padding: "150px 100px" }}>
-        <Grid2 container spacing={4}>
-          {properties.map((property) => (
-            <PropertyCard key={property.id} item={property} />
+          {["Location", "Property Type", "Pricing Range", "Property Size", "Build Year"].map((label, idx) => (
+            <Grid2 item size={{xs:12, sm:6, md:2.4}} key={idx}>
+              <TextField
+                sx={{ backgroundColor: "#141414", color: "white" }}
+                fullWidth
+                variant="outlined"
+                placeholder={label}
+                size="small"
+              />
+            </Grid2>
           ))}
         </Grid2>
-        {/* <PropertyListing /> */}
       </Box>
-      <RealEstateCTA />
+
+      <Grid2 container spacing={4} sx={{ px: { xs: 2, sm: 4, md: 8 }, py: 6 }}>
+        {properties.map((property) => (
+          <PropertyCard key={property.id} item={property} />
+        ))}
+      </Grid2>
+
+      {/* <RealEstateCTA /> */}
       <FooterComponent />
     </Box>
   );

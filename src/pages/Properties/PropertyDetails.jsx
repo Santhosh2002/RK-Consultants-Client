@@ -51,7 +51,7 @@ const PropertyDetails = () => {
         <InquiryForm />
       </MotionBox>
 
-      <RealEstateCTA />
+      {/* <RealEstateCTA /> */}
       <FooterComponent />
     </Box>
   );
