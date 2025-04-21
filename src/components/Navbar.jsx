@@ -27,10 +27,17 @@ const navItems = [
 ];
 
 const getPageFromPath = (pathname) => {
-  if (pathname === "/listyourproperty") return null; // No tab selected on this page
-  const matchedItem = navItems.find((item) => item.path === pathname);
-  return matchedItem ? matchedItem.label : "Home"; // Default to "Home"
+  if (pathname === "/listyourproperty") return null;
+
+  if (pathname.startsWith("/properties")) return "Properties";
+  if (pathname.startsWith("/about")) return "About Us";
+  if (pathname.startsWith("/services")) return "Services";
+  if (pathname.startsWith("/contact")) return "Contact Us";
+  if (pathname === "/") return "Home";
+
+  return "Home"; // fallback
 };
+
 
 const Navbar = ({ logo }) => {
   const dispatch = useDispatch();

@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useSelector } from "react-redux";
 import {
   Box,
   Typography,
@@ -16,6 +17,7 @@ import {
 import ToggleButtonGroup, {
   toggleButtonGroupClasses,
 } from "@mui/material/ToggleButtonGroup";
+import { useParams } from "react-router-dom";
 
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)({
   backgroundColor: "#1A1A1A",
@@ -49,8 +51,8 @@ import SquareFootIcon from "@mui/icons-material/SquareFoot";
 import BalconyIcon from "@mui/icons-material/Balcony";
 import GridOnIcon from "@mui/icons-material/GridOn";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import BoltIcon from "@mui/icons-material/Bolt";
 import { getselectedProject } from "../store/projectsSlice";
-import { useSelector } from "react-redux";
 
 const Dot = styled("div")(({ theme, active }) => ({
   height: "8px",
@@ -61,9 +63,11 @@ const Dot = styled("div")(({ theme, active }) => ({
 }));
 
 const PropertySpecifications = () => {
+  const { variantId } = useParams();
   const property = useSelector(getselectedProject);
+  const selectedVariant = property?.variants?.find(v => v._id === variantId);
+  const activeVariant = selectedVariant || property?.variants?.[0] || null;
   const [alignment, setAlignment] = useState("East");
-  const activeVariant = property?.variants?.[0] || null;
 
   useEffect(()=>{
     console.log("Property", property);
@@ -202,7 +206,7 @@ const PropertySpecifications = () => {
           />
           <Chip
             icon={<Bed sx={{ color: "#A187F0" }} />}
-            label="3BHK"
+            label={activeVariant?.bhk}
             variant="outlined"
             sx={{ color: "white", borderRadius: "8px" }}
           />
@@ -212,7 +216,7 @@ const PropertySpecifications = () => {
             Price
           </Typography>
           <Typography variant="h6" fontSize={24} fontWeight={600}>
-            ${activeVariant?.price}
+            ₹{activeVariant?.price}
           </Typography>
         </Box>
       </Box>
@@ -243,7 +247,7 @@ const PropertySpecifications = () => {
             backgroundColor: "#141414",
           }}
         >
-          {property?.images?.map((src, index) => (
+          {activeVariant?.images?.map((src, index) => (
             <Box
               key={index}
               component="img"
@@ -363,6 +367,163 @@ const PropertySpecifications = () => {
             />
           </IconButton>
         </Box>
+      </Box>
+      <Typography
+        variant="h5"
+        fontWeight={600}
+        sx={{ mb: 2, color: "#fff" }}
+      >
+        Project Details
+      </Typography>
+
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: { xs: "column", md: "row" },
+          gap: 4,
+          width: "100%",
+        }}
+      >
+        {/* Left Section - Description & Specs */}
+        <Box
+          sx={{
+            flex: 1,
+            backgroundColor: "#1A1A1A",
+            border: "1px solid #2A2A2A",
+            borderRadius: "12px",
+            padding: { xs: 2, sm: 3, md: 4 },
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+          }}
+        >
+          <Typography variant="h6" fontWeight={600} color="#fff">
+            Description
+          </Typography>
+
+          <Typography variant="body2" color="#aaa" sx={{ lineHeight: 1.7 }}>
+            {property?.description}
+          </Typography>
+
+          <Box
+            sx={{
+              borderTop: "1px solid #333",
+              pt: 2,
+              mt: 1,
+            }}
+          >
+            <Grid2
+              container
+              spacing={2}
+              sx={{
+                color: "#ccc",
+              }}
+            >
+              <Grid2 size={{xs:12, sm:6}}>
+                <Typography variant="body2">
+                  <strong>Property Type:</strong> {property?.propertyType}
+                </Typography>
+              </Grid2>
+              <Grid2 size={{xs:12, sm:6}}>
+                <Typography variant="body2">
+                  <strong>Available Flats Size:</strong> {activeVariant?.bhk}
+                </Typography>
+              </Grid2>
+              <Grid2 size={{xs:12, sm:6}}>
+                <Typography variant="body2">
+                  <strong>RERA Carpet Area:</strong> {activeVariant?.carpetArea}
+                </Typography>
+              </Grid2>
+              <Grid2 size={{xs:12, sm:6}}>
+                <Typography variant="body2">
+                  <strong>Base Rate:</strong> ₹
+                  {activeVariant?.carpetArea
+                    ? Math.floor(activeVariant?.price / parseInt(activeVariant?.carpetArea))
+                    : "N/A"}{" "}
+                  per sq ft
+                </Typography>
+              </Grid2>
+              <Grid2 size={{xs:12, sm:6}}>
+                <Typography variant="body2">
+                  <strong>Parking:</strong> For SUV: ₹___ &nbsp; Normal: ₹___
+                </Typography>
+              </Grid2>
+              <Grid2 size={{xs:12, sm:6}}>
+                <Typography variant="body2">
+                  <strong>Finance Approved by:</strong> {property?.approval} Bank
+                </Typography>
+              </Grid2>
+              <Grid2 xs={12}>
+                <Typography variant="body2">
+                  <strong>Location:</strong> {property?.location?.street}, {property?.location?.city}
+                </Typography>
+              </Grid2>
+            </Grid2>
+          </Box>
+        </Box>
+
+        {/* Right Section - Amenities */}
+        <Box
+          sx={{
+            flex: 1,
+            backgroundColor: "#1A1A1A",
+            border: "1px solid #2A2A2A",
+            borderRadius: "12px",
+            padding: 3,
+          }}
+        >
+          <Typography variant="h6" fontWeight={600} color="#fff" mb={2}>
+            Key Features and Amenities
+          </Typography>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            {property?.amenities?.map((amenity, index) => (
+              <Box
+                key={index}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1.5,
+                  backgroundColor: "#141414",
+                  padding: "10px 12px",
+                  borderRadius: "8px",
+                  color: "#ccc",
+                }}
+              >
+                <BoltIcon sx={{ color: "#A187F0", fontSize: 20 }} />
+                <Typography variant="body2">{amenity}</Typography>
+              </Box>
+            ))}
+          </Box>
+        </Box>
+      </Box>
+      <Box
+        sx={{
+          mt: 5,
+          backgroundColor: "#1A1A1A",
+          border: "1px solid #2A2A2A",
+          borderRadius: "12px",
+          padding: { xs: 3, md: 4 },
+          width: "100%",
+          color: "#E0E0E0",
+          boxShadow: "0 4px 20px rgba(0, 0, 0, 0.3)",
+        }}
+      >
+        <Typography sx={{ mt: 2 }}><strong>Sample Flat Video:</strong></Typography>
+        {activeVariant?.video ? (
+          <Box sx={{ mt: 1, borderRadius: "8px", overflow: "hidden", border: "1px solid #333" }}>
+            <iframe
+              width="100%"
+              height="400"
+              src={`https://www.youtube.com/embed/${activeVariant?.video?.split("v=")[1]}`}
+              title="Sample Flat Video"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"
+              allowFullScreen
+            ></iframe>
+          </Box>
+        ) : (
+          <Typography sx={{ color: "#aaa", mt: 1 }}>No sample video available</Typography>
+        )}
       </Box>
     </>
   );

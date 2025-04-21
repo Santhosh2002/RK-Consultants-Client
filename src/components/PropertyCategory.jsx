@@ -384,7 +384,7 @@ const PropertyCategory = () => {
                 justifyContent: "start",
               }}
               onClick={() => {
-                navigate(`/properties/details/${property?.slug}`);
+                navigate(`/properties/${property?.slug}/${selectedVariant?._id}`);
               }}
               endIcon={<ArrowForwardIosIcon fontSize="small" />}
             >

@@ -37,6 +37,7 @@ const getPageFromPath = (pathname) => {
     "/services": "Services",
     "/contact": "Contact",
     "/profile": "Profile",
+    "/properties": "Properties"
   };
   return pageMapping[pathname] || "Home"; // Default to Home if not found
 };

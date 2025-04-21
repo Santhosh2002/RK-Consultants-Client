@@ -155,7 +155,7 @@ const PropertyCard = ({ item }) => {
                   textTransform: "none",
                 }}
                 onClick={() => {
-                  navigate(`/properties/category/${item?.slug}`);
+                  navigate(`/properties/${item?.slug}`);
                 }}
               >
                 View Details

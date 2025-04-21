@@ -50,7 +50,7 @@ const fileUploadSlice = createSlice({
       })
       .addCase(uploadFile.fulfilled, (state, action) => {
         state.uploading = false;
-        state.uploadedFileUrls = action.payload; // ⬅️ store the array of URLs
+        state.uploadedFileUrl = action.payload; // ⬅️ store the array of URLs
       })
 
       .addCase(uploadFile.rejected, (state, action) => {
