@@ -11,8 +11,19 @@ import {
   IconButton,
   Avatar,
 } from "@mui/material";
-import { ArrowBackIos, ArrowForwardIos, Star, StarHalf, StarBorder } from "@mui/icons-material";
-import { fetchTestimonials, getTestimonials, getTestimonialLoader } from "../store/testimonialSlice";
+import {
+  ArrowBackIos,
+  ArrowForwardIos,
+  Star,
+  StarHalf,
+  StarBorder,
+} from "@mui/icons-material";
+
+import {
+  selectTestimonials,
+  selectTestimonialsLoading,
+  fetchTestimonials,
+} from "../store/testimonialsSlice";
 
 // const testimonials = [
 //   {
@@ -49,17 +60,15 @@ import { fetchTestimonials, getTestimonials, getTestimonialLoader } from "../sto
 
 const OurClients = () => {
   const dispatch = useDispatch();
-  const testimonials = useSelector(getTestimonials);
-  const loader = useSelector(getTestimonialLoader);
+  const testimonials = useSelector(selectTestimonials);
+  const loader = useSelector(selectTestimonialsLoading);
   const [expanded, setExpanded] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
-  const testimonialsPerPage = 3; 
+  const testimonialsPerPage = 3;
   const indexOfLast = currentPage * testimonialsPerPage;
   const indexOfFirst = indexOfLast - testimonialsPerPage;
   const currentTestimonials = testimonials.slice(indexOfFirst, indexOfLast);
   const totalPages = Math.ceil(testimonials.length / testimonialsPerPage);
-
-
 
   useEffect(() => {
     dispatch(fetchTestimonials());
@@ -106,8 +115,8 @@ const OurClients = () => {
               sx={{ textAlign: "left", width: "70%", color: "#999999" }}
             >
               Read the success stories and heartfelt testimonials from our
-              valued clients. Discover why they chose RK Realtors & Consultants for their real
-              estate needs.
+              valued clients. Discover why they chose RK Realtors & Consultants
+              for their real estate needs.
             </Typography>
             <Button
               variant="outlined"
@@ -123,7 +132,7 @@ const OurClients = () => {
         </Box>
         {/* Testimonials Grid2 */}
         <Grid2 container spacing={4}>
-        {currentTestimonials.map((testimonial) => (
+          {currentTestimonials.map((testimonial) => (
             <Grid2 item size={{ xs: 12, md: 4, sm: 6 }} key={testimonial.id}>
               <Card
                 sx={{
@@ -140,8 +149,10 @@ const OurClients = () => {
                 <Box sx={{ display: "flex", gap: 0.5, mb: 2 }}>
                   {[...Array(5)].map((_, i) => {
                     const diff = testimonial.rating - i;
-                    if (diff >= 1) return <Star key={i} sx={{ color: "#FFD700" }} />;
-                    if (diff >= 0.5) return <StarHalf key={i} sx={{ color: "#FFD700" }} />;
+                    if (diff >= 1)
+                      return <Star key={i} sx={{ color: "#FFD700" }} />;
+                    if (diff >= 0.5)
+                      return <StarHalf key={i} sx={{ color: "#FFD700" }} />;
                     return <StarBorder key={i} sx={{ color: "#FFD700" }} />;
                   })}
                 </Box>
@@ -204,35 +215,38 @@ const OurClients = () => {
           }}
         >
           <Typography variant="body2" sx={{ color: "#888", pt: 2 }}>
-            {String(currentPage).padStart(2, '0')} of {String(totalPages).padStart(2, '0')}
+            {String(currentPage).padStart(2, "0")} of{" "}
+            {String(totalPages).padStart(2, "0")}
           </Typography>
           <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
-          <IconButton
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-            variant="contained"
-            size="large"
-            sx={{
-              color: "#fff",
-              border: "1px solid #999",
-              borderRadius: "50px",
-            }}
-          >
-            <ArrowBackIos />
-          </IconButton>
-          <IconButton
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-            size="large"
-            variant="contained"
-            sx={{
-              color: "#fff",
-              border: "1px solid #999",
-              borderRadius: "50px",
-            }}
-          >
-            <ArrowForwardIos />
-          </IconButton>
+            <IconButton
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              variant="contained"
+              size="large"
+              sx={{
+                color: "#fff",
+                border: "1px solid #999",
+                borderRadius: "50px",
+              }}
+            >
+              <ArrowBackIos />
+            </IconButton>
+            <IconButton
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+              disabled={currentPage === totalPages}
+              size="large"
+              variant="contained"
+              sx={{
+                color: "#fff",
+                border: "1px solid #999",
+                borderRadius: "50px",
+              }}
+            >
+              <ArrowForwardIos />
+            </IconButton>
           </Box>
         </Box>
       </Container>

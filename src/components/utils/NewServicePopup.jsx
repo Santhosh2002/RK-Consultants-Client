@@ -1,49 +1,81 @@
-import React, { useState } from "react";
+// ✅ Refactored NewServicePopup using MUI + StyledTextField
+import React from "react";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import {
-  Button,
-  TextField,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  Typography,
   IconButton,
-  InputAdornment,
+  Button,
+  Typography,
   Box,
-  List,
-  ListItem,
-  ListItemText,
-  Tooltip,
-  Divider,
   Grid2,
 } from "@mui/material";
-import { Add, Delete, Close, UploadFile } from "@mui/icons-material";
-import { useDispatch } from "react-redux";
-import { createService } from "../../store/servicesSlice";
+import { Close, Add, Delete } from "@mui/icons-material";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
+import { useDispatch } from "react-redux";
+import { createService } from "../../store/servicesSlice";
+import StyledTextField from "../../StyledComponents/StyledTextField";
+import ImageUploadComponent from "../../StyledComponents/ImageUploadComponent";
 
-const validationSchema = Yup.object().shape({
-  name: Yup.string().required("Service Name is required"),
+/* ──────────────────────────────────────────────────
+   ▸ Static option lists
+   ────────────────────────────────────────────────── */
+const categories = [
+  "Construction",
+  "Interior Design",
+  "Real Estate Consulting",
+  "Legal Services",
+  "Business",
+  "Other",
+];
+const serviceTypes = ["Standard", "Premium", "Basic", "Custom"];
+const statusOptions = ["Available", "Temporarily Unavailable", "Discontinued"];
+
+/* ──────────────────────────────────────────────────
+   ▸ Yup validation
+   ────────────────────────────────────────────────── */
+const validationSchema = Yup.object({
+  name: Yup.string().required("Service name is required"),
   slug: Yup.string().required("Slug is required"),
   description: Yup.string().required("Description is required"),
-  category: Yup.string().required("Category is required"),
-  serviceType: Yup.string().required("Service Type is required"),
+  category: Yup.string().oneOf(categories).required("Category is required"),
+  serviceType: Yup.string()
+    .oneOf(serviceTypes)
+    .required("Service type is required"),
   price: Yup.number()
-    .required("Price is required")
-    .positive("Price must be positive"),
+    .typeError("Price must be a number")
+    .positive("Must be positive")
+    .required("Price is required"),
+  status: Yup.string().oneOf(statusOptions),
+  subServices: Yup.array()
+    .of(
+      Yup.object({
+        name: Yup.string().required("Name is required"),
+        description: Yup.string(),
+        price: Yup.number()
+          .typeError("Price must be a number")
+          .positive("Must be positive")
+          .required("Price is required"),
+      })
+    )
+    .min(1, "At least one sub‑service"),
 });
 
-const NewServicePopup = ({ isOpen, onClose }) => {
+/* ──────────────────────────────────────────────────
+   ▸ Component
+   ────────────────────────────────────────────────── */
+export default function NewServicePopup({ isOpen, onClose }) {
   const dispatch = useDispatch();
+
   const {
     control,
     handleSubmit,
     formState: { errors, isValid },
-    setValue,
-    watch,
     reset,
+    watch,
   } = useForm({
     resolver: yupResolver(validationSchema),
     mode: "onChange",
@@ -52,9 +84,11 @@ const NewServicePopup = ({ isOpen, onClose }) => {
       slug: "",
       description: "",
       category: "",
-      serviceType: "",
+      serviceType: "Standard",
       price: "",
+      currency: "INR",
       images: [],
+      status: "Available",
       subServices: [{ name: "", description: "", price: "" }],
     },
   });
@@ -64,33 +98,21 @@ const NewServicePopup = ({ isOpen, onClose }) => {
     name: "subServices",
   });
 
-  const [selectedFiles, setSelectedFiles] = useState([]);
-  const handleFileSelect = (event) => {
-    const files = Array.from(event.target.files);
-    setSelectedFiles(files);
-    setValue("images", files);
-  };
-
-  const handleRemoveFile = (index) => {
-    const newFiles = [...selectedFiles];
-    newFiles.splice(index, 1);
-    setSelectedFiles(newFiles);
-    setValue("images", newFiles);
-  };
-
+  /* ----- Submit handler ------------------------------------------- */
   const onSubmit = (data) => {
-    dispatch(createService({ ...data, images: selectedFiles }))
+    dispatch(createService(data))
       .unwrap()
       .then(() => {
         reset();
         onClose();
       })
-      .catch((error) => console.error("Error creating service:", error));
+      .catch(console.error);
   };
 
+  /* ────────────────────────────────────────────────── */
   return (
     <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="md">
-      <DialogTitle>
+      <DialogTitle sx={{ pr: 6 }}>
         Add New Service
         <IconButton
           aria-label="close"
@@ -100,154 +122,160 @@ const NewServicePopup = ({ isOpen, onClose }) => {
           <Close />
         </IconButton>
       </DialogTitle>
-      <DialogContent dividers>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Grid2 container spacing={2}>
-            {[
-              "name",
-              "slug",
-              "description",
-              "category",
-              "serviceType",
-              "price",
-            ].map((field) => (
-              <Grid2 item size={{ xs: 12, sm: 6 }} key={field}>
+
+      <DialogContent dividers sx={{ backgroundColor: "#141414" }}>
+        {/* ------------- Main form ------------- */}
+        <Grid2 container spacing={2} component="form">
+          {/* Left/Right column fields */}
+          {[
+            { name: "name", label: "Service Name" },
+            { name: "slug", label: "Slug (URL‑friendly)" },
+            { name: "price", label: "Price", type: "number" },
+          ].map(({ name, label, type }) => (
+            <Grid2 item size={{ xs: 12, sm: 6 }} key={name}>
+              <Controller
+                name={name}
+                control={control}
+                render={({ field }) => (
+                  <StyledTextField
+                    {...field}
+                    type={type || "text"}
+                    placeholder={label}
+                    error={!!errors[name]}
+                    helperText={errors[name]?.message || ""}
+                  />
+                )}
+              />
+            </Grid2>
+          ))}
+
+          {/* Description (full width) */}
+          <Grid2 item size={{ xs: 12 }}>
+            <Controller
+              name="description"
+              control={control}
+              render={({ field }) => (
+                <StyledTextField
+                  {...field}
+                  multiline
+                  rows={3}
+                  placeholder="Description"
+                  error={!!errors.description}
+                  helperText={errors.description?.message || ""}
+                />
+              )}
+            />
+          </Grid2>
+
+          {/* Selects */}
+          {[
+            {
+              name: "category",
+              options: categories,
+              placeholder: "Category",
+            },
+            {
+              name: "serviceType",
+              options: serviceTypes,
+              placeholder: "Service Type",
+            },
+            {
+              name: "status",
+              options: statusOptions,
+              placeholder: "Status",
+            },
+          ].map(({ name, options, placeholder }) => (
+            <Grid2 item size={{ xs: 12, sm: 4 }} key={name}>
+              <Controller
+                name={name}
+                control={control}
+                render={({ field }) => (
+                  <StyledTextField
+                    {...field}
+                    select
+                    options={options.map((o) => ({ value: o, label: o }))}
+                    placeholder={placeholder}
+                    error={!!errors[name]}
+                    helperText={errors[name]?.message || ""}
+                  />
+                )}
+              />
+            </Grid2>
+          ))}
+
+          {/* Image upload */}
+          <ImageUploadComponent
+            images={watch("images")}
+            setImages={(files) => control.setValue("images", files)}
+          />
+        </Grid2>
+
+        {/* -------- Sub‑services section -------- */}
+        <Box
+          mt={4}
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Typography variant="h6">Sub‑Services</Typography>
+          <Button
+            startIcon={<Add />}
+            onClick={() => append({ name: "", description: "", price: "" })}
+          >
+            Add Sub‑Service
+          </Button>
+        </Box>
+
+        {fields.map((item, idx) => (
+          <Grid2 container spacing={2} key={item.id} mt={1}>
+            {["name", "description", "price"].map((fieldKey) => (
+              <Grid2
+                item
+                size={{ xs: 12 }}
+                sm={fieldKey === "description" ? 5 : 3}
+                key={fieldKey}
+              >
                 <Controller
-                  name={field}
+                  name={`subServices.${idx}.${fieldKey}`}
                   control={control}
                   render={({ field }) => (
-                    <TextField
+                    <StyledTextField
                       {...field}
-                      label={
-                        field.name.charAt(0).toUpperCase() + field.name.slice(1)
+                      type={fieldKey === "price" ? "number" : "text"}
+                      placeholder={
+                        fieldKey.charAt(0).toUpperCase() + fieldKey.slice(1)
                       }
-                      sx={{
-                        "& .MuiOutlinedInput-root": {
-                          "& fieldset": {
-                            border: "1px solid white",
-                          },
-                          "&:hover fieldset": {
-                            border: "1px solid #805ad5",
-                          },
-                          "&.Mui-focused fieldset": {
-                            border: "1px solid #6A5ACD", // Optional: Add focus border color
-                          },
-                        },
-                      }}
-                      fullWidth
-                      variant="outlined"
-                      error={!!errors[field.name]}
-                      helperText={errors[field.name]?.message || ""}
                     />
                   )}
                 />
               </Grid2>
             ))}
-            <Grid2 item size={{ xs: 12 }}>
-              <Box
-                sx={{
-                  padding: "30px",
-                  border: "2px dashed grey",
-                  textAlign: "center",
-                }}
-              >
-                <input
-                  type="file"
-                  multiple
-                  style={{ display: "none" }}
-                  onChange={handleFileSelect}
-                />
-                <UploadFile sx={{ fontSize: 50, color: "primary.main" }} />
-                <Typography>Drag & drop or click to upload images</Typography>
-              </Box>
-              <List>
-                {selectedFiles.map((file, index) => (
-                  <ListItem
-                    key={index}
-                    secondaryAction={
-                      <IconButton onClick={() => handleRemoveFile(index)}>
-                        <Delete />
-                      </IconButton>
-                    }
-                  >
-                    <ListItemText primary={file.name} />
-                  </ListItem>
-                ))}
-              </List>
+            <Grid2
+              item
+              size={{ xs: 12, sm: 1 }}
+              display="flex"
+              alignItems="center"
+            >
+              <IconButton onClick={() => remove(idx)}>
+                <Delete />
+              </IconButton>
             </Grid2>
           </Grid2>
-          <Divider sx={{ my: 2 }} />
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              margin: "0 0 20px 0",
-            }}
-          >
-            <Typography variant="h6">Sub Services</Typography>
-            <Button
-              onClick={() => append({ name: "", description: "", price: "" })}
-              startIcon={<Add />}
-            >
-              Add Sub Service
-            </Button>
-          </Box>
-          {fields.map((subService, index) => (
-            <Grid2 container spacing={2} key={subService.id}>
-              {["name", "description", "price"].map((subField) => (
-                <Grid2 item xs={4} key={subField} flexGrow={1}>
-                  <Controller
-                    name={`subServices.${index}.${subField}`}
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label={
-                          subField.charAt(0).toUpperCase() + subField.slice(1)
-                        }
-                        sx={{
-                          "& .MuiOutlinedInput-root": {
-                            "& fieldset": {
-                              border: "1px solid white",
-                            },
-                            "&:hover fieldset": {
-                              border: "1px solid #805ad5",
-                            },
-                            "&.Mui-focused fieldset": {
-                              border: "1px solid #6A5ACD", // Optional: Add focus border color
-                            },
-                          },
-                        }}
-                        fullWidth
-                        variant="outlined"
-                      />
-                    )}
-                  />
-                </Grid2>
-              ))}
-              <Grid2 item size={{ xs: 1 }}>
-                <IconButton onClick={() => remove(index)}>
-                  <Delete />
-                </IconButton>
-              </Grid2>
-            </Grid2>
-          ))}
-        </form>
+        ))}
       </DialogContent>
-      <DialogActions>
+
+      {/* ------------- Actions ------------- */}
+      <DialogActions sx={{ px: 3, py: 2 }}>
         <Button onClick={onClose}>Cancel</Button>
         <Button
-          onClick={handleSubmit(onSubmit)}
           variant="contained"
+          sx={{ backgroundColor: "#7C4DFF", color: "white" }}
           disabled={!isValid}
+          onClick={handleSubmit(onSubmit)}
         >
           Submit
         </Button>
       </DialogActions>
     </Dialog>
   );
-};
-
-export default NewServicePopup;
+}

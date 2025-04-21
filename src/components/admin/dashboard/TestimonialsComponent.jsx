@@ -98,7 +98,7 @@ function TestimonialsComponent() {
   const dispatch = useDispatch();
   const testimonials = useSelector(selectTestimonials);
   const [expanded, setExpanded] = useState({});
-
+  console.log("Testimonials: ", testimonials);
   useEffect(() => {
     dispatch(fetchTestimonials());
   }, [dispatch]);
@@ -126,7 +126,7 @@ function TestimonialsComponent() {
         {/* Testimonials grid (three cards per row on desktop) */}
         <Grid2 container spacing={4}>
           {testimonials?.map((t) => (
-            <Grid2 key={t?._id} size={{ xs: 12, sm: 4, md: 3 }} item>
+            <Grid2 key={t._id} size={{ xs: 12, sm: 4, md: 3 }} item>
               <Card
                 sx={{
                   p: 3,
