@@ -10,7 +10,7 @@ import generalSettingsReducer from "./generalSettingsSlice";
 import fileUploadReducer from "./fileUploadSlice";
 import clientsReducer from "./clientSlice";
 import contactReducer from "./contactSlice";
-import testimonialsReducer from "./testimonialSlice";
+import testimonialsReducer from "./testimonialsSlice";
 
 const store = configureStore({
   reducer: {

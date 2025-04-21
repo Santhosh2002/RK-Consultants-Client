@@ -164,10 +164,9 @@ const ClientCard = ({ client }) => {
                 Update
               </Button>
               <Button
-                variant="contained"
+                variant="outlined"
+                color="error"
                 sx={{
-                  backgroundColor: "#D32F2F",
-                  color: "#fff",
                   textTransform: "none",
                 }}
               >

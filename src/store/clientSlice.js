@@ -39,6 +39,18 @@ export const updateClient = createAsyncThunk(
     }
   }
 );
+// Async thunk to update a client
+export const deleteClient = createAsyncThunk(
+  "clients/deleteClient",
+  async ({ id }, { rejectWithValue }) => {
+    try {
+      const response = await axios.delete(`/api/client/${id}`);
+      return response.data.client;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
 
 const clientsSlice = createSlice({
   name: "clients",

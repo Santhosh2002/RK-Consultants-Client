@@ -11,7 +11,7 @@ export const fetchTestimonials = createAsyncThunk(
     try {
       const response = await axios.get("/api/testimonial");
       // If your API wraps the array in a property, grab it; otherwise return the raw array.
-      return response.data.testimonials ?? response.data;
+      return response.data.testimonials;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
     }

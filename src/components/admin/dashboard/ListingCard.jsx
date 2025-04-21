@@ -160,8 +160,18 @@ const ListingCard = ({ item, onClick }) => {
             <Button
               variant="contained"
               sx={{
-                backgroundColor: "#D32F2F",
+                backgroundColor: "#4CAF50",
                 color: "#fff",
+                textTransform: "none",
+              }}
+              onClick={onClick}
+            >
+              Approve
+            </Button>
+            <Button
+              variant="outlined"
+              color="error"
+              sx={{
                 textTransform: "none",
               }}
             >

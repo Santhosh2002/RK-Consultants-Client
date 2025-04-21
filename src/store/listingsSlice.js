@@ -18,6 +18,44 @@ export const fetchListings = createAsyncThunk(
   }
 );
 
+// Async thunk to create a new Listing
+export const createListing = createAsyncThunk(
+  "Listings/createListing",
+  async (ListingData, { rejectWithValue }) => {
+    try {
+      const response = await axios.post("/api/listing/create", ListingData);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+// Async thunk to update a Listing
+export const updateListing = createAsyncThunk(
+  "Listings/updateListing",
+  async ({ id, ListingData }, { rejectWithValue }) => {
+    try {
+      const response = await axios.put(`/api/listing/${id}`, ListingData);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+// Async thunk to update a Listing
+export const deleteListing = createAsyncThunk(
+  "Listings/deleteListing",
+  async ({ id }, { rejectWithValue }) => {
+    try {
+      const response = await axios.delete(`/api/listing/${id}`);
+      return response.data.Listing;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
 const listingsSlice = createSlice({
   name: "listings",
   initialState: {
