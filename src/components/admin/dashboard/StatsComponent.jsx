@@ -21,6 +21,7 @@ import {
   getStatsError,
   getStatsLoader,
 } from "../../../store/statsSlice";
+import UpdateStatPopup from "../../utils/UpdateStatsPopup";
 
 function StatsComponent() {
   const dispatch = useDispatch();
@@ -29,6 +30,7 @@ function StatsComponent() {
   const loading = useSelector(getStatsLoader);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [popupTitle, setPopupTitle] = useState("");
+  const [popupDefaultValue, setPopupDefaultValue] = useState(0);
 
   useEffect(() => {
     dispatch(fetchStats());
@@ -42,6 +44,7 @@ function StatsComponent() {
 
   const handleOpenPopup = (statType) => {
     setPopupTitle(statType);
+    setPopupDefaultValue(stats[statType]);
     setIsPopupOpen(true);
   };
 
@@ -129,10 +132,12 @@ function StatsComponent() {
         </Grid2>
         <VisitorsComponent />
 
-        <Popup
+        <UpdateStatPopup
           isOpen={isPopupOpen}
           onClose={handleClosePopup}
           onSubmit={handleUpdateStats}
+          statKey={popupTitle}
+          defaultValue={popupDefaultValue}
         />
       </Container>
     </Box>

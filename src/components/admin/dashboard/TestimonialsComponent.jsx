@@ -7,6 +7,7 @@ import {
   IconButton,
   Avatar,
   Card,
+  CircularProgress,
   Grid2,
 } from "@mui/material";
 import {
@@ -17,70 +18,16 @@ import {
 } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  deleteTestimonial,
   fetchTestimonials,
+  createTestimonial,
+  updateTestimonial,
   selectTestimonials,
+  selectTestimonialsLoading,
 } from "../../../store/testimonialsSlice";
-// ‑‑ If you fetch from Redux, replace the local constant + useSelector useEffect ––.
-const TESTIMONIALS_DATA = [
-  {
-    _id: "68037f311f3ac7fc1ec6bfeb",
-    rating: 5,
-    title: "Exceptional Service!",
-    message: "Our experience with Estatein was outstanding...",
-    author: {
-      name: "Wade Warren",
-      avatarUrl: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde",
-      location: { country: "USA", state: "California" },
-    },
-  },
-  {
-    _id: "68037f651f3ac7fc1ec6bfed",
-    rating: 5,
-    title: "Nice Team!",
-    message: "Our experience with RK Team was outstanding...",
-    author: {
-      name: "Santhosh G",
-      avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
-      location: { country: "USA", state: "California" },
-    },
-  },
-  {
-    _id: "68037fea1f3ac7fc1ec6bff0",
-    rating: 4,
-    title: "Easy and Smooth Process!",
-    message:
-      "My Business was formed without too much of process, they made it easier",
-    author: {
-      name: "Gaurav V",
-      avatarUrl: "https://images.unsplash.com/photo-1517841905240-472988babdf9",
-      location: { country: "India", state: "Telangana" },
-    },
-  },
-  {
-    _id: "6803805d1f3ac7fc1ec6bff2",
-    rating: 4.5,
-    title: "Great Work!",
-    message:
-      "I listed my property with RK and they made the great sales within no time",
-    author: {
-      name: "Ravi Chug",
-      avatarUrl: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e",
-      location: { country: "India", state: "Gujarat" },
-    },
-  },
-  {
-    _id: "680380c51f3ac7fc1ec6bff5",
-    rating: 4.5,
-    title: "Easy Accounting",
-    message: "They settled my accounts and made accounting hassle‑free",
-    author: {
-      name: "Rahul Gupta",
-      avatarUrl: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d",
-      location: { country: "India", state: "Mumbai" },
-    },
-  },
-];
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import TestimonialPopup from "../../utils/TestimonialsPopup";
 const renderStars = (rating) => {
   const full = Math.floor(rating);
   const half = rating - full >= 0.5;
@@ -97,16 +44,52 @@ const renderStars = (rating) => {
 function TestimonialsComponent() {
   const dispatch = useDispatch();
   const testimonials = useSelector(selectTestimonials);
+  const loading = useSelector(selectTestimonialsLoading);
+
   const [expanded, setExpanded] = useState({});
-  console.log("Testimonials: ", testimonials);
+  const [openPopup, setOpenPopup] = useState(false);
+  const [selectedTestimonial, setSelectedTestimonial] = useState(null);
+
   useEffect(() => {
     dispatch(fetchTestimonials());
   }, [dispatch]);
 
-  const toggleExpand = (id) => setExpanded((p) => ({ ...p, [id]: !p[id] }));
+  const handleDelete = async (id) => {
+    try {
+      await dispatch(deleteTestimonial(id)).unwrap();
+      toast.success("Testimonial deleted successfully");
+    } catch (error) {
+      toast.error("Failed to delete testimonial");
+    }
+  };
+
+  const toggleExpand = (id) =>
+    setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
+
+  const handleFormSubmit = async (data) => {
+    try {
+      if (selectedTestimonial) {
+        await dispatch(
+          updateTestimonial({
+            id: selectedTestimonial._id,
+            testimonialData: data,
+          })
+        ).unwrap();
+        toast.success("Testimonial updated successfully");
+      } else {
+        await dispatch(createTestimonial(data)).unwrap();
+        toast.success("Testimonial created successfully");
+      }
+      setOpenPopup(false);
+      setSelectedTestimonial(null);
+    } catch (error) {
+      toast.error("Failed to save testimonial");
+    }
+  };
 
   return (
     <Box sx={{ backgroundColor: "#111", color: "#fff", py: 6 }}>
+      <ToastContainer />
       <Container maxWidth="xl">
         {/* Heading */}
         <Box
@@ -121,140 +104,164 @@ function TestimonialsComponent() {
           <Typography variant="h3" sx={{ fontWeight: "bold" }}>
             Admin Panel: Testimonials
           </Typography>
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: "#6A5ACD",
+              color: "#fff",
+              textTransform: "none",
+            }}
+            onClick={() => {
+              setSelectedTestimonial(null); // <-- 🛠 reset FIRST
+              setTimeout(() => {
+                setOpenPopup(true); // <-- 🛠 open AFTER resetting selectedTestimonial
+              }, 0);
+            }}
+          >
+            Add Testimonial
+          </Button>
         </Box>
 
-        {/* Testimonials grid (three cards per row on desktop) */}
-        <Grid2 container spacing={4}>
-          {testimonials?.map((t) => (
-            <Grid2 key={t._id} size={{ xs: 12, sm: 4, md: 3 }} item>
-              <Card
-                sx={{
-                  p: 3,
-                  height: 350,
-                  bgcolor: "#111",
-                  border: "1px solid #444",
-                  color: "#fff",
-                  overflow: "hidden",
-                  justifyContent: "space-between",
-                  display: "flex",
-                  flexDirection: "column",
-                  borderRadius: 2,
-                }}
-              >
-                <Box
+        {/* Testimonials grid */}
+        {loading ? (
+          <Box sx={{ display: "flex", justifyContent: "center", my: 8 }}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <Grid2 container spacing={4}>
+            {testimonials?.map((t) => (
+              <Grid2 key={t._id} size={{ xs: 12, sm: 4, md: 3 }} item>
+                <Card
                   sx={{
+                    p: 3,
+                    height: 350,
+                    bgcolor: "#111",
+                    border: "1px solid #444",
+                    color: "#fff",
+                    overflow: "hidden",
+                    justifyContent: "space-between",
                     display: "flex",
                     flexDirection: "column",
-                    gap: 0.5,
-                    mb: 2,
+                    borderRadius: 2,
                   }}
                 >
-                  {/* Rating */}
-                  <Box sx={{ display: "flex", mb: 1 }}>
-                    {renderStars(t?.rating)}
-                  </Box>
-
-                  <Typography
-                    variant="h6"
-                    fontWeight="bold"
-                    gutterBottom
-                    sx={{
-                      /* keep normal wrapping */
-                      whiteSpace: "normal",
-                      textWrap: "nowrap",
-                      scrollbarWidth: "none",
-                      /* 1 line of h6 ≈ 1.25 em; adjust if you changed font‑size */
-                      maxHeight: "1.3em",
-                      lineHeight: 1.3,
-                      overflowY: "hidden",
-                      /* optional – hides horizontal scrollbar if a long word appears */
-                      overflowX: "auto",
-                    }}
-                  >
-                    {t?.title}
-                  </Typography>
-
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      color: "grey.400",
-                      height: expanded[t?._id] ? "auto" : 60,
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                    }}
-                  >
-                    {t?.message}
-                  </Typography>
-
-                  {t?.message.length > 150 && (
-                    <Button
-                      size="small"
-                      sx={{ color: "#6A5ACD", textTransform: "none" }}
-                      onClick={() => toggleExpand(t?._id)}
-                    >
-                      {expanded[t?._id] ? "Show Less" : "Read More"}
-                    </Button>
-                  )}
-
-                  {/* Author */}
                   <Box
                     sx={{
                       display: "flex",
-                      alignItems: "center",
-                      mt: 2,
-                      gap: 2,
+                      flexDirection: "column",
+                      gap: 0.5,
+                      mb: 2,
                     }}
                   >
-                    <Avatar
-                      src={t?.author.avatarUrl}
-                      alt={t?.author.name}
-                      sx={{ width: 40, height: 40 }}
-                    />
-                    <Box>
-                      <Typography variant="body1" fontWeight="bold">
-                        {t?.author.name}
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: "grey.500" }}>
-                        {t?.author.location.country}, {t?.author.location.state}
-                      </Typography>
+                    {/* Rating */}
+                    <Box sx={{ display: "flex", mb: 1 }}>
+                      {renderStars(t?.rating)}
+                    </Box>
+
+                    <Typography
+                      variant="h6"
+                      fontWeight="bold"
+                      gutterBottom
+                      sx={{
+                        whiteSpace: "normal",
+                        textWrap: "nowrap",
+                        scrollbarWidth: "none",
+                        maxHeight: "1.3em",
+                        lineHeight: 1.3,
+                        overflowY: "hidden",
+                        overflowX: "auto",
+                      }}
+                    >
+                      {t?.title}
+                    </Typography>
+
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: "grey.400",
+                        height: expanded[t?._id] ? "auto" : 60,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
+                      {t?.message}
+                    </Typography>
+
+                    {t?.message.length > 150 && (
+                      <Button
+                        size="small"
+                        sx={{ color: "#6A5ACD", textTransform: "none" }}
+                        onClick={() => toggleExpand(t._id)}
+                      >
+                        {expanded[t._id] ? "Show Less" : "Read More"}
+                      </Button>
+                    )}
+
+                    {/* Author */}
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        mt: 2,
+                        gap: 2,
+                      }}
+                    >
+                      <Avatar
+                        src={t?.author.avatarUrl}
+                        alt={t?.author.name}
+                        sx={{ width: 40, height: 40 }}
+                      />
+                      <Box>
+                        <Typography variant="body1" fontWeight="bold">
+                          {t?.author.name}
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: "grey.500" }}>
+                          {t?.author.location.country},{" "}
+                          {t?.author.location.state}
+                        </Typography>
+                      </Box>
                     </Box>
                   </Box>
-                </Box>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    marginTop: 2,
-                    marginBottom: 2,
-                  }}
-                >
-                  <Button
-                    variant="contained"
-                    sx={{
-                      backgroundColor: "#6A5ACD",
-                      color: "#fff",
-                      textTransform: "none",
-                    }}
-                  >
-                    Update
-                  </Button>
-                  <Button
-                    variant="contained"
-                    sx={{
-                      backgroundColor: "#D32F2F",
-                      color: "#fff",
-                      textTransform: "none",
-                    }}
-                  >
-                    Delete
-                  </Button>
-                </Box>
-              </Card>
-            </Grid2>
-          ))}
-        </Grid2>
 
-        {/* Simplified pagination stub – hook this up later if needed */}
+                  {/* Actions */}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      marginTop: 2,
+                      marginBottom: 2,
+                    }}
+                  >
+                    <Button
+                      variant="contained"
+                      sx={{
+                        backgroundColor: "#6A5ACD",
+                        color: "#fff",
+                        textTransform: "none",
+                      }}
+                      onClick={() => {
+                        setSelectedTestimonial(t);
+                        setOpenPopup(true);
+                      }}
+                    >
+                      Update
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      sx={{ textTransform: "none" }}
+                      onClick={() => handleDelete(t._id)}
+                    >
+                      Delete
+                    </Button>
+                  </Box>
+                </Card>
+              </Grid2>
+            ))}
+          </Grid2>
+        )}
+
+        {/* Pagination Stub */}
         <Box
           sx={{
             display: "flex",
@@ -293,6 +300,17 @@ function TestimonialsComponent() {
             </IconButton>
           </Box>
         </Box>
+
+        {/* Popup */}
+        <TestimonialPopup
+          isOpen={openPopup}
+          onClose={() => {
+            setOpenPopup(false);
+            setSelectedTestimonial(null);
+          }}
+          existingTestimonial={selectedTestimonial}
+          onSubmit={handleFormSubmit}
+        />
       </Container>
     </Box>
   );

@@ -114,7 +114,6 @@ const theme = createTheme({
     MuiButtonBase: {
       defaultProps: {
         // disableRipple: true
-        color: "primary.main",
       },
       styleOverrides: {
         root: {},

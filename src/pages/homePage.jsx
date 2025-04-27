@@ -17,12 +17,19 @@ import OurValues from "./About/Component/OurValues";
 import OurAchievements from "./About/Component/OurAchievements";
 import { useDispatch } from "react-redux";
 import { fetchProjects } from "../store/projectsSlice";
+import { createVisitors } from "../store/visitorsSlice";
 import FileUploadTester from "./test";
 
 function HomePage() {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    // Track only unique visitor session (optional: session check)
+    const hasVisited = sessionStorage.getItem("hasVisited");
+    if (!hasVisited) {
+      dispatch(createVisitors());
+      sessionStorage.setItem("hasVisited", "true");
+    }
     dispatch(fetchProjects());
   }, [dispatch]);
   return (

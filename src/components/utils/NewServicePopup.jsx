@@ -1,5 +1,4 @@
-// ✅ Refactored NewServicePopup using MUI + StyledTextField
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import {
   Dialog,
@@ -15,14 +14,15 @@ import {
 import { Close, Add, Delete } from "@mui/icons-material";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-import { useDispatch } from "react-redux";
-import { createService } from "../../store/servicesSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { createService, updateService } from "../../store/servicesSlice"; // (optional future updateService if needed)
 import StyledTextField from "../../StyledComponents/StyledTextField";
-import ImageUploadComponent from "../../StyledComponents/ImageUploadComponent";
+import FileUploadField from "../../StyledComponents/FileUploadField";
+import { isUploading } from "../../store/fileUploadSlice";
 
 /* ──────────────────────────────────────────────────
-   ▸ Static option lists
-   ────────────────────────────────────────────────── */
+   ▸ Static options
+────────────────────────────────────────────────── */
 const categories = [
   "Construction",
   "Interior Design",
@@ -36,7 +36,7 @@ const statusOptions = ["Available", "Temporarily Unavailable", "Discontinued"];
 
 /* ──────────────────────────────────────────────────
    ▸ Yup validation
-   ────────────────────────────────────────────────── */
+────────────────────────────────────────────────── */
 const validationSchema = Yup.object({
   name: Yup.string().required("Service name is required"),
   slug: Yup.string().required("Slug is required"),
@@ -66,16 +66,21 @@ const validationSchema = Yup.object({
 
 /* ──────────────────────────────────────────────────
    ▸ Component
-   ────────────────────────────────────────────────── */
-export default function NewServicePopup({ isOpen, onClose }) {
+────────────────────────────────────────────────── */
+export default function NewServicePopup({
+  isOpen,
+  onClose,
+  existingService = null,
+}) {
   const dispatch = useDispatch();
-
+  const isImgUploading = useSelector(isUploading);
   const {
     control,
     handleSubmit,
-    formState: { errors, isValid },
     reset,
+    setValue,
     watch,
+    formState: { errors, isValid },
   } = useForm({
     resolver: yupResolver(validationSchema),
     mode: "onChange",
@@ -98,22 +103,41 @@ export default function NewServicePopup({ isOpen, onClose }) {
     name: "subServices",
   });
 
-  /* ----- Submit handler ------------------------------------------- */
-  const onSubmit = (data) => {
-    dispatch(createService(data))
-      .unwrap()
-      .then(() => {
-        reset();
-        onClose();
-      })
-      .catch(console.error);
+  /* ----- Handle Create or Update ------------------------------------------- */
+  const onSubmit = async (data) => {
+    try {
+      if (existingService) {
+        await dispatch(
+          updateService({ id: existingService._id, ServiceData: data })
+        ).unwrap();
+      } else {
+        await dispatch(createService(data)).unwrap();
+      }
+      reset();
+      onClose();
+    } catch (error) {
+      console.error(error);
+    }
   };
+
+  /* ----- Pre-populate when editing ------------------------------------------- */
+  useEffect(() => {
+    if (existingService && isOpen) {
+      const cleanData = { ...existingService };
+      if (!Array.isArray(cleanData.images)) {
+        cleanData.images = []; // fallback if missing
+      }
+      reset(cleanData);
+    } else if (!isOpen) {
+      reset();
+    }
+  }, [existingService, isOpen, reset]);
 
   /* ────────────────────────────────────────────────── */
   return (
     <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="md">
       <DialogTitle sx={{ pr: 6 }}>
-        Add New Service
+        {existingService ? "Update Service" : "Add New Service"}
         <IconButton
           aria-label="close"
           onClick={onClose}
@@ -124,13 +148,13 @@ export default function NewServicePopup({ isOpen, onClose }) {
       </DialogTitle>
 
       <DialogContent dividers sx={{ backgroundColor: "#141414" }}>
-        {/* ------------- Main form ------------- */}
+        {/* Main Form */}
         <Grid2 container spacing={2} component="form">
-          {/* Left/Right column fields */}
+          {/* Basic Fields */}
           {[
             { name: "name", label: "Service Name" },
             { name: "slug", label: "Slug (URL‑friendly)" },
-            { name: "price", label: "Price", type: "number" },
+            { name: "price", label: "Price (INR)", type: "number" },
           ].map(({ name, label, type }) => (
             <Grid2 item size={{ xs: 12, sm: 6 }} key={name}>
               <Controller
@@ -140,6 +164,7 @@ export default function NewServicePopup({ isOpen, onClose }) {
                   <StyledTextField
                     {...field}
                     type={type || "text"}
+                    label={label}
                     placeholder={label}
                     error={!!errors[name]}
                     helperText={errors[name]?.message || ""}
@@ -149,7 +174,7 @@ export default function NewServicePopup({ isOpen, onClose }) {
             </Grid2>
           ))}
 
-          {/* Description (full width) */}
+          {/* Description */}
           <Grid2 item size={{ xs: 12 }}>
             <Controller
               name="description"
@@ -159,7 +184,8 @@ export default function NewServicePopup({ isOpen, onClose }) {
                   {...field}
                   multiline
                   rows={3}
-                  placeholder="Description"
+                  label="Service Description"
+                  placeholder="Detailed service description..."
                   error={!!errors.description}
                   helperText={errors.description?.message || ""}
                 />
@@ -167,24 +193,16 @@ export default function NewServicePopup({ isOpen, onClose }) {
             />
           </Grid2>
 
-          {/* Selects */}
+          {/* Dropdown Fields */}
           {[
-            {
-              name: "category",
-              options: categories,
-              placeholder: "Category",
-            },
+            { name: "category", options: categories, label: "Category" },
             {
               name: "serviceType",
               options: serviceTypes,
-              placeholder: "Service Type",
+              label: "Service Type",
             },
-            {
-              name: "status",
-              options: statusOptions,
-              placeholder: "Status",
-            },
-          ].map(({ name, options, placeholder }) => (
+            { name: "status", options: statusOptions, label: "Status" },
+          ].map(({ name, options, label }) => (
             <Grid2 item size={{ xs: 12, sm: 4 }} key={name}>
               <Controller
                 name={name}
@@ -193,8 +211,9 @@ export default function NewServicePopup({ isOpen, onClose }) {
                   <StyledTextField
                     {...field}
                     select
+                    label={label}
+                    placeholder={label}
                     options={options.map((o) => ({ value: o, label: o }))}
-                    placeholder={placeholder}
                     error={!!errors[name]}
                     helperText={errors[name]?.message || ""}
                   />
@@ -203,16 +222,23 @@ export default function NewServicePopup({ isOpen, onClose }) {
             </Grid2>
           ))}
 
-          {/* Image upload */}
-          <ImageUploadComponent
-            images={watch("images")}
-            setImages={(files) => control.setValue("images", files)}
-          />
+          {/* File Upload Field */}
+          <Grid2 item size={{ xs: 12 }}>
+            <FileUploadField
+              control={control}
+              setValue={setValue}
+              fieldName="images"
+              label="Service Images"
+              accept="image/*"
+              multiple
+              defaultUrls={existingService ? existingService.images : []} // Pass initial files for edit
+            />
+          </Grid2>
         </Grid2>
 
-        {/* -------- Sub‑services section -------- */}
+        {/* Sub-Services Section */}
         <Box
-          mt={4}
+          mt={6}
           display="flex"
           justifyContent="space-between"
           alignItems="center"
@@ -228,23 +254,30 @@ export default function NewServicePopup({ isOpen, onClose }) {
 
         {fields.map((item, idx) => (
           <Grid2 container spacing={2} key={item.id} mt={1}>
-            {["name", "description", "price"].map((fieldKey) => (
+            {[
+              { name: "name", label: "Sub‑Service Name" },
+              { name: "description", label: "Sub‑Service Description" },
+              {
+                name: "price",
+                label: "Sub‑Service Price (INR)",
+                type: "number",
+              },
+            ].map(({ name, label, type }) => (
               <Grid2
                 item
                 size={{ xs: 12 }}
-                sm={fieldKey === "description" ? 5 : 3}
-                key={fieldKey}
+                sm={name === "description" ? 5 : 3}
+                key={name}
               >
                 <Controller
-                  name={`subServices.${idx}.${fieldKey}`}
+                  name={`subServices.${idx}.${name}`}
                   control={control}
                   render={({ field }) => (
                     <StyledTextField
                       {...field}
-                      type={fieldKey === "price" ? "number" : "text"}
-                      placeholder={
-                        fieldKey.charAt(0).toUpperCase() + fieldKey.slice(1)
-                      }
+                      type={type || "text"}
+                      label={label}
+                      placeholder={label}
                     />
                   )}
                 />
@@ -264,16 +297,16 @@ export default function NewServicePopup({ isOpen, onClose }) {
         ))}
       </DialogContent>
 
-      {/* ------------- Actions ------------- */}
+      {/* Footer Actions */}
       <DialogActions sx={{ px: 3, py: 2 }}>
         <Button onClick={onClose}>Cancel</Button>
         <Button
           variant="contained"
           sx={{ backgroundColor: "#7C4DFF", color: "white" }}
-          disabled={!isValid}
+          disabled={!isValid || isImgUploading}
           onClick={handleSubmit(onSubmit)}
         >
-          Submit
+          {existingService ? "Update Service" : "Create Service"}
         </Button>
       </DialogActions>
     </Dialog>

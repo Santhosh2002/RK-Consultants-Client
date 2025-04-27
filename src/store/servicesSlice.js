@@ -17,42 +17,39 @@ export const createService = createAsyncThunk(
   "services/createService",
   async (serviceData, { rejectWithValue }) => {
     try {
-      const formData = new FormData();
-
-      // Append service fields
-      Object.keys(serviceData).forEach((key) => {
-        if (key === "images") {
-          serviceData.images.forEach((file) => {
-            formData.append("images", file);
-          });
-        } else if (key === "subServices") {
-          formData.append(key, JSON.stringify(serviceData[key]));
-        } else {
-          formData.append(key, serviceData[key]);
-        }
+      const response = await axios.post("/api/service/create", serviceData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
 
-      const response = await axios.post("/api/service/create", formData);
-
-      return response.data;
+      return response.data.service;
     } catch (error) {
       return rejectWithValue(error.response?.data || "An error occurred");
     }
   }
 );
-
-// Delete a service
+// Async thunk to update a Service
+export const updateService = createAsyncThunk(
+  "services/updateService",
+  async ({ id, ServiceData }, { rejectWithValue }) => {
+    try {
+      const response = await axios.put(`/api/service/${id}`, ServiceData);
+      return response.data.service;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+// Async thunk to update a Service
 export const deleteService = createAsyncThunk(
   "services/deleteService",
   async (id, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("authToken");
-      await axios.delete(`/api/service/delete/${id}`, {
-        headers: { Authorization: `${token}` },
-      });
-      return id;
+      const response = await axios.delete(`/api/service/${id}`);
+      return response.data.service;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );
@@ -96,6 +93,23 @@ const servicesSlice = createSlice({
         state.services.push(action.payload);
       })
       .addCase(createService.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(updateService.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateService.fulfilled, (state, action) => {
+        state.loading = false;
+        const updatedService = action.payload;
+        const index = state.services.findIndex(
+          (service) => service._id === updatedService._id
+        );
+        if (index !== -1) {
+          state.services[index] = updatedService; // Replace the updated service in-place
+        }
+      })
+      .addCase(updateService.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

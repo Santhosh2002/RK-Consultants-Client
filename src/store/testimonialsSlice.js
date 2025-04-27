@@ -1,17 +1,58 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-/**
- * GET  /api/testimonial
- * Returns: { testimonials: [...] }   ← or just an array
- */
+/* Fetch all testimonials */
 export const fetchTestimonials = createAsyncThunk(
   "testimonials/fetchAll",
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get("/api/testimonial");
-      // If your API wraps the array in a property, grab it; otherwise return the raw array.
       return response.data.testimonials;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+/* Create a new testimonial */
+export const createTestimonial = createAsyncThunk(
+  "testimonials/create",
+  async (testimonialData, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(
+        "/api/testimonial/create",
+        testimonialData
+      );
+      return response.data.testimonial;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+/* Update existing testimonial */
+export const updateTestimonial = createAsyncThunk(
+  "testimonials/update",
+  async ({ id, testimonialData }, { rejectWithValue }) => {
+    try {
+      const response = await axios.put(
+        `/api/testimonial/${id}`,
+        testimonialData
+      );
+      return response.data.testimonial;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+/* Delete testimonial */
+export const deleteTestimonial = createAsyncThunk(
+  "testimonials/delete",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await axios.delete(`/api/testimonial/${id}`);
+      return response.data.testimonial;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
     }
@@ -21,7 +62,7 @@ export const fetchTestimonials = createAsyncThunk(
 const testimonialsSlice = createSlice({
   name: "testimonials",
   initialState: {
-    list: [], // all testimonials
+    list: [],
     loading: false,
     error: null,
   },
@@ -39,11 +80,23 @@ const testimonialsSlice = createSlice({
       .addCase(fetchTestimonials.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(createTestimonial.fulfilled, (state, action) => {
+        state.list.push(action.payload);
+      })
+      .addCase(updateTestimonial.fulfilled, (state, action) => {
+        const index = state.list.findIndex((t) => t._id === action.payload._id);
+        if (index !== -1) {
+          state.list[index] = action.payload;
+        }
+      })
+      .addCase(deleteTestimonial.fulfilled, (state, action) => {
+        state.list = state.list.filter((t) => t._id !== action.payload._id);
       });
   },
 });
 
-/* ---------- Selectors ---------- */
+/* Selectors */
 export const selectTestimonials = (state) => state.testimonials.list;
 export const selectTestimonialsLoading = (state) => state.testimonials.loading;
 export const selectTestimonialsError = (state) => state.testimonials.error;

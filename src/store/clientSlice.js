@@ -42,9 +42,9 @@ export const updateClient = createAsyncThunk(
 // Async thunk to update a client
 export const deleteClient = createAsyncThunk(
   "clients/deleteClient",
-  async ({ id }, { rejectWithValue }) => {
+  async (id, { rejectWithValue }) => {
     try {
-      const response = await axios.delete(`/api/client/${id}`);
+      const response = await axios.delete(`/api/client/delete/${id}`);
       return response.data.client;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -82,7 +82,15 @@ const clientsSlice = createSlice({
       .addCase(createClient.rejected, (state, action) => {
         state.error = action.payload;
       });
-
+    builder
+      .addCase(deleteClient.fulfilled, (state, action) => {
+        state.clients = state.clients.filter(
+          (client) => client._id !== action.payload._id
+        );
+      })
+      .addCase(deleteClient.rejected, (state, action) => {
+        state.error = action.payload;
+      });
     builder
       .addCase(updateClient.fulfilled, (state, action) => {
         const index = state.clients.findIndex(

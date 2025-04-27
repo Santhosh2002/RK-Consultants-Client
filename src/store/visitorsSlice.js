@@ -13,7 +13,17 @@ export const fetchVisitors = createAsyncThunk(
     }
   }
 );
-
+export const createVisitors = createAsyncThunk(
+  "visitors/createVisitors",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.post("/api/visitor/add");
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
 const visitorsSlice = createSlice({
   name: "visitors",
   initialState: {

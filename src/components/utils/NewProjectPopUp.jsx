@@ -1,11 +1,16 @@
-// ✅ Refactored NewProjectPopUp using MUI + StyledTextField
-import React, { useState, useEffect } from "react";
+// ✅ NewProjectPopup — fully “controller-ised” version
+import React, { useEffect } from "react";
 import { Box, Typography, Button, Modal, Grid2 } from "@mui/material";
-import StyledTextField from "../../StyledComponents/StyledTextField";
-import ImageUploadComponent from "../../StyledComponents/ImageUploadComponent";
-import VideoUploadComponent from "../../StyledComponents/VideoUploadComponent";
-import VariantForm from "../../StyledComponents/AddVariantComponent";
+import { useForm, Controller, FormProvider } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
 
+import StyledTextField from "../../StyledComponents/StyledTextField";
+import VariantForm from "../../StyledComponents/AddVariantComponent";
+import FileUploadField from "../../StyledComponents/FileUploadField";
+import { createProject, updateProject } from "../../store/projectsSlice";
+import { isUploading } from "../../store/fileUploadSlice";
+
+// ───────────────────────────────────────── constants ──────────────────────────────────────────
 const propertyTypes = [
   "Residential",
   "Commercial",
@@ -26,562 +31,573 @@ const parkingOptions = [
   "None",
 ];
 const elevatorAvailable = ["Yes", "No"];
+const approvalOptions = ["Pending", "Approved", "Rejected"];
+const occupationCertificateOptions = [
+  "Yes",
+  "No",
+  "Yes - But up to some floors",
+];
+const buildingAgeOptions = [
+  "Under Construction",
+  "Less than 5 years",
+  "5 years - 10 years",
+  "More than 10 years",
+];
 
-function NewProjectPopUp({ isOpen, onClose, onSubmit }) {
-  const [formData, setFormData] = useState({
-    title: "",
-    slug: "",
-    description: "",
-    contact: { phone: "", email: "" },
-    images: [],
-    video: [],
-    virtualTour: "",
-    brochure: "",
-    visible: true,
-    propertyType: "Residential",
-    transactionType: "Sale",
-    furnishingStatus: "Unfurnished",
-    status: "Available",
-    ownership: "Freehold",
-    landmark: "",
-    nearby: [],
-    amenities: [],
-    parking: "",
-    location: {
-      street: "",
-      city: "",
-      state: "",
-      country: "",
-      latitude: "",
-      longitude: "",
+// ───────────────────────────────────────── helpers ────────────────────────────────────────────
+const emptyProject = {
+  title: "",
+  slug: "",
+  description: "",
+  contact: { phone: "", email: "" },
+  images: [],
+  video: [],
+  virtualTour: [],
+  brochure: [],
+  visible: true,
+  propertyType: "Residential",
+  transactionType: "Sale",
+  furnishingStatus: "Unfurnished",
+  status: "Available",
+  ownership: { name: "", email: "", number: "" },
+  landmark: "",
+  nearby: [],
+  amenities: [],
+  parking: "",
+  elevator: false,
+  location: {
+    street: "",
+    city: "",
+    state: "",
+    country: "",
+    latitude: "",
+    longitude: "",
+  },
+  approval: "Pending",
+  occupationCertificate: "No",
+  buildingAge: "Under Construction",
+  commissionAgreement: "",
+  finance: { approvedBy: [] },
+  baseRate: { amountPerSqFt: "", currency: "INR" },
+  parkingCharges: { suv: "", normal: "", currency: "INR" },
+  variants: [
+    {
+      bhk: "",
+      carpetArea: "",
+      builtUpArea: "",
+      facing: "",
+      price: "",
+      currency: "INR",
+      bedrooms: 0,
+      bathrooms: 0,
+      images: [],
+      video: [],
+      balcony: 0,
+      floor: "",
+      totalFloors: "",
+      availability: true,
     },
-    approval: "Approved",
-    variants: [
-      {
-        bhk: "",
-        carpetArea: "",
-        builtUpArea: "",
-        facing: "",
-        price: "",
-        currency: "INR",
-        bedrooms: 0,
-        bathrooms: 0,
-        images: [],
-        video: [],
-        balcony: 0,
-        floor: "",
-        totalFloors: "",
-        availability: true,
-      },
-    ],
+  ],
+};
+
+// ───────────────────────────────────────── component ──────────────────────────────────────────
+function NewProjectPopup({ isOpen, onClose, editingData = null }) {
+  const dispatch = useDispatch();
+  const isFilesUploading = useSelector(isUploading);
+
+  const methods = useForm({
+    defaultValues: emptyProject,
+    mode: "onChange",
   });
+  const {
+    control,
+    handleSubmit,
+    reset,
+    watch,
+    setValue,
+    formState: { isDirty },
+  } = methods;
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    if (!name) return;
+  // reset form when popup opens / closes or when editingData changes
+  useEffect(() => {
+    if (isOpen) {
+      reset(editingData || emptyProject);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, editingData]);
 
-    const keys = name.split(".");
-
-    setFormData((prev) => {
-      const updated = { ...prev };
-      let nested = updated;
-
-      for (let i = 0; i < keys.length - 1; i++) {
-        if (!nested[keys[i]]) nested[keys[i]] = {};
-        nested = nested[keys[i]];
-      }
-
-      const finalKey = keys[keys.length - 1];
-      nested[finalKey] = type === "checkbox" ? checked : value;
-
-      return updated;
-    });
-  };
-  const handleSubmit = () => {
-    const finalPayload = {
+  // ─────────────── onSubmit ───────────────
+  const onSubmit = async (formData) => {
+    // pre-process files for backend
+    const payload = {
       ...formData,
-      images: formData.images.map((file) => file.name),
-      video: formData.video.map((file) => file.name),
-      variants: formData.variants.map((variant) => ({
-        ...variant,
-        images: Array.isArray(variant.images)
-          ? variant.images.map((file) => file.name)
+      images: formData.images.map((f) => (f?.name ? f.name : f)),
+      video: formData.video.map((f) => (f?.name ? f.name : f)),
+      virtualTour: formData.virtualTour.map((f) => (f?.name ? f.name : f)),
+      brochure: formData.brochure.map((f) => (f?.name ? f.name : f)),
+      variants: formData.variants.map((v) => ({
+        ...v,
+        images: Array.isArray(v.images)
+          ? v.images.map((f) => (f?.name ? f.name : f))
           : [],
-        video: Array.isArray(variant.video)
-          ? variant.video.map((file) => file.name)
-          : [],
+        video: v.video ? (v.video?.name ? v.video.name : v.video) : "",
       })),
     };
 
-    console.log("📦 Final Form Data:", finalPayload);
+    try {
+      if (editingData) {
+        await dispatch(
+          updateProject({ id: editingData._id, ProjectData: payload })
+        ).unwrap();
+      } else {
+        await dispatch(createProject(payload)).unwrap();
+      }
+      onClose();
+    } catch (err) {
+      console.error("Error submitting Project:", err);
+    }
   };
 
+  // ──────────────────────────────────────────────────────────────────────────
   return (
-    <Modal
-      open={isOpen}
-      onClose={onClose}
-      sx={{
-        maxWidth: "50%",
-        margin: "auto",
-        overflowY: "auto",
-        scrollbarWidth: "none",
-        maxHeight: "90vh",
-        backgroundColor: "#141414",
-      }}
-    >
-      <Box
-        component="form"
+    <FormProvider {...methods}>
+      <Modal
+        open={isOpen}
+        onClose={onClose}
         sx={{
-          borderRadius: "8px",
-          padding: { xs: 3, md: 5 },
-          border: "5px solid #262626",
-
-          width: "100%",
+          maxWidth: "50%",
+          margin: "auto",
+          overflowY: "auto",
+          scrollbarWidth: "none",
+          maxHeight: "90vh",
+          backgroundColor: "#141414",
         }}
       >
-        <Grid2 container spacing={2}>
-          <Grid2
-            sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
-            item
-            size={{ xs: 12, sm: 12 }}
-          >
-            <Typography>Title</Typography>
-            <StyledTextField
-              name="formData.title"
-              type="text"
-              placeholder="Enter title"
-              value={formData.title}
-              onChange={(e) => {
-                setFormData((prev) => ({
-                  ...prev,
-                  title: e.target.value,
-                }));
-              }}
-              required
-            />
-          </Grid2>
-          {/* <Grid2
+        <Box
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
+          sx={{
+            borderRadius: "8px",
+            padding: { xs: 3, md: 5 },
+            border: "5px solid #262626",
+            width: "100%",
+          }}
+        >
+          <Grid2 container spacing={2}>
+            {/* ─────────────── Title ─────────────── */}
+            <Grid2
               sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
               item
-              size={{ xs: 12, sm: 6 }}
+              size={{ xs: 12 }}
             >
-              <Typography>Slug</Typography>
-              <StyledTextField
-                name="slug"
-                placeholder="Enter property url"
-                value={formData.slug}
-                onChange={handleChange}
+              <Typography>Title</Typography>
+              <Controller
+                name="title"
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <StyledTextField
+                    {...field}
+                    placeholder="Enter title"
+                    required
+                  />
+                )}
               />
-            </Grid2> */}
-          <Grid2
-            sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
-            item
-            size={{ xs: 12, sm: 6 }}
-          >
-            <Typography>Email</Typography>
-            <StyledTextField
-              name="contact.email"
-              value={formData.contact.email}
-              placeholder="Enter your email"
-              onChange={(e) => {
-                setFormData((prev) => ({
-                  ...prev,
-                  contact: {
-                    ...prev.contact,
-                    email: e.target.value,
-                  },
-                }));
-              }}
-            />
-          </Grid2>
-          <Grid2
-            sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
-            item
-            size={{ xs: 12, sm: 6 }}
-          >
-            <Typography>Phone</Typography>
-            <StyledTextField
-              name="contact.phone"
-              placeholder="Enter your phone number"
-              value={formData.contact.phone}
-              onChange={(e) => {
-                setFormData((prev) => ({
-                  ...prev,
-                  contact: {
-                    ...prev.contact,
-                    phone: e.target.value,
-                  },
-                }));
-              }}
-              required
-            />
-          </Grid2>
-          <Grid2
-            sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
-            item
-            size={{ xs: 12 }}
-          >
-            <Typography>Description</Typography>
-            <StyledTextField
-              name="description"
-              placeholder="Description"
-              multiline
-              rows={4}
-              value={formData.description}
-              onChange={(e) => {
-                setFormData((prev) => ({
-                  ...prev,
-                  description: e.target.value,
-                }));
-              }}
-            />
-          </Grid2>
-          <Grid2
-            sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
-            item
-            size={{ xs: 12, sm: 6 }}
-          >
-            <Typography>Property Type</Typography>
-            <StyledTextField
-              select
-              name="propertyType"
-              value={formData.propertyType}
-              onChange={(e) => {
-                setFormData((prev) => ({
-                  ...prev,
-                  propertyType: e.target.value,
-                }));
-              }}
-              options={propertyTypes.map((type) => ({
-                value: type,
-                label: type,
-              }))}
-            />
-          </Grid2>
-          <Grid2
-            sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
-            item
-            size={{ xs: 12, sm: 6 }}
-          >
-            <Typography>Transaction Type</Typography>
-            <StyledTextField
-              select
-              name="transactionType"
-              value={formData.transactionType}
-              onChange={(e) => {
-                setFormData((prev) => ({
-                  ...prev,
-                  transactionType: e.target.value,
-                }));
-              }}
-              options={transactionTypes.map((type) => ({
-                value: type,
-                label: type,
-              }))}
-            />
-          </Grid2>
-          <Grid2
-            sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
-            item
-            size={{ xs: 12, sm: 6 }}
-          >
-            <Typography>Furnishing Status</Typography>
-            <StyledTextField
-              select
-              name="furnishingStatus"
-              value={formData.furnishingStatus}
-              onChange={(e) => {
-                setFormData((prev) => ({
-                  ...prev,
-                  furnishingStatus: e.target.value,
-                }));
-              }}
-              options={furnishingStatuses.map((status) => ({
-                value: status,
-                label: status,
-              }))}
-            />
-          </Grid2>
-          <Grid2
-            sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
-            item
-            size={{ xs: 12, sm: 6 }}
-          >
-            <Typography>Status</Typography>
-            <StyledTextField
-              select
-              name="status"
-              value={formData.status}
-              onChange={(e) => {
-                setFormData((prev) => ({
-                  ...prev,
-                  status: e.target.value,
-                }));
-              }}
-              options={statusOptions.map((status) => ({
-                value: status,
-                label: status,
-              }))}
-            />
-          </Grid2>
-          <Grid2
-            sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
-            item
-            size={{ xs: 12 }}
-          >
-            <Typography>Landmark</Typography>
-            <StyledTextField
-              name="landmark"
-              placeholder="Enter landmark"
-              value={formData.landmark}
-              onChange={(e) => {
-                setFormData((prev) => ({
-                  ...prev,
-                  landmark: e.target.value,
-                }));
-              }}
-            />
-          </Grid2>
-          <Grid2
-            sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
-            item
-            size={{ xs: 12 }}
-          >
-            <Typography>Nearby Places</Typography>
-            <StyledTextField
-              name="nearby"
-              placeholder="Enter nearby places"
-              value={formData.nearby}
-              onChange={(e) => {
-                setFormData((prev) => ({
-                  ...prev,
-                  nearby: e.target.value.split(",").map((x) => x.trim()),
-                }));
-              }}
-            />
-          </Grid2>
-          <Grid2
-            sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
-            item
-            size={{ xs: 12 }}
-          >
-            <Typography>Amenities</Typography>
-            <StyledTextField
-              name="amenities"
-              placeholder="Enter amenities"
-              value={formData.amenities}
-              onChange={(e) => {
-                setFormData((prev) => ({
-                  ...prev,
-                  amenities: e.target.value.split(",").map((x) => x.trim()),
-                }));
-              }}
-            />
-          </Grid2>
-          <ImageUploadComponent
-            images={formData.images}
-            setImages={(files) =>
-              setFormData((prev) => ({ ...prev, images: files }))
-            }
-          />
-          <VideoUploadComponent
-            videos={formData.video}
-            setVideos={(files) =>
-              setFormData((prev) => ({ ...prev, video: files }))
-            }
-          />
-          <Grid2
-            sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
-            item
-            size={{ xs: 12, sm: 6 }}
-          >
-            <Typography>Parking</Typography>
-            <StyledTextField
-              select
-              name="parking"
-              value={formData.parking}
-              onChange={handleChange}
-              options={parkingOptions.map((option) => ({
-                value: option,
-                label: option,
-              }))}
-            />
-          </Grid2>
-          <Grid2
-            sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
-            item
-            size={{ xs: 12, sm: 6 }}
-          >
-            <Typography>Elevator Available</Typography>
-            <StyledTextField
-              select
-              name="elevator"
-              value={formData.elevator ? "Yes" : "No"}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  elevator: e.target.value === "Yes",
-                }))
-              }
-              options={elevatorAvailable.map((option) => ({
-                value: option,
-                label: option,
-              }))}
-            />
-          </Grid2>
-          <Grid2
-            sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
-            item
-            size={{ xs: 12, sm: 12 }}
-          >
-            <Typography>Location</Typography>
-            <Grid2 direction={"row"} container spacing={2}>
+            </Grid2>
+
+            {/* ─────────────── Email ─────────────── */}
+            <Grid2
+              item
+              size={{ xs: 12, sm: 6 }}
+              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+            >
+              <Typography>Email</Typography>
+              <Controller
+                name="contact.email"
+                control={control}
+                render={({ field }) => (
+                  <StyledTextField {...field} placeholder="Enter your email" />
+                )}
+              />
+            </Grid2>
+
+            {/* ─────────────── Phone ─────────────── */}
+            <Grid2
+              item
+              size={{ xs: 12, sm: 6 }}
+              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+            >
+              <Typography>Phone</Typography>
+              <Controller
+                name="contact.phone"
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <StyledTextField
+                    {...field}
+                    placeholder="Enter your phone number"
+                    required
+                  />
+                )}
+              />
+            </Grid2>
+
+            {/* ─────────────── Description ─────────────── */}
+            <Grid2
+              item
+              size={{ xs: 12 }}
+              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+            >
+              <Typography>Description</Typography>
+              <Controller
+                name="description"
+                control={control}
+                render={({ field }) => (
+                  <StyledTextField
+                    {...field}
+                    placeholder="Description"
+                    multiline
+                    rows={4}
+                  />
+                )}
+              />
+            </Grid2>
+
+            {/* ─────────────── Property / Transaction / Furnishing / Status ─────────────── */}
+            {[
+              {
+                name: "propertyType",
+                label: "Property Type",
+                options: propertyTypes,
+              },
+              {
+                name: "transactionType",
+                label: "Transaction Type",
+                options: transactionTypes,
+              },
+              {
+                name: "furnishingStatus",
+                label: "Furnishing Status",
+                options: furnishingStatuses,
+              },
+              {
+                name: "status",
+                label: "Status",
+                options: statusOptions,
+              },
+            ].map(({ name, label, options }) => (
               <Grid2
-                // sx={{ display: "flex", flexDirection: "row", gap: "8px" }}
+                key={name}
                 item
-                size={{ xs: 12, sm: 4 }}
+                size={{ xs: 12, sm: 6 }}
+                sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
               >
-                <StyledTextField
-                  name="street"
-                  placeholder="Street"
-                  value={formData.location.street}
-                  onChange={(e) => {
-                    setFormData((prev) => ({
-                      ...prev,
-                      location: {
-                        ...prev.location,
-                        street: e.target.value,
-                      },
-                    }));
-                  }}
+                <Typography>{label}</Typography>
+                <Controller
+                  name={name}
+                  control={control}
+                  render={({ field }) => (
+                    <StyledTextField
+                      {...field}
+                      select
+                      options={options.map((v) => ({ value: v, label: v }))}
+                    />
+                  )}
                 />
               </Grid2>
+            ))}
+
+            {/* ─────────────── Landmark / Nearby / Amenities ─────────────── */}
+            {[
+              {
+                name: "landmark",
+                label: "Landmark",
+                placeholder: "Enter landmark",
+              },
+              {
+                name: "nearby",
+                label: "Nearby Places",
+                transform: (v) => v.split(",").map((x) => x.trim()),
+              },
+              {
+                name: "amenities",
+                label: "Amenities",
+                transform: (v) => v.split(",").map((x) => x.trim()),
+              },
+            ].map(({ name, label, transform, placeholder }) => (
               <Grid2
-                // sx={{ display: "flex", flexDirection: "row", gap: "8px" }}
+                key={name}
                 item
-                size={{ xs: 12, sm: 4 }}
+                size={{ xs: 12 }}
+                sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
               >
-                <StyledTextField
-                  name="city"
-                  placeholder="City"
-                  value={formData.location.city}
-                  onChange={(e) => {
-                    setFormData((prev) => ({
-                      ...prev,
-                      location: { ...prev.location, city: e.target.value },
-                    }));
-                  }}
+                <Typography>{label}</Typography>
+                <Controller
+                  name={name}
+                  control={control}
+                  render={({ field }) => (
+                    <StyledTextField
+                      {...field}
+                      placeholder={
+                        placeholder || `Enter ${label.toLowerCase()}`
+                      }
+                      onChange={(e) =>
+                        field.onChange(
+                          transform ? transform(e.target.value) : e.target.value
+                        )
+                      }
+                    />
+                  )}
                 />
               </Grid2>
-              <Grid2
-                sx={{ display: "flex", flexDirection: "row", gap: "8px" }}
-                item
-                size={{ xs: 12, sm: 4 }}
-              >
-                <StyledTextField
-                  name="state"
-                  placeholder="State"
-                  value={formData.location.state}
-                  onChange={(e) => {
-                    setFormData((prev) => ({
-                      ...prev,
-                      location: { ...prev.location, state: e.target.value },
-                    }));
-                  }}
-                />
-              </Grid2>
-              <Grid2
-                sx={{ display: "flex", flexDirection: "row", gap: "8px" }}
-                item
-                size={{ xs: 12, sm: 4 }}
-              >
-                <StyledTextField
-                  name="country"
-                  placeholder="Country"
-                  value={formData.location.country}
-                  onChange={(e) => {
-                    setFormData((prev) => ({
-                      ...prev,
-                      location: {
-                        ...prev.location,
-                        country: e.target.value,
-                      },
-                    }));
-                  }}
-                />
-              </Grid2>
-              <Grid2
-                sx={{ display: "flex", flexDirection: "row", gap: "8px" }}
-                item
-                size={{ xs: 12, sm: 4 }}
-              >
-                <StyledTextField
-                  name="latitude"
-                  placeholder="Latitude"
-                  value={formData.location.latitude}
-                  onChange={(e) => {
-                    setFormData((prev) => ({
-                      ...prev,
-                      location: {
-                        ...prev.location,
-                        latitude: e.target.value,
-                      },
-                    }));
-                  }}
-                />
-              </Grid2>
-              <Grid2
-                sx={{ display: "flex", flexDirection: "row", gap: "8px" }}
-                item
-                size={{ xs: 12, sm: 4 }}
-              >
-                <StyledTextField
-                  name="location.longitude"
-                  placeholder="Longitude"
-                  value={formData.location.longitude}
-                  onChange={handleChange}
-                />
+            ))}
+
+            {/* ─────────────── File Uploads ─────────────── */}
+            {[
+              {
+                name: "images",
+                label: "Project Images",
+                accept: "image/*",
+                multiple: true,
+              },
+              {
+                name: "video",
+                label: "Project Videos",
+                accept: "video/*",
+                multiple: true,
+              },
+              {
+                name: "virtualTour",
+                label: "Virtual Tours",
+                accept: "video/*",
+                multiple: true,
+              },
+              {
+                name: "brochure",
+                label: "Brochures",
+                accept: "application/pdf",
+                multiple: true,
+              },
+            ].map(({ name, label, accept, multiple }) => (
+              <FileUploadField
+                key={name}
+                control={control}
+                setValue={setValue}
+                fieldName={name}
+                label={label}
+                accept={accept}
+                multiple={multiple}
+                defaultUrls={editingData ? editingData[name] : []}
+              />
+            ))}
+
+            {/* ─────────────── Parking / Elevator ─────────────── */}
+            <Grid2
+              item
+              size={{ xs: 12, sm: 6 }}
+              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+            >
+              <Typography>Parking</Typography>
+              <Controller
+                name="parking"
+                control={control}
+                render={({ field }) => (
+                  <StyledTextField
+                    {...field}
+                    select
+                    options={parkingOptions.map((v) => ({
+                      value: v,
+                      label: v,
+                    }))}
+                  />
+                )}
+              />
+            </Grid2>
+            <Grid2
+              item
+              size={{ xs: 12, sm: 6 }}
+              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+            >
+              <Typography>Elevator Available</Typography>
+              <Controller
+                name="elevator"
+                control={control}
+                render={({ field }) => (
+                  <StyledTextField
+                    select
+                    value={field.value ? "Yes" : "No"}
+                    onChange={(e) => field.onChange(e.target.value === "Yes")}
+                    options={elevatorAvailable.map((v) => ({
+                      value: v,
+                      label: v,
+                    }))}
+                  />
+                )}
+              />
+            </Grid2>
+
+            {/* ─────────────── Location ─────────────── */}
+            <Grid2
+              item
+              size={{ xs: 12 }}
+              sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+            >
+              <Typography>Location</Typography>
+              <Grid2 container spacing={2}>
+                {[
+                  "street",
+                  "city",
+                  "state",
+                  "country",
+                  "latitude",
+                  "longitude",
+                ].map((part) => (
+                  <Grid2 key={part} item size={{ xs: 12, sm: 4 }}>
+                    <Controller
+                      name={`location.${part}`}
+                      control={control}
+                      render={({ field }) => (
+                        <StyledTextField
+                          {...field}
+                          placeholder={
+                            part.charAt(0).toUpperCase() + part.slice(1)
+                          }
+                        />
+                      )}
+                    />
+                  </Grid2>
+                ))}
               </Grid2>
             </Grid2>
-          </Grid2>
-          <VariantForm
-            variants={formData.variants}
-            setVariants={(variantsUpdater) =>
-              setFormData((prev) => {
-                const updatedVariants =
-                  typeof variantsUpdater === "function"
-                    ? variantsUpdater(prev.variants)
-                    : variantsUpdater;
 
-                return {
-                  ...prev,
-                  variants: updatedVariants,
-                };
-              })
-            }
-          />
+            {/* ─────────────── Building info numbers ─────────────── */}
+            {[
+              {
+                name: "commissionAgreement",
+                placeholder: "Commission Agreement",
+              },
+              {
+                name: "baseRate.amountPerSqFt",
+                placeholder: "Base Rate (Amount per SqFt)",
+                type: "number",
+              },
+              {
+                name: "parkingCharges.suv",
+                placeholder: "SUV Parking Charges",
+                type: "number",
+              },
+              {
+                name: "parkingCharges.normal",
+                placeholder: "Normal Parking Charges",
+                type: "number",
+              },
+            ].map(({ name, placeholder, type }) => (
+              <Controller
+                key={name}
+                name={name}
+                control={control}
+                render={({ field }) => (
+                  <StyledTextField
+                    {...field}
+                    placeholder={placeholder}
+                    type={type || "text"}
+                  />
+                )}
+              />
+            ))}
 
-          <Grid2
-            item
-            size={{ xs: 12 }}
-            mt={"8px"}
-            container
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Button
-              variant="contained"
-              sx={{ backgroundColor: "#7C4DFF", color: "white" }}
-              onClick={handleSubmit}
-              // disabled={!isFormValid()}
+            {/* ─────────────── Ownership ─────────────── */}
+            {["name", "email", "number"].map((k) => (
+              <Controller
+                key={k}
+                name={`ownership.${k}`}
+                control={control}
+                render={({ field }) => (
+                  <StyledTextField
+                    {...field}
+                    placeholder={`Ownership ${
+                      k.charAt(0).toUpperCase() + k.slice(1)
+                    }`}
+                  />
+                )}
+              />
+            ))}
+
+            {/* ─────────────── Approval / OC / Age ─────────────── */}
+            {[
+              { name: "approval", options: approvalOptions },
+              {
+                name: "occupationCertificate",
+                options: occupationCertificateOptions,
+              },
+              { name: "buildingAge", options: buildingAgeOptions },
+            ].map(({ name, options }) => (
+              <Controller
+                key={name}
+                name={name}
+                control={control}
+                render={({ field }) => (
+                  <StyledTextField
+                    {...field}
+                    select
+                    options={options.map((v) => ({ value: v, label: v }))}
+                  />
+                )}
+              />
+            ))}
+
+            {/* ─────────────── Finance Approved By ─────────────── */}
+            <Controller
+              name="finance.approvedBy"
+              control={control}
+              render={({ field }) => (
+                <StyledTextField
+                  {...field}
+                  placeholder="Finance Approved By (comma separated)"
+                  onChange={(e) =>
+                    field.onChange(
+                      e.target.value.split(",").map((x) => x.trim())
+                    )
+                  }
+                  value={field.value.join(", ")}
+                />
+              )}
+            />
+
+            {/* ─────────────── Variants ─────────────── */}
+            <Controller
+              name="variants"
+              control={control}
+              render={({ field }) => (
+                <VariantForm
+                  variants={field.value}
+                  setVariants={field.onChange}
+                />
+              )}
+            />
+
+            {/* ─────────────── Submit ─────────────── */}
+            <Grid2
+              item
+              size={{ xs: 12 }}
+              mt={2}
+              container
+              justifyContent="center"
             >
-              Submit
-            </Button>
+              <Button
+                variant="contained"
+                sx={{ bgcolor: "#352d66", border: "1px solid #352d66" }}
+                disabled={isFilesUploading}
+                type="submit"
+              >
+                Submit
+              </Button>
+            </Grid2>
           </Grid2>
-        </Grid2>
-      </Box>
-    </Modal>
+        </Box>
+      </Modal>
+    </FormProvider>
   );
 }
 
-export default NewProjectPopUp;
+export default NewProjectPopup;

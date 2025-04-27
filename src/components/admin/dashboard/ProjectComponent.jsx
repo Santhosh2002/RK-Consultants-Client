@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import NewProjectPopup from "../../utils/NewProjectPopUp";
 import UpdateProjectPopup from "../../utils/UpdateProject";
 import {
   Container,
@@ -20,19 +19,17 @@ import {
   getProjects,
   getProjectsLoader,
   getProjectsError,
+  deleteProject,
 } from "../../../store/projectsSlice";
 import ProjectCard from "./ProjectCard";
-
+import NewProjectPopup from "../../utils/NewProjectPopUp";
 function AdminProjectsComponent() {
   const dispatch = useDispatch();
   const projects = useSelector(getProjects);
   const loading = useSelector(getProjectsLoader);
   const error = useSelector(getProjectsError);
-
-  const [isNewPopupOpen, setNewPopupOpen] = useState(false);
-  const [isUpdatePopupOpen, setUpdatePopupOpen] = useState(false);
+  const [isNewPopupOpen, setIsNewPopupOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
-  const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
     dispatch(fetchProjects());
@@ -43,7 +40,19 @@ function AdminProjectsComponent() {
       toast.error(`Failed to fetch projects: ${error}`);
     }
   }, [error]);
-
+  const handleDelete = async (id) => {
+    try {
+      await dispatch(deleteProject(id)).then((res) => {
+        if (res.error) {
+          toast.error("Failed to delete Project");
+        } else {
+          toast.success("Project deleted successfully");
+        }
+      });
+    } catch (error) {
+      console.error("Error deleting service:", error);
+    }
+  };
   return (
     <Box sx={{ backgroundColor: "#111", color: "#fff", py: 6 }}>
       <ToastContainer />
@@ -71,7 +80,7 @@ function AdminProjectsComponent() {
             </Typography>
             <Button
               variant="contained"
-              onClick={() => setNewPopupOpen(true)}
+              onClick={() => setIsNewPopupOpen(true)}
               sx={{
                 backgroundColor: "#6A5ACD",
                 color: "#fff",
@@ -95,7 +104,15 @@ function AdminProjectsComponent() {
           ) : (
             <Grid2 container spacing={4}>
               {projects.map((project) => (
-                <ProjectCard key={project.id} item={project} />
+                <ProjectCard
+                  key={project.id}
+                  item={project}
+                  deleteAction={handleDelete}
+                  onClick={() => {
+                    setSelectedProject(project);
+                    setIsNewPopupOpen(true);
+                  }}
+                />
               ))}
             </Grid2>
           )}
@@ -103,15 +120,9 @@ function AdminProjectsComponent() {
       </Container>
       <NewProjectPopup
         isOpen={isNewPopupOpen}
-        onClose={() => setNewPopupOpen(false)}
-        onSubmit={() => {}}
-      />
-      <UpdateProjectPopup
-        isOpen={isUpdatePopupOpen}
-        onClose={() => setUpdatePopupOpen(false)}
-        onSubmit={() => {}}
-        projectData={selectedProject}
-        id={selectedId}
+        onClose={() => setIsNewPopupOpen(false)}
+        onSubmit={(formData) => handleSubmit(formData, selectedProject?._id)}
+        editingData={selectedProject}
       />
     </Box>
   );
