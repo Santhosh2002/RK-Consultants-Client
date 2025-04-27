@@ -46,10 +46,11 @@ const OurAchievements = () => {
         display: "flex",
         flexDirection: "column",
         gap: "16px",
-        ml: 6,
+        ml: {xs:0, sm:5},
         backgroundColor: "#141414",
         color: "#fff",
-        padding: { xs: "0 16px", sm: "0 64px" },
+        // padding: { xs: "0 16px", sm: "0 64px" },
+        paddingX: "clamp(16px, 5vw, 64px)",
       }}
     >
       <Box
@@ -116,7 +117,7 @@ const OurAchievements = () => {
       </Grid2>
 
       {/* Pagination Controls */}
-      <Box
+      {/* <Box
         sx={{
           display: "flex",
           justifyContent: "space-between",
@@ -152,7 +153,7 @@ const OurAchievements = () => {
             <ArrowForwardIos fontSize="small" />
           </IconButton>
         </Box>
-      </Box>
+      </Box> */}
     </Box>
   );
 };

@@ -46,7 +46,8 @@ const OurJourney = () => {
         justifyContent: "space-between",
         backgroundColor: "#141414",
         color: "white",
-        padding: { xs: "0 16px", sm: "0 64px" },
+        // padding: { xs: "0 16px", sm: "0 64px" },
+        paddingX: "clamp(16px, 5vw, 64px)",
       }}
     >
       {/* Left Content */}
@@ -57,7 +58,9 @@ const OurJourney = () => {
           justifyContent: "flex-start",
           alignItems: "flex-start",
           flex: 1,
-          padding: { xs: "32px", sm: "60px" },
+          // padding: { xs: "32px", sm: "60px" },
+          paddingX: "clamp(16px, 5vw, 56px)",
+          paddingY: "clamp(8px, 2vw, 16px)",
           gap: "80px",
         }}
       >

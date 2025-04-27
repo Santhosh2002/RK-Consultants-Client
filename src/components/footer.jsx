@@ -183,7 +183,9 @@ const FooterComponent = ({
           justifyContent: "space-between",
           alignItems: "center",
           borderTop: "1px solid #262626",
-          padding: { xs: "8px 16px", md: "8px 64px" },
+          // padding: { xs: "8px 16px", md: "8px 64px" },
+          paddingY: "clamp(8px, 2vw, 16px)",
+          paddingX: "clamp(8px, 5vw, 64px)",          
           backgroundColor: "#1A1A1A",
           gap: { xs: "8px" },
         }}
