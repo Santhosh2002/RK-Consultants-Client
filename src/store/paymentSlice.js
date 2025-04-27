@@ -32,7 +32,7 @@ export const fetchAllPayments = createAsyncThunk(
   "payment/fetchAllPayments",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`/api/payment`);
+      const response = await axios.get(`/api/payment/list`);
       return response.data.payments;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -156,4 +156,8 @@ const paymentSlice = createSlice({
 
 export const { resetPaymentStatus, setClientData } = paymentSlice.actions;
 export const getClientDetails = (state) => state.payment.clientDetails;
+export const getPaymentStatus = (state) => state.payment.paymentStatus;
+export const getPayments = (state) => state.payment.payments;
+export const getLoading = (state) => state.payment.loading;
+export const getError = (state) => state.payment.error;
 export default paymentSlice.reducer;

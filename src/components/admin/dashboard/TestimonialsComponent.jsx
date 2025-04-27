@@ -262,7 +262,7 @@ function TestimonialsComponent() {
         )}
 
         {/* Pagination Stub */}
-        <Box
+        {/* <Box
           sx={{
             display: "flex",
             justifyContent: "space-between",
@@ -299,7 +299,7 @@ function TestimonialsComponent() {
               <ArrowForwardIos fontSize="small" />
             </IconButton>
           </Box>
-        </Box>
+        </Box> */}
 
         {/* Popup */}
         <TestimonialPopup

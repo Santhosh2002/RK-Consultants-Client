@@ -8,7 +8,7 @@ import StyledTextField from "../../StyledComponents/StyledTextField";
 import VariantForm from "../../StyledComponents/AddVariantComponent";
 import FileUploadField from "../../StyledComponents/FileUploadField";
 import { createProject, updateProject } from "../../store/projectsSlice";
-import { isUploading } from "../../store/fileUploadSlice";
+import { isUploading, resetUploadState } from "../../store/fileUploadSlice";
 
 // ───────────────────────────────────────── constants ──────────────────────────────────────────
 const propertyTypes = [
@@ -129,33 +129,20 @@ function NewProjectPopup({ isOpen, onClose, editingData = null }) {
   // ─────────────── onSubmit ───────────────
   const onSubmit = async (formData) => {
     // pre-process files for backend
-    const payload = {
-      ...formData,
-      images: formData.images.map((f) => (f?.name ? f.name : f)),
-      video: formData.video.map((f) => (f?.name ? f.name : f)),
-      virtualTour: formData.virtualTour.map((f) => (f?.name ? f.name : f)),
-      brochure: formData.brochure.map((f) => (f?.name ? f.name : f)),
-      variants: formData.variants.map((v) => ({
-        ...v,
-        images: Array.isArray(v.images)
-          ? v.images.map((f) => (f?.name ? f.name : f))
-          : [],
-        video: v.video ? (v.video?.name ? v.video.name : v.video) : "",
-      })),
-    };
 
     try {
       if (editingData) {
         await dispatch(
-          updateProject({ id: editingData._id, ProjectData: payload })
+          updateProject({ id: editingData._id, ProjectData: formData })
         ).unwrap();
       } else {
-        await dispatch(createProject(payload)).unwrap();
+        await dispatch(createProject(formData)).unwrap();
       }
       onClose();
     } catch (err) {
       console.error("Error submitting Project:", err);
     }
+    dispatch(resetUploadState());
   };
 
   // ──────────────────────────────────────────────────────────────────────────

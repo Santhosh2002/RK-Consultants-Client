@@ -1,13 +1,16 @@
+/* ------------------------------------------------------------------ */
+/* imports                                                            */
+/* ------------------------------------------------------------------ */
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-
-// Async thunk for uploading files
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { storage } from "../../firebaseConfig"; // adjust path
+import { storage } from "../../firebaseConfig"; // <- adjust path if needed
 
+/* ------------------------------------------------------------------ */
+/* Async thunk – payload: { files, uploadKey }                        */
+/* ------------------------------------------------------------------ */
 export const uploadFile = createAsyncThunk(
   "files/uploadFiles",
-  async (files, { rejectWithValue }) => {
+  async ({ files, uploadKey }, { rejectWithValue }) => {
     if (!Array.isArray(files) || files.length === 0) {
       return rejectWithValue("No files provided");
     }
@@ -15,56 +18,71 @@ export const uploadFile = createAsyncThunk(
     try {
       const uploadPromises = files.map((file) => {
         const fileRef = ref(storage, `RK Consultants/${file.name}`);
-        return uploadBytesResumable(fileRef, file).then((snapshot) =>
-          getDownloadURL(snapshot.ref)
+        return uploadBytesResumable(fileRef, file).then((snap) =>
+          getDownloadURL(snap.ref)
         );
       });
 
-      const urls = await Promise.all(uploadPromises);
-      console.log("✅ All files uploaded:", urls);
-      return urls; // ⬅️ array of download URLs
-    } catch (error) {
-      return rejectWithValue(error.message);
+      const urls = await Promise.all(uploadPromises); // array of download URLs
+      console.log(`✅ [${uploadKey}] files uploaded:`, urls);
+      return { uploadKey, urls };
+    } catch (err) {
+      return rejectWithValue(err.message);
     }
   }
 );
+
+/* ------------------------------------------------------------------ */
+/* Slice                                                              */
+/* ------------------------------------------------------------------ */
+const initialState = {
+  uploads: {},
+};
+
 const fileUploadSlice = createSlice({
   name: "files",
-  initialState: {
-    uploadedFileUrl: [],
-    uploading: false,
-    error: null,
-  },
+  initialState,
   reducers: {
-    resetUploadState: (state) => {
-      state.uploadedFileUrl = null;
-      state.uploading = false;
-      state.error = null;
+    /** Reset one scope (field) or everything if no key supplied */
+    resetUploadState: (state, { payload }) => {
+      if (payload) {
+        delete state.uploads[payload];
+      } else {
+        state.uploads = {};
+      }
     },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(uploadFile.pending, (state) => {
-        state.uploading = true;
-        state.error = null;
+      .addCase(uploadFile.pending, (state, { meta }) => {
+        const key = meta.arg.uploadKey;
+        state.uploads[key] = { urls: [], uploading: true, error: null };
       })
-      .addCase(uploadFile.fulfilled, (state, action) => {
-        state.uploading = false;
-        state.uploadedFileUrl = action.payload; // ⬅️ store the array of URLs
+      .addCase(uploadFile.fulfilled, (state, { payload }) => {
+        const { uploadKey, urls } = payload;
+        state.uploads[uploadKey] = { urls, uploading: false, error: null };
       })
-
-      .addCase(uploadFile.rejected, (state, action) => {
-        state.uploading = false;
-        state.error = action.payload;
+      .addCase(uploadFile.rejected, (state, { payload, meta }) => {
+        const key = meta.arg.uploadKey;
+        state.uploads[key] = { urls: [], uploading: false, error: payload };
       });
   },
 });
 
-// Selectors
-export const getUploadedFileUrl = (state) => state.files.uploadedFileUrl;
-export const isUploading = (state) => state.files.uploading;
-export const getUploadError = (state) => state.files.error;
+/* ------------------------------------------------------------------ */
+/* Selectors (pass the same uploadKey you used for dispatch)          */
+/* ------------------------------------------------------------------ */
+export const getUploadedFileUrl = (state, key) =>
+  state.files?.uploads?.[key]?.urls ?? [];
 
+export const isUploading = (state, key) =>
+  state.files?.uploads?.[key]?.uploading ?? false;
+
+export const getUploadError = (state, key) =>
+  state.files?.uploads?.[key]?.error ?? null;
+
+/* ------------------------------------------------------------------ */
+/* Exports                                                            */
+/* ------------------------------------------------------------------ */
 export const { resetUploadState } = fileUploadSlice.actions;
-
 export default fileUploadSlice.reducer;

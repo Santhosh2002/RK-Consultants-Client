@@ -22,9 +22,12 @@ export default function FileUploadField({
   defaultUrls = [], // ✅ added defaultUrls support
 }) {
   const dispatch = useDispatch();
-  const uploadedUrls = useSelector(getUploadedFileUrl);
-  const uploadImgLoading = useSelector(isUploading);
-
+  const uploadedUrls = useSelector((state) =>
+    getUploadedFileUrl(state, fieldName)
+  );
+  const uploadImgLoading = useSelector((state) =>
+    isUploading(state, fieldName)
+  );
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [fileQueue, setFileQueue] = useState([]);
   const [preloadedUrls, setPreloadedUrls] = useState(defaultUrls || []); // ✅ preloaded urls
@@ -47,7 +50,7 @@ export default function FileUploadField({
   const handleUploadClick = () => {
     if (fileQueue.length === 0) return;
     dispatch(resetUploadState());
-    dispatch(uploadFile(fileQueue));
+    dispatch(uploadFile({ files: fileQueue, uploadKey: fieldName }));
     setFileQueue([]);
   };
 

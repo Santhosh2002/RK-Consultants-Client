@@ -8,7 +8,7 @@ import StyledTextField from "../../StyledComponents/StyledTextField";
 import VariantForm from "../../StyledComponents/AddVariantComponent";
 import FileUploadField from "../../StyledComponents/FileUploadField";
 import { createListing, updateListing } from "../../store/listingsSlice";
-import { isUploading } from "../../store/fileUploadSlice";
+import { isUploading, resetUploadState } from "../../store/fileUploadSlice";
 
 // ───────────────────────────────────────── constants ──────────────────────────────────────────
 const propertyTypes = [
@@ -129,33 +129,20 @@ function NewListingPopup({ isOpen, onClose, editingData = null }) {
   // ─────────────── onSubmit ───────────────
   const onSubmit = async (formData) => {
     // pre-process files for backend
-    const payload = {
-      ...formData,
-      images: formData.images.map((f) => (f?.name ? f.name : f)),
-      video: formData.video.map((f) => (f?.name ? f.name : f)),
-      virtualTour: formData.virtualTour.map((f) => (f?.name ? f.name : f)),
-      brochure: formData.brochure.map((f) => (f?.name ? f.name : f)),
-      variants: formData.variants.map((v) => ({
-        ...v,
-        images: Array.isArray(v.images)
-          ? v.images.map((f) => (f?.name ? f.name : f))
-          : [],
-        video: v.video ? (v.video?.name ? v.video.name : v.video) : "",
-      })),
-    };
 
     try {
       if (editingData) {
         await dispatch(
-          updateListing({ id: editingData._id, ListingData: payload })
+          updateListing({ id: editingData._id, ListingData: formData })
         ).unwrap();
       } else {
-        await dispatch(createListing(payload)).unwrap();
+        await dispatch(createListing(formData)).unwrap();
       }
       onClose();
     } catch (err) {
       console.error("Error submitting listing:", err);
     }
+    dispatch(resetUploadState());
   };
 
   // ──────────────────────────────────────────────────────────────────────────

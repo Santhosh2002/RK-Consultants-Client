@@ -1,66 +1,30 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+// ✅ PaymentsComponent — connected to paymentSlice
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Container,
   Box,
   Typography,
   Card,
   Chip,
-  IconButton,
-  Button,
+  CircularProgress,
   Grid2,
 } from "@mui/material";
 import {
-  ArrowBackIos,
+  ArrowBackIos, // If you plan to use paging later
   ArrowForwardIos,
   CurrencyRupee,
 } from "@mui/icons-material";
 
-// ▸ Replace this with the selector / API call you already have.
-const PAYMENTS_DATA = [
-  {
-    _id: "68039353a673fcc5849abe55",
-    clientId: { name: "santhosh", email: "saisanthoshgadde2002@gmail.com" },
-    amount: 10000,
-    currency: "INR",
-    orderId: "order_QKubQWhdz3SJVR",
-    status: "Success",
-    createdAt: "2025-04-19T12:13:07.064Z",
-    paymentId: "pay_QKug4jP5DUwRJP",
-  },
-  {
-    _id: "6803a34ea673fcc5849ac285",
-    clientId: { name: "santhosh", email: "saisanthoshgadde2002@gmail.com" },
-    amount: 10000,
-    currency: "INR",
-    orderId: "order_QKvlSUKFyRgFoY",
-    status: "Pending",
-    createdAt: "2025-04-19T13:21:18.513Z",
-  },
-  {
-    _id: "6803a3c1a673fcc5849ac28a",
-    clientId: { name: "sai santhosh", email: "saisanthoshgadde2002@gmail.com" },
-    amount: 10000,
-    currency: "INR",
-    orderId: "order_QKvnUVX5Gub5l6",
-    status: "Success",
-    createdAt: "2025-04-19T13:23:13.955Z",
-    paymentId: "pay_QKvnbE6zkzBHSe",
-  },
-  {
-    _id: "6803aa22a673fcc5849ac3f6",
-    clientId: { name: "saisanthosh", email: "gadde2002@gmail.com" },
-    amount: 10000,
-    currency: "INR",
-    orderId: "order_QKwGEjnPHV2yLv",
-    status: "Success",
-    createdAt: "2025-04-19T13:50:26.814Z",
-    paymentId: "pay_QKwGMVcqapCoUC",
-  },
-];
-
+import {
+  fetchAllPayments,
+  getError,
+  getLoading,
+  getPayments,
+} from "../../../store/paymentSlice";
+/* ───────────────────────── helpers ───────────────────────── */
 const statusColor = (s) =>
-  s === "Success" ? "success" : s === "Pending" ? "warning" : "error";
+  s === "Success" ? "success" : s === "Pending" ? "warning" : "error"; // treat everything else (e.g. "Failed") as error
 
 const dateFmt = (iso) =>
   new Date(iso).toLocaleString("en-IN", {
@@ -71,14 +35,18 @@ const dateFmt = (iso) =>
     minute: "2-digit",
   });
 
+/* ─────────────────────── component ──────────────────────── */
 function PaymentsComponent() {
   const dispatch = useDispatch();
-  const [payments, setPayments] = useState(PAYMENTS_DATA);
 
+  // pull what we need from the slice
+  const payments = useSelector(getPayments);
+  const loading = useSelector(getLoading);
+  const error = useSelector(getError);
+  // kick off the fetch once
   useEffect(() => {
-    // 🔄  replace this with your actual redux selector or API call
-    setPayments(PAYMENTS_DATA);
-  }, []);
+    dispatch(fetchAllPayments());
+  }, [dispatch]);
 
   return (
     <Box sx={{ bgcolor: "#111", color: "#fff", py: 6 }}>
@@ -88,24 +56,39 @@ function PaymentsComponent() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          height: `calc(100vh - 170px)`,
+          minHeight: `calc(100vh - 170px)`,
         }}
       >
-        <Box display={"flex"} flexDirection="column" gap={4}>
-          {/* heading */}
-          <Box sx={{ mb: 5 }}>
-            <Typography variant="h3" sx={{ fontWeight: "bold" }} fontSize={48}>
-              Payments
-            </Typography>
-            <Typography sx={{ color: "#999" }}>
-              Overview of all client transactions
-            </Typography>
-          </Box>
+        {/* heading */}
+        <Box sx={{ mb: 5 }}>
+          <Typography variant="h3" sx={{ fontWeight: "bold" }} fontSize={48}>
+            Payments
+          </Typography>
+          <Typography sx={{ color: "#999" }}>
+            Overview of all client transactions
+          </Typography>
+        </Box>
 
-          {/* grid */}
+        {/* content */}
+        {loading && (
+          <Box
+            sx={{ display: "flex", justifyContent: "center", mt: 10 }}
+            data-testid="payments-loading"
+          >
+            <CircularProgress />
+          </Box>
+        )}
+
+        {error && (
+          <Typography color="error" sx={{ mt: 4 }} data-testid="payments-error">
+            {typeof error === "string" ? error : "Something went wrong"}
+          </Typography>
+        )}
+
+        {!loading && !error && (
           <Grid2 container spacing={4}>
-            {payments.map((p) => (
-              <Grid2 xs={12} sm={6} md={4} key={p._id}>
+            {payments?.map((p) => (
+              <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={p._id}>
                 <Card
                   sx={{
                     p: 3,
@@ -127,13 +110,13 @@ function PaymentsComponent() {
                       variant="h6"
                       fontWeight="bold"
                       sx={{
-                        maxHeight: "1.4em", // single‑line cap + auto scroll
+                        maxHeight: "1.4em",
                         overflowX: "auto",
                         overflowY: "hidden",
                         scrollbarWidth: "none",
                       }}
                     >
-                      {p.clientId.name}
+                      {p.clientId?.name ?? "—"}
                     </Typography>
                     <Chip
                       size="small"
@@ -174,46 +157,7 @@ function PaymentsComponent() {
               </Grid2>
             ))}
           </Grid2>
-        </Box>
-        {/* pagination stub */}
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mt: 6,
-            pt: 3,
-            borderTop: "1px solid #262626",
-          }}
-        >
-          <Typography variant="body2" sx={{ color: "#888" }}>
-            01 of 05
-          </Typography>
-          <Box sx={{ display: "flex", gap: 2 }}>
-            <IconButton
-              sx={{
-                color: "#fff",
-                border: "1px solid #999",
-                borderRadius: "50%",
-                width: 40,
-                height: 40,
-              }}
-            >
-              <ArrowBackIos fontSize="small" />
-            </IconButton>
-            <IconButton
-              sx={{
-                color: "#fff",
-                border: "1px solid #999",
-                borderRadius: "50%",
-                width: 40,
-                height: 40,
-              }}
-            >
-              <ArrowForwardIos fontSize="small" />
-            </IconButton>
-          </Box>
-        </Box>
+        )}
       </Container>
     </Box>
   );

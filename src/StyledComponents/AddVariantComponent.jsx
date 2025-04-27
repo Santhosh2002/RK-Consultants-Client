@@ -1,13 +1,12 @@
-// ✅ VariantForm — controller-ised version
+// ✅ VariantForm — useFieldArray + controller
 import React from "react";
 import { Typography, Button, IconButton, Box, Grid2 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useFormContext, Controller } from "react-hook-form";
+import { useFormContext, Controller, useFieldArray } from "react-hook-form";
 
 import StyledTextField from "./StyledTextField";
 import FileUploadField from "./FileUploadField";
 
-// ▶︎ Default empty record for a new variant row
 const emptyVariant = {
   bhk: "",
   floor: "",
@@ -22,79 +21,80 @@ const emptyVariant = {
   facing: "",
   availability: true,
   images: [],
-  video: "", // ✅ single URL string
+  video: "",
 };
 
-const VariantForm = ({ variants, setVariants }) => {
-  /* -------------------------------------------------------------------- */
-  /* react-hook-form helpers                                              */
-  /* -------------------------------------------------------------------- */
+function getGridSize(field) {
+  switch (field) {
+    case "price":
+    case "carpetArea":
+    case "builtUpArea":
+    case "currency":
+      return 6;
+    case "bhk":
+    case "floor":
+    case "totalFloors":
+    case "balcony":
+      return 3;
+    case "facing":
+    case "availability":
+      return 4;
+    case "images":
+    case "video":
+      return 12;
+    default:
+      return 4;
+  }
+}
+const createVariant = () => ({
+  bhk: "",
+  floor: "",
+  totalFloors: "",
+  balcony: 0,
+  carpetArea: "",
+  builtUpArea: "",
+  price: "",
+  currency: "INR",
+  bedrooms: 0,
+  bathrooms: 0,
+  facing: "",
+  availability: true,
+  images: [], // new array every time
+  video: "", // empty string (single file field)
+});
+
+const VariantForm = () => {
   const { control, setValue } = useFormContext();
 
-  /* -------------------------------------------------------------------- */
-  /* handlers                                                             */
-  /* -------------------------------------------------------------------- */
+  // RHF-friendly array helpers
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "variants",
+  });
+
   const handleAddVariant = () => {
-    const last = variants[variants.length - 1];
+    const last = fields[fields.length - 1];
     const isLastFilled = last
-      ? Object.values(last).every((val) => val !== "" && val !== null)
+      ? Object.values(last).every((v) => v !== "" && v !== null)
       : true;
 
-    if (isLastFilled) {
-      setVariants([...variants, { ...emptyVariant }]);
-    } else {
-      alert(
-        "Please fill the previous variant completely before adding a new one."
-      );
+    if (!isLastFilled) {
+      alert("Please finish the previous variant before adding a new one.");
+      return;
     }
+    append(createVariant());
   };
 
-  const handleRemove = (index) => {
-    const updated = [...variants];
-    updated.splice(index, 1);
-    setVariants(updated);
-  };
-
-  /* -------------------------------------------------------------------- */
-  /* layout helpers                                                       */
-  /* -------------------------------------------------------------------- */
-  const getGridSize = (field) => {
-    switch (field) {
-      case "price":
-      case "carpetArea":
-      case "builtUpArea":
-      case "currency":
-        return 6;
-      case "bhk":
-      case "floor":
-      case "totalFloors":
-      case "balcony":
-        return 3;
-      case "facing":
-      case "availability":
-        return 4;
-      case "images":
-      case "video":
-        return 12;
-      default:
-        return 4;
-    }
-  };
-
-  /* -------------------------------------------------------------------- */
-  /* render                                                               */
-  /* -------------------------------------------------------------------- */
   return (
     <Grid2 container direction="column" spacing={2}>
       {/* header row */}
       <Grid2
         container
         direction="row"
-        spacing={2}
         justifyContent="space-between"
+        spacing={2}
       >
         <Typography variant="h6">Variants</Typography>
-
         <Button
           variant="outlined"
           size="small"
@@ -106,10 +106,10 @@ const VariantForm = ({ variants, setVariants }) => {
       </Grid2>
 
       {/* dynamic rows */}
-      {variants?.map((variant, index) => (
+      {fields.map((item, index) => (
         <Grid2
           container
-          key={index}
+          key={item.id}
           spacing={2}
           sx={{
             border: "1px solid #ddd",
@@ -121,7 +121,7 @@ const VariantForm = ({ variants, setVariants }) => {
         >
           {/* delete badge */}
           <IconButton
-            onClick={() => handleRemove(index)}
+            onClick={() => remove(index)}
             sx={{
               position: "absolute",
               top: -15,
@@ -134,10 +134,13 @@ const VariantForm = ({ variants, setVariants }) => {
             <DeleteIcon />
           </IconButton>
 
-          {/* fields */}
+          {/* every property in the variant */}
           {Object.keys(emptyVariant).map((field) => (
-            <Grid2 item size={{ xs: 12, sm: getGridSize(field) }} key={field}>
-              {/* upload fields */}
+            <Grid2
+              item
+              size={{ xs: 12, sm: getGridSize(field) }}
+              key={`${index}-${field}`} // unique across rows
+            >
               {field === "images" ? (
                 <FileUploadField
                   control={control}
@@ -146,7 +149,7 @@ const VariantForm = ({ variants, setVariants }) => {
                   label="Variant Images"
                   accept="image/*"
                   multiple
-                  defaultUrls={variant.images}
+                  defaultUrls={item.images} // Pass initial files for edit
                 />
               ) : field === "video" ? (
                 <FileUploadField
@@ -156,10 +159,9 @@ const VariantForm = ({ variants, setVariants }) => {
                   label="Variant Video"
                   accept="video/*"
                   multiple={false}
-                  defaultUrls={variant.video ? [variant.video] : []}
+                  defaultUrls={item.video ? [item.video] : []} // Pass initial files for edit
                 />
               ) : (
-                /* text / numeric fields */
                 <Controller
                   name={`variants.${index}.${field}`}
                   control={control}

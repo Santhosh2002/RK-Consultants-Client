@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { createService, updateService } from "../../store/servicesSlice"; // (optional future updateService if needed)
 import StyledTextField from "../../StyledComponents/StyledTextField";
 import FileUploadField from "../../StyledComponents/FileUploadField";
-import { isUploading } from "../../store/fileUploadSlice";
+import { isUploading, resetUploadState } from "../../store/fileUploadSlice";
 
 /* ──────────────────────────────────────────────────
    ▸ Static options
@@ -118,6 +118,7 @@ export default function NewServicePopup({
     } catch (error) {
       console.error(error);
     }
+    dispatch(resetUploadState());
   };
 
   /* ----- Pre-populate when editing ------------------------------------------- */

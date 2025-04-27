@@ -24,7 +24,7 @@ export const createListing = createAsyncThunk(
   async (ListingData, { rejectWithValue }) => {
     try {
       const response = await axios.post("/api/listing/create", ListingData);
-      return response.data;
+      return response.data.listing;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
     }
@@ -37,7 +37,7 @@ export const updateListing = createAsyncThunk(
   async ({ id, ListingData }, { rejectWithValue }) => {
     try {
       const response = await axios.put(`/api/listing/${id}`, ListingData);
-      return response.data;
+      return response.data.listing;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
     }
@@ -85,6 +85,31 @@ const listingsSlice = createSlice({
       })
       .addCase(deleteListing.rejected, (state, action) => {
         state.error = action.payload;
+      })
+      .addCase(createListing.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createListing.fulfilled, (state, { payload }) => {
+        state.loading = false;
+        state.listings.unshift(payload); // newest first
+      })
+      .addCase(createListing.rejected, (state, { payload }) => {
+        state.loading = false;
+        state.error = payload;
+      })
+      .addCase(updateListing.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateListing.fulfilled, (state, { payload }) => {
+        state.loading = false;
+        const i = state.listings.findIndex((l) => l._id === payload._id);
+        if (i !== -1) state.listings[i] = payload; // replace in list
+      })
+      .addCase(updateListing.rejected, (state, { payload }) => {
+        state.loading = false;
+        state.error = payload;
       });
   },
 });

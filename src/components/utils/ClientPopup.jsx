@@ -16,7 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { createClient, updateClient } from "../../store/clientSlice";
 import StyledTextField from "../../StyledComponents/StyledTextField";
 import FileUploadField from "../../StyledComponents/FileUploadField";
-import { isUploading } from "../../store/fileUploadSlice";
+import { isUploading, resetUploadState } from "../../store/fileUploadSlice";
 
 const industries = [
   "Construction",
@@ -128,6 +128,7 @@ export default function ClientPopup({
         })
         .catch(console.error);
     }
+    dispatch(resetUploadState());
   };
 
   return (

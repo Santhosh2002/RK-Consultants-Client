@@ -54,7 +54,7 @@ export const createProject = createAsyncThunk(
   async (ProjectData, { rejectWithValue }) => {
     try {
       const response = await axios.post("/api/project/create", ProjectData);
-      return response.data.Project;
+      return response.data.project;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
     }
@@ -67,7 +67,7 @@ export const updateProject = createAsyncThunk(
   async ({ id, ProjectData }, { rejectWithValue }) => {
     try {
       const response = await axios.put(`/api/project/${id}`, ProjectData);
-      return response.data;
+      return response.data.project;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
     }
@@ -134,6 +134,40 @@ const projectsSlice = createSlice({
       })
       .addCase(deleteProject.rejected, (state, action) => {
         state.error = action.payload;
+      })
+      .addCase(createProject.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createProject.fulfilled, (state, { payload }) => {
+        state.loading = false;
+        state.projects.unshift(payload); // newest first
+        state.selectedProject = payload; // view the newly-created one
+      })
+      .addCase(createProject.rejected, (state, { payload }) => {
+        state.loading = false;
+        state.error = payload;
+      })
+
+      .addCase(updateProject.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateProject.fulfilled, (state, { payload }) => {
+        state.loading = false;
+
+        // replace item in list
+        const idx = state.projects.findIndex((p) => p._id === payload._id);
+        if (idx !== -1) state.projects[idx] = payload;
+
+        // if we're viewing it, keep the detail up-to-date
+        if (state.selectedProject?._id === payload._id) {
+          state.selectedProject = payload;
+        }
+      })
+      .addCase(updateProject.rejected, (state, { payload }) => {
+        state.loading = false;
+        state.error = payload;
       });
   },
 });
