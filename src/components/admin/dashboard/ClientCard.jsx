@@ -11,7 +11,7 @@ import {
   Link,
 } from "@mui/material";
 
-const ClientCard = ({ client }) => {
+const ClientCard = ({ client, deleteAction, updateAction }) => {
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -30,7 +30,7 @@ const ClientCard = ({ client }) => {
         <CardMedia
           component="img"
           image={
-            client?.companyLogo ||
+            client?.image ||
             "https://th.bing.com/th/id/OIP.i1tbVDllj1O_HfWT3fngOAHaE8?rs=1&pid=ImgDetMain"
           }
           alt={client?.name}
@@ -160,14 +160,19 @@ const ClientCard = ({ client }) => {
                   color: "#fff",
                   textTransform: "none",
                 }}
+                onClick={() => updateAction(client)} // ✅ no need to wrap in {}
               >
                 Update
               </Button>
+
               <Button
                 variant="outlined"
                 color="error"
                 sx={{
                   textTransform: "none",
+                }}
+                onClick={() => {
+                  deleteAction(client._id);
                 }}
               >
                 Delete

@@ -3,31 +3,26 @@ import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import NewListingPopup from "../../utils/NewListingPopUp";
-import UpdateListingPopup from "../../utils/UpdateListingPopUp";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import "swiper/css/navigation";
-import { Navigation } from "swiper/modules";
-import {
-  Container,
-  Grid2,
-  Card,
-  CardMedia,
-  CardContent,
-  Typography,
-  Box,
-  Button,
-  CircularProgress,
-  IconButton,
-} from "@mui/material";
-import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 import {
   fetchListings,
   getListings,
   getListingsLoader,
   getListingsError,
+  deleteListing,
+  createListing,
+  updateListing,
 } from "../../../store/listingsSlice";
 import ListingCard from "./ListingCard";
+import {
+  Container,
+  Grid2,
+  Box,
+  Typography,
+  Button,
+  CircularProgress,
+  IconButton,
+} from "@mui/material";
+import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 
 function ListingComponent() {
   const dispatch = useDispatch();
@@ -36,7 +31,6 @@ function ListingComponent() {
   const error = useSelector(getListingsError);
 
   const [isNewPopupOpen, setIsNewPopupOpen] = useState(false);
-  const [isUpdatePopupOpen, setIsUpdatePopupOpen] = useState(false);
   const [selectedListing, setSelectedListing] = useState(null);
 
   useEffect(() => {
@@ -48,6 +42,57 @@ function ListingComponent() {
       toast.error(`Failed to fetch: ${error}`);
     }
   }, [error]);
+
+  const handleDelete = async (id) => {
+    try {
+      await dispatch(deleteListing(id)).unwrap();
+      toast.success("Listing deleted successfully");
+    } catch (error) {
+      toast.error("Failed to delete listing");
+      console.error("Error deleting listing:", error);
+    }
+  };
+
+  const handleSubmit = async (formData, editingId = null) => {
+    const payload = {
+      ...formData,
+      images: formData.images.map((file) => (file?.name ? file.name : file)),
+      video: formData.video.map((file) => (file?.name ? file.name : file)),
+      virtualTour: formData.virtualTour.map((file) =>
+        file?.name ? file.name : file
+      ),
+      brochure: formData.brochure.map((file) =>
+        file?.name ? file.name : file
+      ),
+      variants: formData.variants.map((variant) => ({
+        ...variant,
+        images: Array.isArray(variant.images)
+          ? variant.images.map((file) => (file?.name ? file.name : file))
+          : [],
+        video: variant.video
+          ? variant.video?.name
+            ? variant.video.name
+            : variant.video
+          : "",
+      })),
+    };
+
+    try {
+      if (editingId) {
+        await dispatch(
+          updateListing({ id: editingId, ListingData: payload })
+        ).unwrap();
+        toast.success("Listing updated successfully");
+      } else {
+        await dispatch(createListing(payload)).unwrap();
+        toast.success("Listing created successfully");
+      }
+      dispatch(fetchListings()); // Refresh listings after create/update
+    } catch (error) {
+      toast.error("Failed to save listing");
+      console.error("Error submitting listing:", error);
+    }
+  };
 
   return (
     <Box sx={{ backgroundColor: "#111", color: "#fff", py: 6 }}>
@@ -76,7 +121,10 @@ function ListingComponent() {
             </Typography>
             <Button
               variant="contained"
-              onClick={() => setIsNewPopupOpen(true)}
+              onClick={() => {
+                setSelectedListing(null);
+                setIsNewPopupOpen(true);
+              }}
               sx={{
                 backgroundColor: "#6A5ACD",
                 color: "#fff",
@@ -86,6 +134,7 @@ function ListingComponent() {
               Add New Listing
             </Button>
           </Box>
+
           {loading ? (
             <Box
               sx={{
@@ -101,17 +150,19 @@ function ListingComponent() {
             <Grid2 container spacing={4}>
               {listings.map((listing) => (
                 <ListingCard
-                  key={listing.id}
+                  key={listing._id}
                   item={listing}
                   onClick={() => {
                     setSelectedListing(listing);
-                    setIsUpdatePopupOpen(true);
+                    setIsNewPopupOpen(true);
                   }}
+                  deleteAction={handleDelete}
                 />
               ))}
             </Grid2>
           )}
         </Box>
+
         <Box
           sx={{
             display: "flex",
@@ -150,17 +201,13 @@ function ListingComponent() {
           </Box>
         </Box>
       </Container>
+
+      {/* ⬇ Popup handled dynamically: new or update */}
       <NewListingPopup
         isOpen={isNewPopupOpen}
         onClose={() => setIsNewPopupOpen(false)}
-        onSubmit={() => {}}
-      />
-      <UpdateListingPopup
-        isOpen={isUpdatePopupOpen}
-        onClose={() => setIsUpdatePopupOpen(false)}
-        onSubmit={() => {}}
-        listingData={selectedListing}
-        id={selectedListing?._id}
+        onSubmit={(formData) => handleSubmit(formData, selectedListing?._id)}
+        editingData={selectedListing}
       />
     </Box>
   );

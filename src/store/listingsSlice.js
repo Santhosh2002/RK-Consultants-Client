@@ -46,10 +46,10 @@ export const updateListing = createAsyncThunk(
 // Async thunk to update a Listing
 export const deleteListing = createAsyncThunk(
   "Listings/deleteListing",
-  async ({ id }, { rejectWithValue }) => {
+  async (id, { rejectWithValue }) => {
     try {
-      const response = await axios.delete(`/api/listing/${id}`);
-      return response.data.Listing;
+      const response = await axios.delete(`/api/listing/delete/${id}`);
+      return response.data.listing;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
     }
@@ -76,6 +76,14 @@ const listingsSlice = createSlice({
       })
       .addCase(fetchListings.rejected, (state, action) => {
         state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(deleteListing.fulfilled, (state, action) => {
+        state.listings = state.listings.filter(
+          (listing) => listing._id !== action.payload._id
+        );
+      })
+      .addCase(deleteListing.rejected, (state, action) => {
         state.error = action.payload;
       });
   },

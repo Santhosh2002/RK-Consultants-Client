@@ -12,7 +12,7 @@ import {
   Paper,
 } from "@mui/material";
 
-const ServiceCard = ({ service }) => {
+const ServiceCard = ({ service, deleteAction, updateAction }) => {
   const [expanded, setExpanded] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [open, setOpen] = useState(false);
@@ -111,6 +111,7 @@ const ServiceCard = ({ service }) => {
                 color: "#fff",
                 textTransform: "none",
               }}
+              onClick={() => updateAction(service)}
             >
               Update
             </Button>
@@ -119,6 +120,9 @@ const ServiceCard = ({ service }) => {
               color="error"
               sx={{
                 textTransform: "none",
+              }}
+              onClick={() => {
+                deleteAction(service._id);
               }}
             >
               Delete

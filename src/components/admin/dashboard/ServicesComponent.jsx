@@ -10,8 +10,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { motion } from "framer-motion";
-import NewServicePopup from "../../utils/NewServicePopup";
-import UpdateServicePopup from "../../utils/UpdatingServices";
+import NewServicePopup from "../../utils/NewServicePopup"; // ✅ only one Popup now
 import {
   fetchServices,
   deleteService,
@@ -20,6 +19,9 @@ import {
   getServicesError,
 } from "../../../store/servicesSlice";
 import ServiceCard from "./ServicesCard";
+import { Add } from "@mui/icons-material";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function ServicesComponent() {
   const dispatch = useDispatch();
@@ -27,9 +29,8 @@ function ServicesComponent() {
   const loading = useSelector(getServicesLoader);
   const error = useSelector(getServicesError);
 
-  const [isNewPopupOpen, setNewPopupOpen] = useState(false);
-  const [isUpdatePopupOpen, setUpdatePopupOpen] = useState(false);
-  const [selectedService, setSelectedService] = useState(null);
+  const [isPopupOpen, setPopupOpen] = useState(false); // ✅ single popup state
+  const [selectedService, setSelectedService] = useState(null); // ✅ for update
   const [buttonLoading, setButtonLoading] = useState(false);
 
   useEffect(() => {
@@ -45,11 +46,27 @@ function ServicesComponent() {
   const handleDelete = async (id) => {
     setButtonLoading(true);
     try {
-      await dispatch(deleteService(id));
+      await dispatch(deleteService(id)).then((res) => {
+        if (res.error) {
+          toast.error("Failed to delete Service");
+        } else {
+          toast.success("Service deleted successfully");
+        }
+      });
     } catch (error) {
       console.error("Error deleting service:", error);
     }
     setButtonLoading(false);
+  };
+
+  const handleAddNew = () => {
+    setSelectedService(null); // Clear previous selected
+    setPopupOpen(true);
+  };
+
+  const handleEditService = (service) => {
+    setSelectedService(service);
+    setPopupOpen(true);
   };
 
   if (loading) {
@@ -75,6 +92,8 @@ function ServicesComponent() {
         py: 6,
       }}
     >
+      <ToastContainer />
+
       <Container
         maxWidth="xl"
         sx={{
@@ -93,35 +112,39 @@ function ServicesComponent() {
               marginBottom: "40px",
             }}
           >
-            <Typography variant="h4" sx={{ color: "#fff" }}>
-              Services
+            <Typography variant="h3" sx={{ fontWeight: "bold" }}>
+              Admin Panel: Services
             </Typography>
             <Button
-              onClick={() => setNewPopupOpen(true)}
+              onClick={handleAddNew}
+              startIcon={<Add />}
               sx={{
                 backgroundColor: "#A187F0",
                 color: "#fff",
                 "&:hover": { backgroundColor: "#805AD5" },
               }}
             >
-              Add New Service
+              New Service
             </Button>
           </Box>
+
+          {/* Services grid */}
           <Grid2 container spacing={4}>
             {services.map((service) => (
-              <ServiceCard service={service} />
+              <ServiceCard
+                key={service._id}
+                service={service}
+                deleteAction={handleDelete}
+                updateAction={handleEditService} // ✅ pass edit handler
+              />
             ))}
           </Grid2>
+
+          {/* New or Update Popup */}
           <NewServicePopup
-            isOpen={isNewPopupOpen}
-            onClose={() => setNewPopupOpen(false)}
-            onSubmit={() => {}}
-          />
-          <UpdateServicePopup
-            isOpen={isUpdatePopupOpen}
-            onClose={() => setUpdatePopupOpen(false)}
-            onSubmit={() => {}}
-            serviceData={selectedService}
+            isOpen={isPopupOpen}
+            onClose={() => setPopupOpen(false)}
+            existingService={selectedService} // ✅ pass if updating
           />
         </Box>
       </Container>

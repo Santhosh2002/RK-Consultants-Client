@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-const ProjectCard = ({ item }) => {
+const ProjectCard = ({ item, onClick, deleteAction }) => {
   const [expanded, setExpanded] = useState(false);
   // Safely extract the least priced variant
   const leastPriceVariant = item?.variants?.reduce(
@@ -153,6 +153,7 @@ const ProjectCard = ({ item }) => {
                 color: "#fff",
                 textTransform: "none",
               }}
+              onClick={onClick}
             >
               Update
             </Button>
@@ -161,6 +162,9 @@ const ProjectCard = ({ item }) => {
               color="error"
               sx={{
                 textTransform: "none",
+              }}
+              onClick={() => {
+                deleteAction(item._id);
               }}
             >
               Delete

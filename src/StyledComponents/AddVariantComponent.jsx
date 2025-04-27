@@ -1,34 +1,45 @@
-import React, { useState } from "react";
-import { Button, Typography, IconButton, Grid2, Box } from "@mui/material";
+// ✅ VariantForm — controller-ised version
+import React from "react";
+import { Typography, Button, IconButton, Box, Grid2 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import StyledTextField from "./StyledTextField";
-import ImageUploadComponent from "./ImageUploadComponent";
-import VideoUploadComponent from "./VideoUploadComponent";
+import { useFormContext, Controller } from "react-hook-form";
 
+import StyledTextField from "./StyledTextField";
+import FileUploadField from "./FileUploadField";
+
+// ▶︎ Default empty record for a new variant row
 const emptyVariant = {
   bhk: "",
   floor: "",
   totalFloors: "",
-  balcony: "",
-
+  balcony: 0,
   carpetArea: "",
   builtUpArea: "",
   price: "",
-  currency: "",
-  bedrooms: "",
-  bathrooms: "",
+  currency: "INR",
+  bedrooms: 0,
+  bathrooms: 0,
   facing: "",
-  availability: "",
+  availability: true,
   images: [],
-  video: [],
+  video: "", // ✅ single URL string
 };
 
 const VariantForm = ({ variants, setVariants }) => {
+  /* -------------------------------------------------------------------- */
+  /* react-hook-form helpers                                              */
+  /* -------------------------------------------------------------------- */
+  const { control, setValue } = useFormContext();
+
+  /* -------------------------------------------------------------------- */
+  /* handlers                                                             */
+  /* -------------------------------------------------------------------- */
   const handleAddVariant = () => {
     const last = variants[variants.length - 1];
     const isLastFilled = last
-      ? Object.values(last).every((val) => val !== "")
+      ? Object.values(last).every((val) => val !== "" && val !== null)
       : true;
+
     if (isLastFilled) {
       setVariants([...variants, { ...emptyVariant }]);
     } else {
@@ -38,21 +49,15 @@ const VariantForm = ({ variants, setVariants }) => {
     }
   };
 
-  const handleChange = (index, field, value) => {
-    setVariants((prevVariants) => {
-      const updated = prevVariants.map((variant, i) =>
-        i === index ? { ...variant, [field]: value } : variant
-      );
-      return updated;
-    });
-  };
-
   const handleRemove = (index) => {
     const updated = [...variants];
     updated.splice(index, 1);
     setVariants(updated);
   };
 
+  /* -------------------------------------------------------------------- */
+  /* layout helpers                                                       */
+  /* -------------------------------------------------------------------- */
   const getGridSize = (field) => {
     switch (field) {
       case "price":
@@ -76,8 +81,12 @@ const VariantForm = ({ variants, setVariants }) => {
     }
   };
 
+  /* -------------------------------------------------------------------- */
+  /* render                                                               */
+  /* -------------------------------------------------------------------- */
   return (
     <Grid2 container direction="column" spacing={2}>
+      {/* header row */}
       <Grid2
         container
         direction="row"
@@ -85,6 +94,7 @@ const VariantForm = ({ variants, setVariants }) => {
         justifyContent="space-between"
       >
         <Typography variant="h6">Variants</Typography>
+
         <Button
           variant="outlined"
           size="small"
@@ -95,6 +105,7 @@ const VariantForm = ({ variants, setVariants }) => {
         </Button>
       </Grid2>
 
+      {/* dynamic rows */}
       {variants?.map((variant, index) => (
         <Grid2
           container
@@ -108,6 +119,7 @@ const VariantForm = ({ variants, setVariants }) => {
             mt: 2,
           }}
         >
+          {/* delete badge */}
           <IconButton
             onClick={() => handleRemove(index)}
             sx={{
@@ -115,46 +127,46 @@ const VariantForm = ({ variants, setVariants }) => {
               top: -15,
               right: -15,
               backgroundColor: "white",
-              "&:hover": {
-                backgroundColor: "white",
-              },
+              "&:hover": { backgroundColor: "white" },
             }}
             color="error"
           >
             <DeleteIcon />
           </IconButton>
 
+          {/* fields */}
           {Object.keys(emptyVariant).map((field) => (
             <Grid2 item size={{ xs: 12, sm: getGridSize(field) }} key={field}>
+              {/* upload fields */}
               {field === "images" ? (
-                <Box>
-                  <ImageUploadComponent
-                    variantIndex={index}
-                    onImagesUploaded={(uploadedUrls) => {
-                      const updatedImages = [
-                        ...(variants[index]?.images || []),
-                        ...uploadedUrls,
-                      ];
-                      handleChange(index, "images", updatedImages);
-                    }}
-                  />
-                </Box>
+                <FileUploadField
+                  control={control}
+                  setValue={setValue}
+                  fieldName={`variants.${index}.images`}
+                  label="Variant Images"
+                  accept="image/*"
+                  multiple
+                  defaultUrls={variant.images}
+                />
               ) : field === "video" ? (
-                <Box>
-                  <VideoUploadComponent />
-                </Box>
+                <FileUploadField
+                  control={control}
+                  setValue={setValue}
+                  fieldName={`variants.${index}.video`}
+                  label="Variant Video"
+                  accept="video/*"
+                  multiple={false}
+                  defaultUrls={variant.video ? [variant.video] : []}
+                />
               ) : (
-                <Box>
-                  <Typography variant="subtitle2" mb={1}>
-                    {field.charAt(0).toUpperCase() + field.slice(1)}
-                  </Typography>
-                  <StyledTextField
-                    name={`variant.${field}`}
-                    placeholder={`Enter ${field}`}
-                    value={variant[field]}
-                    onChange={(e) => handleChange(index, field, e.target.value)}
-                  />
-                </Box>
+                /* text / numeric fields */
+                <Controller
+                  name={`variants.${index}.${field}`}
+                  control={control}
+                  render={({ field: c }) => (
+                    <StyledTextField {...c} placeholder={`Enter ${field}`} />
+                  )}
+                />
               )}
             </Grid2>
           ))}

@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-const ListingCard = ({ item, onClick }) => {
+const ListingCard = ({ item, onClick, approveAction, deleteAction }) => {
   const [expanded, setExpanded] = useState(false);
   // Safely extract the least priced variant
   const leastPriceVariant = item?.variants?.reduce(
@@ -173,6 +173,9 @@ const ListingCard = ({ item, onClick }) => {
               color="error"
               sx={{
                 textTransform: "none",
+              }}
+              onClick={() => {
+                deleteAction(item._id);
               }}
             >
               Delete
