@@ -11,6 +11,7 @@ import {
   deleteListing,
   createListing,
   updateListing,
+  approveListing,
 } from "../../../store/listingsSlice";
 import ListingCard from "./ListingCard";
 import {
@@ -52,39 +53,27 @@ function ListingComponent() {
       console.error("Error deleting listing:", error);
     }
   };
-
+  const handleApprove = async (id) => {
+    dispatch(approveListing(id))
+      .unwrap()
+      .then(() => {
+        toast.success("Listing approved successfully");
+      })
+      .catch((error) => {
+        toast.error("Failed to approve listing");
+        console.error("Error approving listing:", error);
+      });
+  };
+  // Handle form submission for both creating and updating listings
   const handleSubmit = async (formData, editingId = null) => {
-    const payload = {
-      ...formData,
-      images: formData.images.map((file) => (file?.name ? file.name : file)),
-      video: formData.video.map((file) => (file?.name ? file.name : file)),
-      virtualTour: formData.virtualTour.map((file) =>
-        file?.name ? file.name : file
-      ),
-      brochure: formData.brochure.map((file) =>
-        file?.name ? file.name : file
-      ),
-      variants: formData.variants.map((variant) => ({
-        ...variant,
-        images: Array.isArray(variant.images)
-          ? variant.images.map((file) => (file?.name ? file.name : file))
-          : [],
-        video: variant.video
-          ? variant.video?.name
-            ? variant.video.name
-            : variant.video
-          : "",
-      })),
-    };
-
     try {
       if (editingId) {
         await dispatch(
-          updateListing({ id: editingId, ListingData: payload })
+          updateListing({ id: editingId, ListingData: formData })
         ).unwrap();
         toast.success("Listing updated successfully");
       } else {
-        await dispatch(createListing(payload)).unwrap();
+        await dispatch(createListing(formData)).unwrap();
         toast.success("Listing created successfully");
       }
       dispatch(fetchListings()); // Refresh listings after create/update
@@ -150,12 +139,13 @@ function ListingComponent() {
             <Grid2 container spacing={4}>
               {listings.map((listing) => (
                 <ListingCard
-                  key={listing._id}
+                  key={listing?._id}
                   item={listing}
                   onClick={() => {
                     setSelectedListing(listing);
                     setIsNewPopupOpen(true);
                   }}
+                  approveAction={handleApprove}
                   deleteAction={handleDelete}
                 />
               ))}

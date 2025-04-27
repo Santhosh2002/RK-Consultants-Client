@@ -30,6 +30,18 @@ export const createListing = createAsyncThunk(
     }
   }
 );
+// Async thunk to create a new Listing
+export const approveListing = createAsyncThunk(
+  "Listings/approveListing",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`/api/listing/approve/${id}`);
+      return response.data.listing;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
 
 // Async thunk to update a Listing
 export const updateListing = createAsyncThunk(

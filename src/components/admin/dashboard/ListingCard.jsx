@@ -164,7 +164,9 @@ const ListingCard = ({ item, onClick, approveAction, deleteAction }) => {
                 color: "#fff",
                 textTransform: "none",
               }}
-              onClick={onClick}
+              onClick={() => {
+                approveAction(item?._id);
+              }}
             >
               Approve
             </Button>
@@ -175,7 +177,7 @@ const ListingCard = ({ item, onClick, approveAction, deleteAction }) => {
                 textTransform: "none",
               }}
               onClick={() => {
-                deleteAction(item._id);
+                deleteAction(item?._id);
               }}
             >
               Delete
