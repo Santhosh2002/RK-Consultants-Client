@@ -44,7 +44,9 @@ const OurValues = () => {
     },
   ];
   return (
-    <Box
+    <Grid2
+      container
+      spacing={2}
       sx={{
         display: "flex",
         flexDirection: { xs: "column", sm: "row" },
@@ -53,17 +55,21 @@ const OurValues = () => {
         backgroundColor: "#141414",
         color: "white",
         width: "100%",
-        padding: { xs: "16px", sm: "64px" },
+        // padding: { xs: "16px", sm: "64px" },
+        paddingY: "clamp(16px, 2vw, 64px)",
+        paddingX: "clamp(16px, 5vw, 64px)",
       }}
     >
       {/* Left Content */}
-      <motion.div
+      
+      <Grid2 item size={{xs:12, sm:4}}
         style={{
-          width: "40%",
+          // width:{xs: "100%", sm: "40%"},
           display: "flex",
           flexDirection: "column",
           gap: "16px",
-          padding: "60px",
+          // padding: "60px",
+          padding: "clamp(8px, 2vw, 60px)",
         }}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -82,7 +88,7 @@ const OurValues = () => {
           small team with big dreams, determined to create a real estate
           platform that transcended the ordinary.
         </Typography>
-      </motion.div>
+      </Grid2>
 
       {/* Right Section (Values Box) */}
       {/* <Box sx={{display:"flex", flexDirection:'column', padding:"30px", justifyContent:'space-between', alignItems:"center"}}>
@@ -92,13 +98,14 @@ const OurValues = () => {
         <Divider sx={{color:"#262626"}} />
         <Box></Box>
       </Box> */}
-      <motion.div
+      <Grid2 item size={{xs:12, sm:8}}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
-        style={{
+        sx={{
           flex: 1,
-          padding: "40px",
+          // padding: {} "40px",
+          padding: "clamp(8px, 5vw, 40px)",
           borderRadius: "12px",
           background: "#141414",
           border: "5px solid #262626",
@@ -106,7 +113,6 @@ const OurValues = () => {
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
           gap: "20px",
-          width: "60%",
         }}
       >
         {values.map((item, index) => (
@@ -170,8 +176,8 @@ const OurValues = () => {
             ) : null}
           </Box>
         ))}
-      </motion.div>
-    </Box>
+      </Grid2>
+    </Grid2>
   );
 };
 

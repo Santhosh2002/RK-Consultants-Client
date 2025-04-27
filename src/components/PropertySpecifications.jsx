@@ -391,7 +391,9 @@ const PropertySpecifications = () => {
             backgroundColor: "#1A1A1A",
             border: "1px solid #2A2A2A",
             borderRadius: "12px",
-            padding: { xs: 2, sm: 3, md: 4 },
+            // padding: { xs: 2, sm: 3, md: 4 },
+            paddingY: "clamp(8px, 2vw, 16px)",
+            paddingX: "clamp(16px, 5vw, 32px)",
             display: "flex",
             flexDirection: "column",
             gap: 2,
@@ -404,6 +406,32 @@ const PropertySpecifications = () => {
           <Typography variant="body2" color="#aaa" sx={{ lineHeight: 1.7 }}>
             {property?.description}
           </Typography>
+          <Grid2
+            container
+            spacing={2}
+            sx={{
+              color: "#ccc",
+              borderTop: "1px solid #333",
+              pt: 2,
+              mt: 1,
+            }}
+          >
+            {features.map((feature, index) => (
+              <Grid2 key={index} size={{xs:12, sm:6, md:4}}>
+                <Box sx={{display:"flex", flexDirection:"column" }}>
+                  <Box sx={{display:"flex", flexDirection:"row", justifyContent:"flex-start", alignItems:'center', gap:1}}>
+                    {feature.icon}
+                    <Typography variant="caption" sx={{ color: "#aaa" }}>
+                      {feature.label}
+                    </Typography>
+                  </Box>
+                  <Typography variant="h6" sx={{ fontWeight: "bold", color: "#fff" }}>
+                      {feature.value ?? "-"}
+                  </Typography>
+                </Box>
+              </Grid2>
+            ))}
+          </Grid2>
 
           <Box
             sx={{
@@ -502,7 +530,9 @@ const PropertySpecifications = () => {
           backgroundColor: "#1A1A1A",
           border: "1px solid #2A2A2A",
           borderRadius: "12px",
-          padding: { xs: 3, md: 4 },
+          // padding: { xs: 3, md: 4 },
+          paddingY: "clamp(8px, 2vw, 16px)",
+          paddingX: "clamp(16px, 5vw, 32px)",
           width: "100%",
           color: "#E0E0E0",
           boxShadow: "0 4px 20px rgba(0, 0, 0, 0.3)",

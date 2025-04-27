@@ -44,7 +44,8 @@ const PropertyDetails = () => {
           color: "white",
           width: "100%",
           gap: 4,
-          padding: { xs: "16px 16px 16px 16px", sm: "44px 124px 44px 124px" },
+          padding: "clamp(16px, 5vw, 124px)",
+          // padding: { xs: "16px 16px 16px 16px", sm: "44px 124px 44px 124px" },
         }}
       >
         <PropertySpecifications />

@@ -309,7 +309,9 @@ const ContactUs = () => {
             component="form"
             sx={{
               borderRadius: "8px",
-              padding: { xs: 3, md: 5 },
+              // padding: { xs: 3, md: 5 },
+              paddingX: "clamp(16px, 5vw, 40px)",
+              paddingY: "clamp(8px, 2vw, 40px)",
               width: "100%",
               border: "5px solid #262626",
             }}
