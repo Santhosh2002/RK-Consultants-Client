@@ -35,8 +35,8 @@ export const approveListing = createAsyncThunk(
   "Listings/approveListing",
   async (id, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`/api/listing/approve/${id}`);
-      return response.data.listing;
+      const response = await axios.patch(`/api/listing/approve/${id}`);
+      return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
     }
