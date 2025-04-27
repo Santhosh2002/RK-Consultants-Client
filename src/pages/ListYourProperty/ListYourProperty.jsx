@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Typography, Button, Modal, Grid2 } from "@mui/material";
 import { useForm, Controller, FormProvider } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,7 +12,7 @@ import ImageUploadComponent from "./ImageUploadComponent";
 import VideoUploadComponent from "./VideoUploadComponent";
 import FileUploadField from "../../StyledComponents/FileUploadField";
 import { isUploading } from "../../store/fileUploadSlice";
-import { createListing } from "../../store/listingsSlice";
+import { createListing, getListingsLoader } from "../../store/listingsSlice";
 import VariantForm from "../../StyledComponents/AddVariantComponent";
 
 // ───────────────────────────────────────── constants ──────────────────────────────────────────
@@ -107,7 +107,10 @@ const emptyListing = {
 
 const ListYourProperty = () => {
   const dispatch = useDispatch();
+  const loading = useSelector(getListingsLoader);
   const isFilesUploading = useSelector(isUploading);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [showForm, setShowForm] = useState(true);
 
   const methods = useForm({
       defaultValues: emptyListing,
@@ -163,8 +166,20 @@ const ListYourProperty = () => {
         //   ).unwrap();
         // } else {
         console.log(payload);
-          await dispatch(createListing(payload)).unwrap();
-        // }
+        dispatch(createListing(payload))
+          .then((response)=>{
+            if(response.error){
+              console.error("Error submitting Listing:", response.error.message);
+            }else{
+              console.log("Listing submitted successfully:", response.payload);
+              setShowForm(false);
+              setShowSuccessMessage(true);
+              setTimeout(()=>{
+                reset(emptyListing);
+                setShowForm(true);
+                setShowSuccessMessage(false);
+              }, 60000);
+            }})
       } catch (err) {
         console.error("Error submitting listing:", err);
       }
@@ -223,6 +238,40 @@ const ListYourProperty = () => {
           </Box>
         </Box>
         {/* Listing Popup Form */}
+        {!showForm && showSuccessMessage && (
+          <Box
+            sx={{
+              textAlign: "center",
+              border: "5px solid #262626",
+              borderRadius: "12px",
+              padding: "40px",
+              backgroundColor: "#1A1A1A",
+              color: "#7C4DFF",
+            }}
+          >
+            <Typography variant="h4" gutterBottom>
+              Thank You!
+            </Typography>
+            <Typography variant="body1">
+              We’ve received your message and will contact you shortly.
+            </Typography>
+          </Box>
+        )}
+        {loading && !showSuccessMessage && (
+          <Box
+            sx={{
+              textAlign: "center",
+              border: "5px solid #262626",
+              borderRadius: "12px",
+              padding: "40px",
+              backgroundColor: "#1A1A1A",
+              color: "#ffffff",
+            }}
+          >
+            <Typography variant="body1">Submitting your inquiry...</Typography>
+          </Box>
+        )}
+        {showForm && !loading && (
         <FormProvider {...methods}>
               {/* <Modal
                 open={isOpen}
@@ -660,6 +709,7 @@ const ListYourProperty = () => {
                 </Box>
               {/* </Modal> */}
             </FormProvider>
+        )}
       </Box>
 
       <RealEstateCTA />
