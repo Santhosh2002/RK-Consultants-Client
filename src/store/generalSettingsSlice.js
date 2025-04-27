@@ -20,10 +20,8 @@ export const updateGeneralSettings = createAsyncThunk(
   async (settings, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("authToken");
-      await axios.post(`/api/general/${settings._id}`, settings, {
-        headers: { Authorization: `${token}` },
-      });
-      return settings;
+      var response = await axios.put(`/api/general/${settings._id}`, settings);
+      return response.data.general;
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -37,7 +35,7 @@ const getPageFromPath = (pathname) => {
     "/services": "Services",
     "/contact": "Contact",
     "/profile": "Profile",
-    "/properties": "Properties"
+    "/properties": "Properties",
   };
   return pageMapping[pathname] || "Home"; // Default to Home if not found
 };

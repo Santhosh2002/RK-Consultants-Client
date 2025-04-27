@@ -24,8 +24,12 @@ export default function FileUploadField({
   const dispatch = useDispatch();
   const uploadKey = `${fieldName}-${variantIndex}`; // Unique key
 
-  const uploadedUrls = useSelector((state) => getUploadedFileUrl(state, uploadKey));
-  const uploadImgLoading = useSelector((state) => isUploading(state, uploadKey));
+  const uploadedUrls = useSelector((state) =>
+    getUploadedFileUrl(state, uploadKey)
+  );
+  const uploadImgLoading = useSelector((state) =>
+    isUploading(state, uploadKey)
+  );
 
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [fileQueue, setFileQueue] = useState([]);
@@ -39,7 +43,11 @@ export default function FileUploadField({
     Array.from(files).forEach((file) => {
       if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
         errors.push(`${file.name} exceeds ${MAX_FILE_SIZE_MB}MB size limit.`);
-      } else if (!accept.split(",").some((type) => file.type.includes(type.trim().replace('*', '')))) {
+      } else if (
+        !accept
+          .split(",")
+          .some((type) => file.type.includes(type.trim().replace("*", "")))
+      ) {
         errors.push(`${file.name} is not a supported format.`);
       } else {
         selected.push(file);
@@ -69,11 +77,14 @@ export default function FileUploadField({
   };
 
   const handleRemovePreloaded = (indexToRemove) => {
-    const updated = preloadedUrls.filter((_, idx) => idx !== indexToRemove);
+    const updated = preloadedUrls?.filter((_, idx) => idx !== indexToRemove);
     setPreloadedUrls(updated);
 
     if (setValue) {
-      setValue(fieldName, multiple ? [...updated, ...uploadedUrls] : updated[0] || "");
+      setValue(
+        fieldName,
+        multiple ? [...updated, ...uploadedUrls] : updated[0] || ""
+      );
     }
   };
 
@@ -81,21 +92,28 @@ export default function FileUploadField({
     if (uploadedUrls?.length > 0) {
       setSelectedFiles([]); // Clear selected after upload
       if (setValue) {
-        setValue(fieldName, multiple ? [...preloadedUrls, ...uploadedUrls] : uploadedUrls[0]);
+        setValue(
+          fieldName,
+          multiple ? [...preloadedUrls, ...uploadedUrls] : uploadedUrls[0]
+        );
       }
     }
   }, [uploadedUrls]);
 
   useEffect(() => {
     if (defaultUrls?.length > 0) {
-      setPreloadedUrls((prev) => prev.length === 0 ? defaultUrls : prev);
+      setPreloadedUrls((prev) => (prev.length === 0 ? defaultUrls : prev));
     }
   }, []);
-  
 
   return (
     <Box display="flex" flexDirection="column" gap={2} width="100%">
-      <Box display="flex" justifyContent="space-between" alignItems="center" sx={{width:'100%'}}>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        sx={{ width: "100%" }}
+      >
         <Typography>{label}</Typography>
         <Box>
           <input
@@ -107,7 +125,12 @@ export default function FileUploadField({
             style={{ display: "none" }}
           />
           <label htmlFor={`upload-${fieldName}-${variantIndex}`}>
-            <Button variant="outlined" size="small" sx={{ color: "#7C4DFF", mr: 1 }} component="span">
+            <Button
+              variant="outlined"
+              size="small"
+              sx={{ color: "#7C4DFF", mr: 1 }}
+              component="span"
+            >
               Choose {multiple ? "Files" : "File"}
             </Button>
           </label>
@@ -131,12 +154,17 @@ export default function FileUploadField({
       )}
 
       {/* Uploaded Files */}
-      {preloadedUrls.length > 0 && (
+      {preloadedUrls?.length > 0 && (
         <Box>
           <Typography variant="subtitle2">Uploaded Files:</Typography>
           <Box display="flex" flexWrap="wrap" gap={2} mt={1}>
-            {preloadedUrls.map((url, index) => (
-              <Box key={`uploaded-${index}`} position="relative" width={100} height={100}>
+            {preloadedUrls?.map((url, index) => (
+              <Box
+                key={`uploaded-${index}`}
+                position="relative"
+                width={100}
+                height={100}
+              >
                 <img
                   src={url}
                   alt="uploaded"
@@ -144,7 +172,12 @@ export default function FileUploadField({
                 />
                 <IconButton
                   size="small"
-                  sx={{ position: "absolute", top: 0, right: 0, backgroundColor: "rgba(255,255,255,0.7)" }}
+                  sx={{
+                    position: "absolute",
+                    top: 0,
+                    right: 0,
+                    backgroundColor: "rgba(255,255,255,0.7)",
+                  }}
                   onClick={() => handleRemovePreloaded(index)}
                 >
                   <Delete fontSize="small" color="error" />
@@ -158,25 +191,44 @@ export default function FileUploadField({
       {/* Selected Files */}
       {selectedFiles.length > 0 && (
         <Box>
-          <Typography variant="subtitle2">Selected Files (not uploaded):</Typography>
+          <Typography variant="subtitle2">
+            Selected Files (not uploaded):
+          </Typography>
           <Box display="flex" flexWrap="wrap" gap={2} mt={1}>
             {selectedFiles.map((file, index) => (
-              <Box key={`${file.name}-${index}`} position="relative" width={100} height={100}>
+              <Box
+                key={`${file.name}-${index}`}
+                position="relative"
+                width={100}
+                height={100}
+              >
                 {file.type.startsWith("image/") ? (
                   <img
                     src={URL.createObjectURL(file)}
                     alt={file.name}
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
                   />
                 ) : (
-                  <Typography variant="caption" sx={{ p: 1, fontSize: "10px", textAlign: "center" }}>
+                  <Typography
+                    variant="caption"
+                    sx={{ p: 1, fontSize: "10px", textAlign: "center" }}
+                  >
                     {file.name}
                   </Typography>
                 )}
                 <IconButton
                   onClick={() => handleRemoveFile(index)}
                   size="small"
-                  sx={{ position: "absolute", top: 0, right: 0, backgroundColor: "rgba(255,255,255,0.7)" }}
+                  sx={{
+                    position: "absolute",
+                    top: 0,
+                    right: 0,
+                    backgroundColor: "rgba(255,255,255,0.7)",
+                  }}
                 >
                   <Delete fontSize="small" color="error" />
                 </IconButton>
