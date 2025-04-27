@@ -374,7 +374,7 @@ function NewListingPopup({ isOpen, onClose, editingData = null }) {
                 label={label}
                 accept={accept}
                 multiple={multiple}
-                defaultUrls={watch(name)}
+                defaultUrls={editingData ? editingData[name] : []}
               />
             ))}
 
