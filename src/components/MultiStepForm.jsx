@@ -53,7 +53,7 @@ const MultiStepForm = ({
     };
     loadRazorpay();
   }, []);
-
+  console.log("sele", selectedSubServices);
   const handleSubServiceToggle = (subService) => {
     const exists = selectedSubServices.some((s) => s._id === subService._id);
     const updated = exists
@@ -80,11 +80,27 @@ const MultiStepForm = ({
       alert("Razorpay failed to load.");
       return;
     }
+    //purchasedServices: [
+    //   {
+    //     name: { type: String, required: true },
+    //     amount: { type: Number, required: true },
+    //     currency: { type: String, default: "INR" },
+    //   },
+    // ],
     const order = {
       amount: totalAmount,
       clientId: clientData._id,
+      name: clientData.name,
+      email: clientData.email,
+      phone: clientData.phone,
+      companyName: clientData.companyName,
       currency: "INR",
       serviceId: serviceId,
+      purchasedServices: selectedSubServices.map((s) => ({
+        name: s.name,
+        amount: s.price,
+        currency: "INR",
+      })),
     };
     dispatch(createOrder(order)).then((res) => {
       if (res.payload) {
@@ -142,16 +158,25 @@ const MultiStepForm = ({
           <Typography variant="subtitle1" gutterBottom>
             Select required services:
           </Typography>
-          <Box sx={{ overflowY: "auto", maxHeight: "calc(80vh - 280px)", pr: 1 }}>
+          <Box
+            sx={{ overflowY: "auto", maxHeight: "calc(80vh - 280px)", pr: 1 }}
+          >
             {subServices.map((sub) => (
               <Box
                 key={sub._id}
-                sx={{ mb: 1, display: "flex", justifyContent: "space-between", alignItems: "center" }}
+                sx={{
+                  mb: 1,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
               >
                 <FormControlLabel
                   control={
                     <Checkbox
-                      checked={!!selectedSubServices.find((s) => s._id === sub._id)}
+                      checked={
+                        !!selectedSubServices.find((s) => s._id === sub._id)
+                      }
                       onChange={() => handleSubServiceToggle(sub)}
                       sx={{ color: "#6A5ACD" }}
                     />
