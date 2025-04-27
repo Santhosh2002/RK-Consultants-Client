@@ -153,7 +153,7 @@ function ListingComponent() {
           )}
         </Box>
 
-        <Box
+        {/* <Box
           sx={{
             display: "flex",
             justifyContent: "space-between",
@@ -189,7 +189,7 @@ function ListingComponent() {
               <ArrowForwardIos fontSize="small" />
             </IconButton>
           </Box>
-        </Box>
+        </Box> */}
       </Container>
 
       {/* ⬇ Popup handled dynamically: new or update */}
