@@ -10,9 +10,10 @@ import FooterComponent from "../../components/footer";
 import StyledTextField from "../../StyledComponents/StyledTextField";
 import ImageUploadComponent from "./ImageUploadComponent";
 import VideoUploadComponent from "./VideoUploadComponent";
-import VariantForm from "./AddVariantComponent";
 import FileUploadField from "../../StyledComponents/FileUploadField";
 import { isUploading } from "../../store/fileUploadSlice";
+import { createListing } from "../../store/listingsSlice";
+import VariantForm from "../../StyledComponents/AddVariantComponent";
 
 // ───────────────────────────────────────── constants ──────────────────────────────────────────
 const propertyTypes = [
@@ -95,7 +96,7 @@ const emptyListing = {
       bedrooms: 0,
       bathrooms: 0,
       images: [],
-      video: [],
+      video: "",
       balcony: 0,
       floor: "",
       totalFloors: "",
@@ -156,14 +157,14 @@ const ListYourProperty = () => {
       };
   
       try {
-        if (editingData) {
-          await dispatch(
-            updateListing({ id: editingData._id, ListingData: payload })
-          ).unwrap();
-        } else {
+        // if (editingData) {
+        //   await dispatch(
+        //     updateListing({ id: editingData._id, ListingData: payload })
+        //   ).unwrap();
+        // } else {
+        console.log(payload);
           await dispatch(createListing(payload)).unwrap();
-        }
-        onClose();
+        // }
       } catch (err) {
         console.error("Error submitting listing:", err);
       }

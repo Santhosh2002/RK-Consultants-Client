@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Typography, Box, IconButton, Grid2 } from "@mui/material";
+import { Button, Typography, Box, IconButton } from "@mui/material";
 import { Delete } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -19,27 +19,36 @@ export default function FileUploadField({
   accept = "image/*",
   multiple = true,
   variantIndex = "",
-  defaultUrls = [], // ✅ added defaultUrls support
+  defaultUrls = [],
 }) {
   const dispatch = useDispatch();
-  const uploadedUrls = useSelector((state) =>
-    getUploadedFileUrl(state, fieldName)
-  );
-  const uploadImgLoading = useSelector((state) =>
-    isUploading(state, fieldName)
-  );
+  const uploadKey = `${fieldName}-${variantIndex}`; // Unique key
+
+  const uploadedUrls = useSelector((state) => getUploadedFileUrl(state, uploadKey));
+  const uploadImgLoading = useSelector((state) => isUploading(state, uploadKey));
+
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [fileQueue, setFileQueue] = useState([]);
-  const [preloadedUrls, setPreloadedUrls] = useState(defaultUrls || []); // ✅ preloaded urls
+  const [preloadedUrls, setPreloadedUrls] = useState(defaultUrls || []);
+  const [error, setError] = useState("");
 
   const handleFileChange = (files) => {
-    const selected = Array.from(files).filter((file) => {
-      if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) return false;
-      return true;
+    const selected = [];
+    const errors = [];
+
+    Array.from(files).forEach((file) => {
+      if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+        errors.push(`${file.name} exceeds ${MAX_FILE_SIZE_MB}MB size limit.`);
+      } else if (!accept.split(",").some((type) => file.type.includes(type.trim().replace('*', '')))) {
+        errors.push(`${file.name} is not a supported format.`);
+      } else {
+        selected.push(file);
+      }
     });
 
     setSelectedFiles((prev) => [...prev, ...selected]);
     setFileQueue((prev) => [...prev, ...selected]);
+    setError(errors.join(" \n "));
   };
 
   const onInputChange = (e) => {
@@ -49,8 +58,8 @@ export default function FileUploadField({
 
   const handleUploadClick = () => {
     if (fileQueue.length === 0) return;
-    dispatch(resetUploadState());
-    dispatch(uploadFile({ files: fileQueue, uploadKey: fieldName }));
+    dispatch(resetUploadState(uploadKey));
+    dispatch(uploadFile({ files: fileQueue, uploadKey }));
     setFileQueue([]);
   };
 
@@ -64,40 +73,30 @@ export default function FileUploadField({
     setPreloadedUrls(updated);
 
     if (setValue) {
-      if (multiple) {
-        setValue(fieldName, [...updated, ...uploadedUrls]);
-      } else {
-        setValue(fieldName, updated.length > 0 ? updated[0] : "");
-      }
+      setValue(fieldName, multiple ? [...updated, ...uploadedUrls] : updated[0] || "");
     }
   };
 
   useEffect(() => {
-    if (uploadedUrls?.length > 0 && setValue) {
-      if (multiple) {
-        setValue(fieldName, [...preloadedUrls, ...uploadedUrls]);
-      } else {
-        setValue(fieldName, uploadedUrls[0]);
+    if (uploadedUrls?.length > 0) {
+      setSelectedFiles([]); // Clear selected after upload
+      if (setValue) {
+        setValue(fieldName, multiple ? [...preloadedUrls, ...uploadedUrls] : uploadedUrls[0]);
       }
     }
-  }, [uploadedUrls, preloadedUrls, setValue, fieldName, multiple]);
+  }, [uploadedUrls]);
 
   useEffect(() => {
-    // Whenever defaultUrls changes externally (when editing)
     if (defaultUrls?.length > 0) {
-      setPreloadedUrls(defaultUrls);
+      setPreloadedUrls((prev) => prev.length === 0 ? defaultUrls : prev);
     }
-  }, [defaultUrls]);
+  }, []);
+  
 
   return (
-    <Grid2
-      item
-      size={{ xs: 12 }}
-      sx={{ display: "flex", flexDirection: "column", gap: 2 }}
-    >
-      <Box display="flex" justifyContent="space-between" alignItems="center">
+    <Box display="flex" flexDirection="column" gap={2} width="100%">
+      <Box display="flex" justifyContent="space-between" alignItems="center" sx={{width:'100%'}}>
         <Typography>{label}</Typography>
-
         <Box>
           <input
             id={`upload-${fieldName}-${variantIndex}`}
@@ -108,12 +107,7 @@ export default function FileUploadField({
             style={{ display: "none" }}
           />
           <label htmlFor={`upload-${fieldName}-${variantIndex}`}>
-            <Button
-              variant="outlined"
-              size="small"
-              sx={{ color: "#7C4DFF", mr: 1 }}
-              component="span"
-            >
+            <Button variant="outlined" size="small" sx={{ color: "#7C4DFF", mr: 1 }} component="span">
               Choose {multiple ? "Files" : "File"}
             </Button>
           </label>
@@ -130,97 +124,67 @@ export default function FileUploadField({
         </Box>
       </Box>
 
-      {/* Preloaded images */}
+      {error && (
+        <Typography color="error" variant="body2">
+          {error}
+        </Typography>
+      )}
+
+      {/* Uploaded Files */}
       {preloadedUrls.length > 0 && (
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, mt: 2 }}>
-          {preloadedUrls.map((url, index) => (
-            <Box
-              key={`preloaded-${index}`}
-              sx={{
-                position: "relative",
-                width: 100,
-                height: 100,
-                borderRadius: 2,
-                overflow: "hidden",
-                boxShadow: 1,
-                border: "1px solid #ccc",
-                backgroundColor: "#eee",
-              }}
-            >
-              <img
-                src={url}
-                alt="preloaded"
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
-              <IconButton
-                size="small"
-                sx={{
-                  position: "absolute",
-                  top: 0,
-                  right: 0,
-                  backgroundColor: "rgba(255,255,255,0.7)",
-                }}
-                onClick={() => handleRemovePreloaded(index)}
-              >
-                <Delete fontSize="small" color="error" />
-              </IconButton>
-            </Box>
-          ))}
+        <Box>
+          <Typography variant="subtitle2">Uploaded Files:</Typography>
+          <Box display="flex" flexWrap="wrap" gap={2} mt={1}>
+            {preloadedUrls.map((url, index) => (
+              <Box key={`uploaded-${index}`} position="relative" width={100} height={100}>
+                <img
+                  src={url}
+                  alt="uploaded"
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+                <IconButton
+                  size="small"
+                  sx={{ position: "absolute", top: 0, right: 0, backgroundColor: "rgba(255,255,255,0.7)" }}
+                  onClick={() => handleRemovePreloaded(index)}
+                >
+                  <Delete fontSize="small" color="error" />
+                </IconButton>
+              </Box>
+            ))}
+          </Box>
         </Box>
       )}
 
-      {/* Newly selected local files */}
+      {/* Selected Files */}
       {selectedFiles.length > 0 && (
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, mt: 2 }}>
-          {selectedFiles.map((file, index) => (
-            <Box
-              key={`${file.name}-${index}`}
-              sx={{
-                position: "relative",
-                width: 100,
-                height: 100,
-                borderRadius: 2,
-                overflow: "hidden",
-                boxShadow: 1,
-                border: "1px solid #ccc",
-                backgroundColor: "#eee",
-              }}
-            >
-              {file.type.startsWith("image/") ? (
-                <img
-                  src={URL.createObjectURL(file)}
-                  alt={file.name}
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                />
-              ) : (
-                <Typography
-                  variant="caption"
-                  sx={{
-                    p: 1,
-                    fontSize: "10px",
-                    textAlign: "center",
-                    overflowWrap: "break-word",
-                  }}
+        <Box>
+          <Typography variant="subtitle2">Selected Files (not uploaded):</Typography>
+          <Box display="flex" flexWrap="wrap" gap={2} mt={1}>
+            {selectedFiles.map((file, index) => (
+              <Box key={`${file.name}-${index}`} position="relative" width={100} height={100}>
+                {file.type.startsWith("image/") ? (
+                  <img
+                    src={URL.createObjectURL(file)}
+                    alt={file.name}
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  />
+                ) : (
+                  <Typography variant="caption" sx={{ p: 1, fontSize: "10px", textAlign: "center" }}>
+                    {file.name}
+                  </Typography>
+                )}
+                <IconButton
+                  onClick={() => handleRemoveFile(index)}
+                  size="small"
+                  sx={{ position: "absolute", top: 0, right: 0, backgroundColor: "rgba(255,255,255,0.7)" }}
                 >
-                  {file.name}
-                </Typography>
-              )}
-              <IconButton
-                onClick={() => handleRemoveFile(index)}
-                size="small"
-                sx={{
-                  position: "absolute",
-                  top: 0,
-                  right: 0,
-                  backgroundColor: "rgba(255,255,255,0.7)",
-                }}
-              >
-                <Delete fontSize="small" color="error" />
-              </IconButton>
-            </Box>
-          ))}
+                  <Delete fontSize="small" color="error" />
+                </IconButton>
+              </Box>
+            ))}
+          </Box>
         </Box>
       )}
-    </Grid2>
+    </Box>
   );
 }
