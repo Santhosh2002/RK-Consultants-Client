@@ -44,11 +44,11 @@ const HeroSection = () => {
       sx={{
         display: "flex",
         flexDirection: { xs: "column-reverse", sm: "row" },
-        alignItems: "center",
+        alignItems: "stretch",
         justifyContent: "space-between",
         backgroundColor: "#0d0d0d",
         color: "white",
-        padding: { xs: "16px", sm: "0px" },
+        padding: "0px",
       }}
     >
       {/* Left Content */}
@@ -125,7 +125,7 @@ const HeroSection = () => {
           direction={{ xs: "column", sm: "row" }}
         >
           {stats.map((stat, index) => (
-            <Grid2 item size={{ xs: 12, sm: 4 }} key={index} sx={{ flex: 1 }}>
+            <Grid2 item size={{ xs: 12, sm: 6, md: 4 }} key={index} sx={{ flex: 1 }}>
               <Box
                 sx={{
                   background: "#1A1A1A",
@@ -133,6 +133,7 @@ const HeroSection = () => {
                   borderRadius: "12px",
                   textAlign: "left",
                   border: "1px solid #262626",
+                  width: "100%", // <--- important to prevent overflow
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "center",
@@ -145,7 +146,7 @@ const HeroSection = () => {
                 </Typography>
                 <Typography
                   variant="body2"
-                  sx={{ color: "#b0b0b0", whiteSpace: "nowrap" }}
+                  sx={{ color: "#b0b0b0", whiteSpace: "wrap" }}
                 >
                   {stat.title}
                 </Typography>
@@ -160,6 +161,12 @@ const HeroSection = () => {
         <motion.img
           src="/Icons/Container.svg"
           alt="Modern Building"
+          style={{
+            alignItems:'center',
+            height:"100%",
+            width:"100%",
+            objectFit: "cover",
+          }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
