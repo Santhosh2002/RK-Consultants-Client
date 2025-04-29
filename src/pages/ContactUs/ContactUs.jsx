@@ -445,7 +445,7 @@ const ContactUs = () => {
                 container
                 width="100%"
                 size={{ xs: 12, md: 12, sm: 12 }}
-                justifyContent="space-between"
+                justifyContent= {{xs: "center", sm:"space-between"}}
                 alignItems="center"
               >
                 <Grid2 item>
