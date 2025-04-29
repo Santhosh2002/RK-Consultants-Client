@@ -88,7 +88,8 @@ const OurClients = () => {
           sx={{
             display: "flex",
             flexDirection: "column",
-            alignItems: "flex-start",
+            alignItems: {xs:"center", sm:"flex-start"},
+            textAlign: "center",
             gap: "16px",
             marginBottom: "40px",
           }}
@@ -96,27 +97,32 @@ const OurClients = () => {
           <img
             src="/Icons/abstract-Design.svg"
             alt="Icon"
-            style={{ width: 70, height: "auto", marginRight: 10 }}
+            style={{ width: 70, height: "auto" }}
           />
-          <Typography variant="h3" sx={{ fontWeight: "bold" }} fontSize={48}>
+          <Typography variant="h3" sx={{ fontWeight: "bold", fontSize: { xs: 32, sm: 48 } }}>
             What Our Clients Say
           </Typography>
+
           <Box
             sx={{
               display: "flex",
-              flexDirection: "row",
+              flexDirection: { xs: "column", sm: "row" },
               justifyContent: "space-between",
-              alignItems: "center",
+              // alignItems: { xs: "flex-start", sm: "flex-start" },
               width: "100%",
+              gap: { xs: 2, sm: 4 },
             }}
           >
             <Typography
               variant="body1"
-              sx={{ textAlign: "left", width: "70%", color: "#999999" }}
+              sx={{
+                textAlign: { xs: "center", sm: "left" },
+                width: { xs: "100%", sm: "70%" },
+                color: "#999999",
+              }}
             >
-              Read the success stories and heartfelt testimonials from our
-              valued clients. Discover why they chose RK Realtors & Consultants
-              for their real estate needs.
+              Read the success stories and heartfelt testimonials from our valued clients.
+              Discover why they chose RK Realtors & Consultants for their real estate needs.
             </Typography>
             <Button
               variant="outlined"
@@ -124,12 +130,14 @@ const OurClients = () => {
                 whiteSpace: "nowrap",
                 color: "white",
                 border: "1px solid #999999",
+                alignSelf: { xs: "center", sm: "center" },
               }}
             >
               View All Testimonials
             </Button>
           </Box>
         </Box>
+
         {/* Testimonials Grid2 */}
         <Grid2 container spacing={4}>
           {currentTestimonials.map((testimonial) => (

@@ -68,7 +68,8 @@ const PropertyListing = () => {
           sx={{
             display: "flex",
             flexDirection: "column",
-            alignItems: "flex-start",
+            alignItems: {xs:"center", sm:"flex-start"},
+            textAlign: "center",
             gap: "16px",
             marginBottom: "40px",
           }}
@@ -78,21 +79,26 @@ const PropertyListing = () => {
             alt="Icon"
             style={{ width: 70, height: "auto", marginRight: 10 }}
           />
-          <Typography variant="h3" sx={{ fontWeight: "bold" }} fontSize={48}>
+          <Typography variant="h3" sx={{ fontWeight: "bold", fontSize: { xs: 32, sm: 48 } }}>
             Featured Properties
           </Typography>
           <Box
             sx={{
               display: "flex",
-              flexDirection: "row",
+              flexDirection: { xs: "column", sm: "row" },
               justifyContent: "space-between",
-              alignItems: "center",
+              // alignItems: { xs: "flex-start", sm: "flex-start" },
               width: "100%",
+              gap: { xs: 2, sm: 4 },
             }}
           >
             <Typography
               variant="body1"
-              sx={{ textAlign: "left", width: "70%", color: "#999999" }}
+              sx={{
+                textAlign: { xs: "center", sm: "left" },
+                width: { xs: "100%", sm: "70%" },
+                color: "#999999",
+              }}
             >
               Explore our handpicked selection of featured properties. Each
               listing offers a glimpse into exceptional homes and investments
@@ -106,6 +112,7 @@ const PropertyListing = () => {
                 whiteSpace: "nowrap",
                 color: "white",
                 border: "1px solid #999999",
+                alignSelf: { xs: "center", sm: "center" },
               }}
             >
               View All Properties

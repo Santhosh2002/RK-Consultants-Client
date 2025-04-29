@@ -41,7 +41,8 @@ const Services = () => {
           sx={{
             display: "flex",
             flexDirection: "column",
-            alignItems: "flex-start",
+            alignItems: {xs:"center", sm:"flex-start"},
+            textAlign: "center",
             gap: "16px",
             marginBottom: "40px",
           }}
@@ -51,41 +52,43 @@ const Services = () => {
             alt="Icon"
             style={{ width: 70, height: "auto", marginRight: 10 }}
           />
-          <Typography variant="h3" fontSize={48} fontWeight={"bold"}>
+          <Typography variant="h3" sx={{ fontSize: { xs: 32, sm: 48 }, fontWeight: "bold" }}>
             What we Offer
           </Typography>
           <Box
             sx={{
               display: "flex",
-              flexDirection: "row",
+              flexDirection: { xs: "column", sm: "row" },
               justifyContent: "space-between",
-              alignItems: "center",
+              // alignItems: { xs: "flex-start", sm: "flex-start" },
               width: "100%",
+              gap: { xs: 2, sm: 4 },
             }}
           >
             <Typography
               variant="body1"
-              sx={{ textAlign: "left", width: "70%", color: "#999999" }}
+              sx={{
+                textAlign: { xs: "center", sm: "left" },
+                width: { xs: "100%", sm: "70%" },
+                color: "#999999",
+              }}
             >
-              Empowering you with innovative solutions, tailored to exceed your
-              expectations!
+              Empowering you with innovative solutions, tailored to exceed your expectations!
             </Typography>
             <Button
-              onClick={() => {
-                navigate("/services");
-              }}
+              onClick={() => navigate("/services")}
               variant="outlined"
               sx={{
                 whiteSpace: "nowrap",
                 color: "white",
                 border: "1px solid #999999",
+                alignSelf: { xs: "center", sm: "center" },
               }}
             >
               View All Services
             </Button>
           </Box>
         </Box>
-
         {/* ✅ Services List */}
         <Grid2 container spacing={4}>
           {services.slice(0, 3).map((service, index) => (
