@@ -63,6 +63,8 @@ const Properties = () => {
   const [searchText, setSearchText] = useState("");
   const [location, setLocation] = useState("");
   const [propertyType, setPropertyType] = useState("");
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(50);
   const [priceRange, setPriceRange] = useState("");
   const [propertySize, setPropertySize] = useState("");
   const [buildYear , setBuildYear] = useState("");
@@ -75,8 +77,8 @@ const Properties = () => {
       keyword: searchText || "*",
       location,
       propertyType,
-      minPrice: priceRange?.[0],
-      maxPrice: priceRange?.[1],
+      minPrice: minPrice,
+      maxPrice: maxPrice,
       page: pageNum || 1,
       pageSize,
       propertySize,
@@ -159,8 +161,8 @@ const Properties = () => {
                       keyword: searchText || "*",
                       location,
                       propertyType,
-                      minPrice: priceRange?.[0],
-                      maxPrice: priceRange?.[1],
+                      minPrice: minPrice,
+                      maxPrice: maxPrice * 100000,
                       page: pageNum || 1,
                       pageSize,
                       propertySize,
@@ -249,8 +251,8 @@ const Properties = () => {
           <TextField
             label="Max Price (in Lakhs)"
             type="number"
-            value={priceRange}
-            onChange={(e) => setPriceRange(e.target.value)}
+            value={maxPrice}
+            onChange={(e) => setMaxPrice(e.target.value)}
             fullWidth
             variant="outlined"
             size="large"
