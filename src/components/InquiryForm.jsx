@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 
 const MotionBox = motion(Box);
-
+// Inquiry Form
 const InquiryForm = () => {
   return (
     <Box
