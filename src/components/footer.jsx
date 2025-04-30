@@ -127,7 +127,7 @@ const FooterComponent = ({
             </Grid2> */}
             <Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
               <LocationOn sx={{ fontSize: 20, mr: 1 }} />
-              <Typography variant="body2" noWrap>
+              <Typography variant="body2">
                 {settings?.address}
               </Typography>
             </Box>

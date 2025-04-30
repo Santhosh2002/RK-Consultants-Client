@@ -1,34 +1,96 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Box,
   Typography,
   TextField,
   Button,
-  MenuItem,
   InputAdornment,
   Grid2,
   OutlinedInput,
   FormControl,
+  Skeleton,
+  Pagination,
+  Slider,
+  MenuItem,
+  InputLabel,
+  Select,
 } from "@mui/material";
-import { Search } from "@mui/icons-material";
 import Navbar from "../../components/Navbar";
 import RealEstateCTA from "../../components/RealEstateCTA";
 import FooterComponent from "../../components/footer";
 import PropertyListing from "../../components/PropertyListing";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchProjects, getProjects } from "../../store/projectsSlice";
+import { fetchProjects, getProjects, getProjectsLoader } from "../../store/projectsSlice";
 import PropertyCard from "../../components/PropertyCard";
 
 const MotionBox = motion(Box);
 
+const SkeletonPropertyCard = () => (
+  <Grid2 item size={{ xs: 12, sm: 6, md: 4 }} >
+    <Box
+      sx={{
+        borderRadius: 3,
+        border: "1px solid #444",
+        backgroundColor: "#111",
+        boxShadow: 4,
+        p: 2,
+      }}
+    >
+      <Skeleton variant="rectangular" height={200} sx={{ borderRadius: "10px", mb: 2 }} />
+      <Skeleton variant="text" height={30} width="80%" />
+      <Skeleton variant="text" height={20} width="100%" />
+      <Skeleton variant="text" height={20} width="100%" />
+      <Skeleton variant="text" height={20} width="60%" />
+      <Skeleton variant="rounded" height={36} width={100} sx={{ mt: 2 }} />
+    </Box>
+  </Grid2>
+);
+
+const propertyTypes = [
+  "Residential",
+  "Commercial",
+  "MAHA RERA",
+  "Land",
+  "Shop",
+  "Other",
+];
+
 const Properties = () => {
   const dispatch = useDispatch();
   var properties = useSelector(getProjects);
+  const isLoading = useSelector(getProjectsLoader);
+  const [searchText, setSearchText] = useState("");
+  const [location, setLocation] = useState("");
+  const [propertyType, setPropertyType] = useState("");
+  const [priceRange, setPriceRange] = useState("");
+  const [propertySize, setPropertySize] = useState("");
+  const [buildYear , setBuildYear] = useState("");
+  const [pageNum, setPageNum] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 6;
 
   useEffect(() => {
-    dispatch(fetchProjects());
-  }, [dispatch]);
+    const filters = {
+      keyword: searchText || "*",
+      location,
+      propertyType,
+      minPrice: priceRange?.[0],
+      maxPrice: priceRange?.[1],
+      page: pageNum || 1,
+      pageSize,
+      propertySize,
+      buildYear,
+    };
+  
+    dispatch(fetchProjects(filters));
+  }, [dispatch]); 
+  
+  useEffect(()=>{
+    if(properties && properties.length > 0){
+      setTotalPages(Math.ceil(properties.length / pageSize));
+    }
+  },[properties]);
   
   return (
     <Box id="properties" sx={{ backgroundColor: "#191919", width: "100vw" }}>
@@ -78,6 +140,8 @@ const Properties = () => {
         <FormControl sx={{ width: "100%", maxWidth: "700px", backgroundColor: "#262626", pt:1, px:1, borderRadius: "10px 10px 0 0", }} variant="outlined">
           <OutlinedInput
             id="outlined-adornment-search"
+            value={searchText}
+            onChange={(e)=> setSearchText(e.target.value)}
             sx={{
               padding: "16px",
               border: "1px solid #262626",
@@ -90,6 +154,20 @@ const Properties = () => {
                 <Button
                   variant="contained"
                   sx={{ backgroundColor: "#703BF7", color: "white" }}
+                  onClick={()=>{
+                    const filters = {
+                      keyword: searchText || "*",
+                      location,
+                      propertyType,
+                      minPrice: priceRange?.[0],
+                      maxPrice: priceRange?.[1],
+                      page: pageNum || 1,
+                      pageSize,
+                      propertySize,
+                      buildYear,
+                    }
+                    dispatch(fetchProjects(filters));
+                  }}
                 >
                   Find Property
                 </Button>
@@ -99,7 +177,7 @@ const Properties = () => {
           />
         </FormControl>
 
-        <Grid2
+        {/* <Grid2
           container
           spacing={1}
           sx={{
@@ -117,18 +195,140 @@ const Properties = () => {
                 fullWidth
                 variant="outlined"
                 placeholder={label}
-                size="small"
+                size="large"
               />
             </Grid2>
           ))}
+        </Grid2> */}
+      <Grid2
+        container
+        spacing={1}
+        sx={{
+          width: "100%",
+          maxWidth: "900px",
+          backgroundColor: "#262626",
+          borderRadius: "10px",
+          p: 1,
+        }}
+      >
+        {/* Location */}
+        <Grid2 item size={{xs:12, sm:6, md:2.4}}>
+          <TextField
+            label="Location"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            fullWidth
+            variant="outlined"
+            size="large"
+            sx={{ backgroundColor: "#141414", input: { color: "#fff" }, label: { color: "#999" } }}
+          />
         </Grid2>
+
+        {/* Property Type */}
+        <Grid2 item size={{xs:12, sm:6, md:2.4}}>
+          <TextField
+            label="Property Type"
+            select
+            value={propertyType}
+            onChange={(e) => setPropertyType(e.target.value)}
+            fullWidth
+            variant="outlined"
+            size="large"
+            sx={{ backgroundColor: "#141414", color: "white", label: { color: "#999" } }}
+          >
+            {propertyTypes.map((type) => (
+              <MenuItem key={type} value={type}>
+                {type}
+              </MenuItem>
+            ))}
+          </TextField>
+        </Grid2>
+
+        {/* Max Price */}
+        <Grid2 item size={{xs:12, sm:6, md:2.4}}>
+          <TextField
+            label="Max Price (in Lakhs)"
+            type="number"
+            value={priceRange}
+            onChange={(e) => setPriceRange(e.target.value)}
+            fullWidth
+            variant="outlined"
+            size="large"
+            sx={{
+              backgroundColor: "#141414",
+              input: { color: "#fff" },
+              label: { color: "#999" },
+            }}
+          />
+        </Grid2>
+
+        {/* Property Size */}
+        <Grid2 item size={{xs:12, sm:6, md:2.4}}>
+          <TextField
+            label="Carpet Area (sq ft)"
+            type="number"
+            value={propertySize}
+            onChange={(e) => setPropertySize(e.target.value)}
+            fullWidth
+            variant="outlined"
+            size="large"
+            sx={{ backgroundColor: "#141414", input: { color: "#fff" }, label: { color: "#999" } }}
+          />
+        </Grid2>
+
+        {/* Build Year */}
+        <Grid2 item size={{xs:12, sm:6, md:2.4}}>
+          <TextField
+            label="Build Year"
+            type="number"
+            inputProps={{ min: 1900, max: new Date().getFullYear() }}
+            value={buildYear}
+            onChange={(e) => setBuildYear(e.target.value)}
+            fullWidth
+            variant="outlined"
+            size="large"
+            sx={{ backgroundColor: "#141414", input: { color: "#fff" }, label: { color: "#999" } }}
+          />
+        </Grid2>
+      </Grid2>
       </Box>
 
       <Grid2 container spacing={4} sx={{ px: { xs: 2, sm: 4, md: 8 }, py: 6 }}>
-        {properties.map((property) => (
-          <PropertyCard key={property.id} item={property} />
-        ))}
+        {isLoading
+          ? Array.from({ length: 6 }).map((_, index) => (
+              <SkeletonPropertyCard key={index} />
+            )) : properties.length === 0 ? (
+              <Box
+                sx={{
+                  width: "100%",
+                  textAlign: "center",
+                  color: "#aaa",
+                  fontSize: "18px",
+                  py: 10,
+                }}
+              >
+                No Properties Available
+              </Box>
+            )
+          : properties.map((property) => (
+              <PropertyCard key={property._id || property.id} item={property} />
+            ))}
       </Grid2>
+      
+      {!isLoading && totalPages > 1 && (
+        <Box sx={{ display: "flex", justifyContent: "center", pb: 6 }}>
+          <Pagination
+            count={totalPages}
+            page={pageNum}
+            onChange={(e, value) => setPageNum(value)}
+            color="primary"
+            sx={{
+              "& .MuiPaginationItem-root": { color: "#fff" },
+              "& .Mui-selected": { backgroundColor: "#703BF7" },
+            }}
+          />
+        </Box>
+      )}
 
       {/* <RealEstateCTA /> */}
       <FooterComponent />
