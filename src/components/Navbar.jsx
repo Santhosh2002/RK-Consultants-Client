@@ -151,7 +151,12 @@ const Navbar = ({ logo }) => {
             </IconButton>
           </Box>
           <List>
-            {navItems.map((item) => (
+          {[
+            ...navItems,
+            ...(isDrawerOpen
+              ? [{ label: "List your Property", path: "/listyourproperty" }]
+              : []),
+          ].map((item) => (
               <ListItem
                 key={item.label}
                 onClick={() => {

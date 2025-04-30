@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Button, Typography, Grid2, Divider } from "@mui/material";
+import { Box, Button, Typography, Grid2, Divider, useMediaQuery, useTheme } from "@mui/material";
 import { motion } from "framer-motion";
 import StarIcon from "@mui/icons-material/Star";
 import SchoolIcon from "@mui/icons-material/School";
@@ -7,6 +7,8 @@ import GroupsIcon from "@mui/icons-material/Groups";
 import VerifiedIcon from "@mui/icons-material/Verified";
 
 const OurValues = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery('(max-width:765px)');
   const [stats, setStats] = useState([
     { title: "Happy Customer", value: 200, divisor: 1, suffix: "" },
     {
@@ -111,7 +113,7 @@ const OurValues = () => {
           border: "5px solid #262626",
           boxShadow: "0px 0px 30px #262626",
           display: "grid",
-          gridTemplateColumns: "1fr 1fr",
+          gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
           gap: "20px",
         }}
       >
@@ -130,8 +132,8 @@ const OurValues = () => {
             <Box sx={{ display: "flex", alignItems: "center", gap: "16px" }}>
               <Box
                 sx={{
-                  width: "50px",
-                  height: "50px",
+                  width: "clamp(10px, 5vw, 50px)",
+                  height: "clamp(10px, 5vw, 50px)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -150,6 +152,9 @@ const OurValues = () => {
               {item.description}
             </Typography>
 
+            {!isMobile && (
+              <>
+
             {/* Add Dividers */}
             {index % 2 === 0 && (
               <Divider
@@ -163,7 +168,7 @@ const OurValues = () => {
                 orientation="vertical"
               />
             )}
-            {index < values.length - 3 ? (
+            {index < values.length - 3 && (
               <Divider
                 sx={{
                   position: "absolute",
@@ -173,7 +178,9 @@ const OurValues = () => {
                   borderColor: "#262626",
                 }}
               />
-            ) : null}
+            )}
+            </>
+          )}
           </Box>
         ))}
       </Grid2>

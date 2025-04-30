@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 
 const MotionBox = motion(Box);
-
+// Inquiry Form
 const InquiryForm = () => {
   return (
     <Box
@@ -191,7 +191,7 @@ const InquiryForm = () => {
             container
             width="100%"
             size={{ xs: 12, md: 12, sm: 12 }}
-            justifyContent="space-between"
+            justifyContent= {{xs: "center", sm:"space-between"}}
             alignItems="center"
           >
             <Grid2 item>
