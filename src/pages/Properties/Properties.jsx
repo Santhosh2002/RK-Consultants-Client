@@ -64,7 +64,7 @@ const Properties = () => {
   const [location, setLocation] = useState("");
   const [propertyType, setPropertyType] = useState("");
   const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(50);
+  const [maxPrice, setMaxPrice] = useState(100);
   const [priceRange, setPriceRange] = useState("");
   const [propertySize, setPropertySize] = useState("");
   const [buildYear , setBuildYear] = useState("");
