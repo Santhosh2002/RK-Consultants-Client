@@ -78,7 +78,7 @@ const Properties = () => {
       location,
       propertyType,
       minPrice: minPrice,
-      maxPrice: maxPrice,
+      maxPrice: maxPrice * 100000,
       page: pageNum || 1,
       pageSize,
       propertySize,
