@@ -23,6 +23,7 @@ export const createListing = createAsyncThunk(
   "Listings/createListing",
   async (ListingData, { rejectWithValue }) => {
     try {
+      console.log(ListingData);
       const response = await axios.post("/api/listing/create", ListingData);
       return response.data.listing;
     } catch (error) {

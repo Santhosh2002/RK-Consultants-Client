@@ -22,7 +22,9 @@ export const submitContactInquiry = createAsyncThunk(
       const response = await axios.post("/api/contact", contactData);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || error.message);
+      return rejectWithValue(
+        error.response?.data || { message: "Unknown error occurred" }
+      );
     }
   }
 );

@@ -14,7 +14,7 @@ import FileUploadField from "../../StyledComponents/FileUploadField";
 import { isUploading } from "../../store/fileUploadSlice";
 import { createListing, getListingsLoader } from "../../store/listingsSlice";
 import VariantForm from "../../StyledComponents/AddVariantComponent";
-
+import ReCAPTCHA from "react-google-recaptcha";
 // ───────────────────────────────────────── constants ──────────────────────────────────────────
 const propertyTypes = [
   "Residential",
@@ -107,6 +107,7 @@ const emptyListing = {
 
 const ListYourProperty = () => {
   const dispatch = useDispatch();
+  const recaptchaRef = React.useRef(null);
   const loading = useSelector(getListingsLoader);
   const isFilesUploading = useSelector(isUploading);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
@@ -143,9 +144,18 @@ const ListYourProperty = () => {
 
   // ─────────────── onSubmit ───────────────
     const onSubmit = async (formData) => {
+      // Trigger invisible reCAPTCHA
+      const token = await recaptchaRef.current.executeAsync();
+      recaptchaRef.current.reset();
+
+      if (!token) {
+        alert("Please verify you're human.");
+        return;
+      }
       // pre-process files for backend
       const payload = {
         ...formData,
+        recaptchaToken: token,
         images: formData.images.map((f) => (f?.name ? f.name : f)),
         video: formData.video.map((f) => (f?.name ? f.name : f)),
         virtualTour: formData.virtualTour.map((f) => (f?.name ? f.name : f)),
@@ -696,6 +706,12 @@ const ListYourProperty = () => {
                       container
                       justifyContent="center"
                     >
+                      <ReCAPTCHA
+                        ref={recaptchaRef}
+                        sitekey="6Lf-4D0rAAAAAFtqqRH8qf44niOqQi5sZtCLguQO"
+                        size="invisible"
+                        theme="dark"
+                      />
                       <Button
                         variant="contained"
                         sx={{ bgcolor: "#352d66" }}

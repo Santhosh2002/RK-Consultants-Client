@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { motion } from "framer-motion";
 import { Helmet } from "react-helmet";
@@ -21,11 +21,13 @@ import FooterComponent from "../../components/footer";
 import StyledTextField from "../../StyledComponents/StyledTextField";
 import {submitContactInquiry, getContactsLoader} from "../../store/contactSlice";
 import { getGeneralSettings } from '../../store/generalSettingsSlice';
+import ReCAPTCHA from "react-google-recaptcha";
 
 const MotionBox = motion(Box);
 
 const ContactUs = () => {
   const dispatch = useDispatch();
+  const recaptchaRef = React.useRef(null);
   const loading = useSelector(getContactsLoader);
   const settings = useSelector(getGeneralSettings);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
@@ -59,9 +61,24 @@ const ContactUs = () => {
     message: "",
   });
   
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(submitContactInquiry(formData))
+      // Trigger invisible reCAPTCHA
+    const token = await recaptchaRef.current.executeAsync();
+    recaptchaRef.current.reset();
+
+    if (!token) {
+      alert("Please verify you're human.");
+      return;
+    }
+
+    const finalFormData = {
+      ...formData,
+      recaptchaToken: token,
+    };
+    console.log("Form Data:", finalFormData);
+
+    dispatch(submitContactInquiry(finalFormData))
       .then((response)=>{
         if(response.error){
           console.error("Error submitting inquiry:", response.error.message);
@@ -473,6 +490,13 @@ const ContactUs = () => {
                   />
                 </Grid2>
                 <Grid2 item>
+                  <ReCAPTCHA
+                    ref={recaptchaRef}
+                    sitekey="6Lf-4D0rAAAAAFtqqRH8qf44niOqQi5sZtCLguQO"
+                    size="invisible"
+                    theme="dark"
+                  />
+
                   <Button
                     variant="contained"
                     sx={{ backgroundColor: "#7C4DFF", color: "white", px: 4 }}

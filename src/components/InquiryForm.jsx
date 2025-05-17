@@ -219,6 +219,7 @@ const InquiryForm = () => {
               />
             </Grid2>
             <Grid2 item>
+              
               <Button
                 variant="contained"
                 sx={{ backgroundColor: "#7C4DFF", color: "white", px: 4 }}
